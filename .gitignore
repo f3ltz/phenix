@@ -17,6 +17,8 @@ data/raw/genomic/*.gz
 *.parquet
 *.h5
 *.hdf5
+*.npy
+*.npz
 .coverage
 htmlcov/
 .pytest_cache/

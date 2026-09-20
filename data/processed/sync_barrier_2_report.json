@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "errors": [],
+  "warnings": [],
+  "taxa_count": 3268,
+  "primary_approach": "Phylo-PCoA",
+  "tree_tip_count": 3268,
+  "patristic_matrix_shape": [
+    3268,
+    3268
+  ],
+  "baseline_feature_count": 85,
+  "augmented_feature_count": 117,
+  "architecture_freeze_locked": true
+}
