@@ -2,16 +2,16 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from typing import Tuple, Dict, Any
+from typing import Tuple, Dict, Any, Optional, Union
 import pandas as pd
 from src.data.schemas import ID_COL, BIOCLIM_VARS
 
 
 def audit_sync_barrier_1(
-    pheno_path: Path,
-    env_path: Path,
-    genomic_path: Path,
-    report_out_path: Optional = None,
+    pheno_path: Union[str, Path],
+    env_path: Union[str, Path],
+    genomic_path: Union[str, Path],
+    report_out_path: Optional[Union[str, Path]] = None,
 ) -> Tuple[bool, Dict[str, Any]]:
     """
     Sync Barrier 1: Target & Alignment Lock Audit.
