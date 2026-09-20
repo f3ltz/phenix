@@ -6,55 +6,49 @@ PHENIX bridges evolutionary biology and predictive machine learning by integrati
 
 ---
 
-## Operational Architecture: Phase 1 (Side B)
+## Roadmap & Progress
 
-This branch (`feature/side-b-phase-1`) completes all tasks assigned to **Person B (ML & Benchmarking Lead)** through **Phase 1: Target Ingestion & Taxonomy Normalization**, culminating in **Sync Barrier 1: Target & Alignment Lock**.
+| Phase | Milestone | Person A (Phylogenetics) | Person B (ML & Benchmarking) | Synchronization Barrier | Status |
+| :---: | :--- | :--- | :--- | :--- | :---: |
+| **Phase 1** | Target Ingestion & Taxonomy Normalization | PanTHERIA mammal traits, coordinates & taxonomy | WorldClim v2.1 (bio1–bio19) + ESM-2 BUSCO genomics | **SYNC BARRIER 1: Target & Alignment Lock** | **LOCKED (PASS)** |
+| **Phase 2** | Tree Calibration & Feature Transformation | OToL topology, TimeTree BLADJ calibration, Patristic $D$ & PCoA | Baseline features, Cholesky whitening, PyG graph, Augmented features | **SYNC BARRIER 2: Architectural & Feature Freeze** | **LOCKED (PASS)** |
+| **Phase 3** | Validation Engine & Model Engineering | Monophyletic withholdings, $T_{\text{cut}}$ & buffer zones | Random 10-fold CV, Phylo-CV, ML models (Ridge, RF, XGBoost, GNN) | **SYNC BARRIER 3: Clade Leakage Audit** | *Upcoming* |
+| **Phase 4** | Experimental Benchmarking & Extrapolation | Divergence tracking vs accuracy | Train & benchmark Baseline vs Augmented across CV protocols | **SYNC BARRIER 4: Benchmark Review** | *Upcoming* |
+| **Phase 5** | Residual Diagnostics & Manuscript Integration | Pagel's $\lambda$, Blomberg's $K$ error autocorrelation | Signal attribution (evolutionary proximity vs genomics) | **SYNC BARRIER 5: Final Freeze** | *Upcoming* |
+
+---
+
+## Phase 2 Architecture (Branch: `feature/phase-2`)
 
 ```mermaid
 flowchart TD
-    A[PanTHERIA Mammal Database ~5,416 Species] --> B[Species Coordinates & Geographic Centroids]
-    B --> C[WorldClim v2.1 Extractor bio1-bio19 + Elevation + Biome]
-    A --> D[BUSCO Mammalia Sequences / Markers]
-    D --> E[ESM-2 Embeddings + SNP QC/PCA + Functional Features]
-    C --> F[Unified Data Pipeline Orchestrator]
-    E --> F
-    A --> F
-    F --> G[Cross-Modal Completeness Audit]
-    G --> H[1:1 Index & Identity Alignment Lock]
-    H --> I[data/processed/phenotypic_clean.csv]
-    H --> J[data/processed/environmental_clean.csv]
-    H --> K[data/processed/genomic_clean.csv]
-    I & J & K --> L[SYNC BARRIER 1 AUDIT GATE]
-    L --> M{Status: PASS?}
-    M -->|PASS| N[Ready for Phase 2 Tree Calibration & Feature Transformation]
+    subgraph Phase_1 ["Phase 1: Ingestion & Alignment Lock"]
+        P1[phenotypic_clean.csv 3,268 species]
+        E1[environmental_clean.csv 21 vars]
+        G1[genomic_clean.csv 64 features]
+    end
+
+    subgraph Phase_2_Side_A ["Phase 2: Person A (Phylogenetics)"]
+        P1 --> O1[OToL Consensus Topology & Leaf Mapping]
+        O1 --> C1[TimeTree BLADJ Calibration Root: 177.0 Ma]
+        C1 --> T1[phylo_tree_calibrated.nwk Ultrametric Timetree]
+        T1 --> D1[Patristic Distance Matrix D 3268x3268]
+        D1 --> B1[Double-Centered Matrix B = HAH]
+        B1 --> PC1[features_phylo_pcoa.csv 32 Eigenmaps]
+    end
+
+    subgraph Phase_2_Side_B ["Phase 2: Person B (ML & Features)"]
+        E1 & G1 --> BF[features_baseline.csv 85 Features]
+        BF --> CW[features_whitened.csv Cholesky Whitening Cov approx I]
+        T1 & BF --> GR[phylo_graph.json PyTorch Geometric Graph G=V,E]
+        BF & PC1 --> AF[features_augmented.csv 117 Features]
+    end
+
+    subgraph Barrier_2 ["SYNC BARRIER 2: Architectural & Feature Freeze"]
+        T1 & D1 & BF & AF --> SB2[Sync Barrier 2 Audit Gate]
+        SB2 -->|PASS| LK[sync_barrier_2_report.json Freeze Locked]
+    end
 ```
-
-### Key Deliverables
-1. **WorldClim & Habitat Ingestion** (`src/data/worldclim.py`):
-   - Ingests 19 WorldClim v2.1 bioclimatic rasters (`bio1` through `bio19`).
-   - Ingests habitat parameters: `elevation` (m a.s.l.), terrestrial `biome_class`, and continuous `habitat_suitability` indices.
-   - Point sampling via `rasterio` GeoTIFFs with deterministic physical-geographic fallback for offline execution.
-   - Multi-occurrence aggregation (median/mean) per species.
-
-2. **Genomic Processing & ESM-2 Sequence Embeddings** (`src/data/genomic.py`):
-   - **ESM-2 BUSCO Embeddings**: Processes conserved BUSCO Mammalia protein sequences using Meta's ESM-2 language model architecture to extract dense latent representations (`esm2_dim_1` to `esm2_dim_32`).
-   - **SNP Genotype Matrices**: Minor Allele Frequency (MAF) filtering, missing call-rate thresholding, VanRaden genomic scaling, and PCA dimensionality reduction (`snp_dim_1` to `snp_dim_16`).
-   - **Functional Genomics**: Gene annotations, pathway enrichment scores, standardization, and variance filtering (`func_dim_1` to `func_dim_16`).
-   - **Composite Pipeline**: Merges all genomic modalities into a zero-missing-value feature matrix.
-
-3. **Tabular Schema Standards** (`src/data/schemas.py`):
-   - Primary key standardization (`canonical_taxon_id`) and binomial normalization.
-   - Strict validators for occurrences, bioclimatic variables, habitat parameters, and genomic representations.
-   - `evaluate_data_completeness()` utility for cross-modal auditing.
-
-4. **Unified Data Pipeline** (`src/data/pipeline.py`):
-   - Ingests full PanTHERIA database (5,416 mammal species).
-   - Locks 3,268 mammalian taxa across 27 orders with complete spatial, phenotypic, environmental, and genomic coverage.
-   - Outputs clean, synchronized datasets and an alignment manifest to `data/processed/`.
-
-5. **Sync Barrier 1 Audit Gate** (`src/validation/sync_barrier_1.py`):
-   - Verifies 1:1 row index equality, identical row order, non-empty three-way overlap, and zero NaNs.
-   - Produces JSON verification reports (`sync_barrier_1_report.json`).
 
 ---
 
@@ -65,42 +59,49 @@ flowchart TD
 pip install -r requirements.txt
 ```
 
-### 2. Run the Unified Pipeline
-To process the full PanTHERIA dataset and lock alignment across candidate mammalian taxa:
+### 2. Run Phase 1 Pipeline (Ingestion & Sync Barrier 1)
 ```powershell
 python -m src.data.pipeline --output-dir data/processed
 ```
+- Ingests PanTHERIA (5,416 mammal species)
+- Locks 3,268 species across 27 mammalian orders
+- Extracts WorldClim bioclimatic rasters (`bio1`–`bio19`), elevation, biome, and ESM-2 BUSCO sequence representations.
 
-To run on specific target mammalian orders:
+### 3. Run Phase 2 Pipeline (Tree Calibration, Feature Transformation & Sync Barrier 2)
 ```powershell
-python -m src.data.pipeline --target-orders Carnivora Primates Rodentia
+python -m src.pipeline_phase2 --data-dir data/processed
 ```
+- Person A: Builds consensus mammal tree, applies TimeTree BLADJ calibration (root 177.0 Ma), computes patristic matrix $D$ ($3,268 \times 3,268$), and extracts 32 Phylo-PCoA eigenmaps.
+- Person B: Assembles Baseline features (85 vars), performs Cholesky whitening ($X^* = L^{-1} X$), exports PyTorch Geometric graph $G=(V, E)$, and builds Augmented features (117 vars).
+- Sync Barrier 2: Audits 0 tip mismatches, 0 NaNs, distance symmetry, and locks architecture.
 
-To run a fast reference seed run (29 taxa across 5 orders):
+### 4. Verification & Audit Gates
 ```powershell
-python -m src.data.pipeline --use-reference-seed
-```
+# Sync Barrier 1 Gate
+python -m src.validation.sync_barrier_1
 
-### 3. Run Sync Barrier 1 Audit Gate
-```powershell
-python -m src.validation.sync_barrier_1 `
-  --pheno data/processed/phenotypic_clean.csv `
-  --env data/processed/environmental_clean.csv `
-  --genomic data/processed/genomic_clean.csv
-```
+# Sync Barrier 2 Gate
+python -m src.validation.sync_barrier_2
 
-### 4. Run Automated Test Suite
-```powershell
+# Full Test Suite (26 automated unit and integration tests)
 python -m pytest -v
 ```
 
 ---
 
-## Output Manifest & Dataset Summary
+## Processed Dataset Artifacts (`data/processed/`)
 
-Clean aligned tables are saved in `data/processed/`:
-- `phenotypic_clean.csv`: 3,268 species $\times$ 11 phenotypic traits
-- `environmental_clean.csv`: 3,268 species $\times$ 21 bioclimatic & habitat variables
-- `genomic_clean.csv`: 3,268 species $\times$ 64 ESM-2, SNP, and functional features
-- `alignment_manifest.json`: Full taxonomic manifest, order breakdown, and column profiles
-- `sync_barrier_1_report.json`: Audit gate status (`PASS`)
+| Artifact | Dimensions | Description |
+| :--- | :--- | :--- |
+| `phenotypic_clean.csv` | $3,268 \times 12$ | 11 cleaned life-history traits (adult body mass, gestation length, litter size, etc.) |
+| `environmental_clean.csv` | $3,268 \times 22$ | 19 WorldClim v2.1 bioclimatic variables + elevation + habitat suitability |
+| `genomic_clean.csv` | $3,268 \times 65$ | 32 ESM-2 sequence embeddings + 16 SNP PCs + 16 functional features |
+| `phylo_tree_calibrated.nwk` | Newick string | Ultrametric timetree calibrated with TimeTree dates (root age 177.0 Ma) |
+| `patristic_distance_matrix.npy` | $3,268 \times 3,268$ | Pairwise evolutionary divergence distances ($D_{ij} = 2 \cdot \text{age}(\text{MRCA})$) |
+| `features_phylo_pcoa.csv` | $3,268 \times 33$ | 32 Phylo-PCoA eigenmaps capturing multi-scale phylogenetic gradients |
+| `features_baseline.csv` | $3,268 \times 86$ | Baseline Feature Set: 21 Environmental + 64 Genomic features |
+| `features_whitened.csv` | $3,268 \times 86$ | Cholesky-whitened baseline features ($\text{Cov}(X^*) \approx I$) |
+| `features_augmented.csv` | $3,268 \times 118$ | Augmented Feature Set: 85 Baseline + 32 Phylo-PCoA eigenmaps |
+| `phylo_graph.json` | Graph topology | PyTorch Geometric compatible node/edge structure with branch length attributes |
+| `sync_barrier_1_report.json` | JSON audit report | **STATUS: PASS** (3,268 taxa locked) |
+| `sync_barrier_2_report.json` | JSON audit report | **STATUS: PASS** (Architecture and features frozen) |
