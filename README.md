@@ -16,9 +16,14 @@ PHENIX bridges evolutionary biology and predictive machine learning by integrati
 | **Phase 4** | Experimental Benchmarking & Extrapolation | Divergence tracking vs accuracy | Train & benchmark Baseline vs Augmented across CV protocols | **SYNC BARRIER 4: Benchmark Review** | *Upcoming* |
 | **Phase 5** | Residual Diagnostics & Manuscript Integration | Pagel's $\lambda$, Blomberg's $K$ error autocorrelation | Signal attribution (evolutionary proximity vs genomics) | **SYNC BARRIER 5: Final Freeze** | *Upcoming* |
 
+## Documentation & Guides
+
+- **[Phase 2 Execution Guide](PHASE_2_EXECUTION_GUIDE.md)**: Detailed step-by-step operational hand-offs between Person A (Phylogenetics) and Person B (ML & Features), task dependencies, mathematical specifications, and audit checklist for Phase 2.
+- **[Concepts & Architecture Guide](CONCEPTS_AND_ARCHITECTURE.md)**: Comprehensive guide covering theoretical foundations, Felsenstein's dilemma, ESM-2 protein language modeling, WorldClim bioclimatics, TimeTree BLADJ calibration, and Cholesky whitening.
+
 ---
 
-## Phase 2 Architecture (Branch: `feature/phase-2`)
+## Phase 2 Architecture
 
 ```mermaid
 flowchart TD
