@@ -22,7 +22,7 @@ class TestPipeline(unittest.TestCase):
             snp_dims=6,
             func_dims=6,
         )
-        res = pipeline.run_pipeline()
+        res = pipeline.run_pipeline(use_reference_seed=True)
 
         self.assertEqual(res["status"], "SUCCESS")
         self.assertTrue((self.tmp_path / "phenotypic_clean.csv").exists())

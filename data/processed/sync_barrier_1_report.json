@@ -3,15 +3,15 @@
   "errors": [],
   "warnings": [],
   "taxa_counts": {
-    "phenotypic": 29,
-    "environmental": 29,
-    "genomic": 29
+    "phenotypic": 3268,
+    "environmental": 3268,
+    "genomic": 3268
   },
-  "overlap_count": 29,
+  "overlap_count": 3268,
   "feature_counts": {
-    "phenotypic_traits": 7,
+    "phenotypic_traits": 11,
     "environmental_vars": 21,
-    "genomic_features": 61
+    "genomic_features": 64
   },
   "alignment_verified": true
 }

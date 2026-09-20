@@ -1,8 +1,9 @@
 import argparse
 import json
 import sys
+import urllib.request
 from pathlib import Path
-from typing import Optional, List, Dict, Any, Tuple
+from typing import Optional, List, Dict, Any, Tuple, Union
 import numpy as np
 import pandas as pd
 
@@ -21,7 +22,10 @@ from src.data.worldclim import WorldClimExtractor
 from src.data.genomic import CompositeGenomicPipeline
 
 
-# Reference PanTHERIA mammal species dataset with coordinates and life-history traits
+DEFAULT_PANTHERIA_PATH = Path("data/raw/phenotypic/PanTHERIA_1-0_WR05_Aug2008.txt")
+PANTHERIA_DOWNLOAD_URL = "https://raw.githubusercontent.com/pedroj/Megafauna/master/datasets/PanTHERIA_1-0_WR05_Aug2008.txt"
+
+# Curated reference mammal species seed across 5 mammalian orders (used for quick tests & fast demo)
 REFERENCE_PANTHERIA_TAXA = [
     # Carnivora
     {"name": "Panthera leo", "order": "Carnivora", "family": "Felidae", "lat": -2.33, "lon": 34.83, "mass_g": 160000.0, "gestation_d": 110.0, "litter_size": 2.8, "home_range_km2": 150.0},
@@ -64,11 +68,93 @@ REFERENCE_PANTHERIA_TAXA = [
 ]
 
 
+def download_pantheria_database(dest_path: Path = DEFAULT_PANTHERIA_PATH) -> Path:
+    """Downloads the full PanTHERIA database (5,416 mammal species) if not present locally."""
+    dest = Path(dest_path)
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    if not dest.exists():
+        print(f"Downloading PanTHERIA database to {dest}...")
+        req = urllib.request.Request(PANTHERIA_DOWNLOAD_URL, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req) as resp, open(dest, "wb") as f:
+            f.write(resp.read())
+        print(f"Download complete: {dest.stat().st_size} bytes.")
+    return dest
+
+
+def load_pantheria_database(
+    file_path: Optional[Union[str, Path]] = None,
+    require_coords: bool = True,
+    require_target_traits: bool = True,
+    target_orders: Optional[List[str]] = None,
+    max_taxa: Optional[int] = None,
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """
+    Ingests and normalizes the full PanTHERIA mammal database (~5,416 species).
+    Pivots long/raw tabular data into standardized phenotypic and occurrence matrices.
+    """
+    path = Path(file_path) if file_path else DEFAULT_PANTHERIA_PATH
+    if not path.exists():
+        path = download_pantheria_database(path)
+
+    df_raw = pd.read_csv(path, sep="\t")
+    # In PanTHERIA, missing values are denoted by -999.00 or -999
+    df_raw = df_raw.replace(-999.0, np.nan).replace(-999, np.nan)
+
+    lat_col = "26-4_GR_MidRangeLat_dd"
+    lon_col = "26-7_GR_MidRangeLong_dd"
+
+    # Canonical taxon identifier
+    df_raw[ID_COL] = df_raw["MSW05_Binomial"].astype(str).apply(normalize_taxon_id)
+    df_raw = df_raw.drop_duplicates(subset=[ID_COL])
+
+    if target_orders:
+        df_raw = df_raw[df_raw["MSW05_Order"].isin(target_orders)]
+
+    if require_coords:
+        valid_coords = (
+            df_raw[lat_col].notnull()
+            & df_raw[lon_col].notnull()
+            & df_raw[lat_col].astype(float).between(-90, 90)
+            & df_raw[lon_col].astype(float).between(-180, 180)
+        )
+        df_raw = df_raw[valid_coords]
+
+    if require_target_traits:
+        # Require adult body mass (primary benchmark trait)
+        df_raw = df_raw[df_raw["5-1_AdultBodyMass_g"].notnull()]
+
+    if max_taxa and len(df_raw) > max_taxa:
+        df_raw = df_raw.head(max_taxa)
+
+    pheno_df = pd.DataFrame({
+        ID_COL: df_raw[ID_COL].values,
+        "species": df_raw["MSW05_Binomial"].values,
+        "order": df_raw["MSW05_Order"].values,
+        "family": df_raw["MSW05_Family"].values,
+        "genus": df_raw["MSW05_Genus"].values,
+        "adult_body_mass_g": df_raw["5-1_AdultBodyMass_g"].astype(float).values,
+        "gestation_length_d": df_raw["9-1_GestationLen_d"].astype(float).values,
+        "litter_size": df_raw["15-1_LitterSize"].astype(float).values,
+        "weaning_age_d": df_raw["25-1_WeaningAge_d"].astype(float).values,
+        "home_range_km2": df_raw["22-1_HomeRange_km2"].astype(float).values,
+        "trophic_level": df_raw["6-2_TrophicLevel"].astype(float).values,
+        "max_longevity_m": df_raw["17-1_MaxLongevity_m"].astype(float).values,
+    })
+
+    occ_df = pd.DataFrame({
+        ID_COL: df_raw[ID_COL].values,
+        "latitude": df_raw[lat_col].astype(float).values,
+        "longitude": df_raw[lon_col].astype(float).values,
+    })
+
+    return pheno_df, occ_df
+
+
 class UnifiedDataPipeline:
     """
     Unified Data Pipeline for Phase 1: Target Ingestion & Taxonomy Normalization.
     Coordinates:
-      1. Phenotypic Trait Ingestion (PanTHERIA mammal records)
+      1. Phenotypic Trait Ingestion (Full PanTHERIA mammal database, 5,416 species)
       2. WorldClim v2.1 Bioclimatic & Habitat Ingestion
       3. Genomic Feature Processing (ESM-2 BUSCO Embeddings, SNPs, Functional features)
       4. Target Taxon Completeness Evaluation & 1:1 Alignment Lock
@@ -95,7 +181,7 @@ class UnifiedDataPipeline:
         self.random_state = random_state
 
     def load_reference_phenotypic(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
-        """Loads curated PanTHERIA reference dataset with occurrences and traits."""
+        """Loads curated PanTHERIA reference dataset seed (used for quick tests)."""
         pheno_rows = []
         occ_rows = []
 
@@ -125,24 +211,34 @@ class UnifiedDataPipeline:
         self,
         raw_pheno_df: Optional[pd.DataFrame] = None,
         raw_occ_df: Optional[pd.DataFrame] = None,
+        use_reference_seed: bool = False,
+        pantheria_file: Optional[Union[str, Path]] = None,
         target_orders: Optional[List[str]] = None,
         min_completeness: float = 0.80,
+        max_taxa: Optional[int] = None,
     ) -> Dict[str, Any]:
         """
         Executes end-to-end data ingestion, environmental extraction, genomic processing,
-        completeness audit, and alignment lock.
+        completeness audit, and alignment lock across target taxa.
         """
         print("[UnifiedDataPipeline] Step 1: Ingesting phenotypic records and occurrences...")
-        if raw_pheno_df is None or raw_occ_df is None:
-            df_pheno, df_occ = self.load_reference_phenotypic()
-        else:
+        if raw_pheno_df is not None and raw_occ_df is not None:
             df_pheno = raw_pheno_df.copy()
             df_occ = raw_occ_df.copy()
             if ID_COL not in df_pheno.columns and "species" in df_pheno.columns:
                 df_pheno[ID_COL] = df_pheno["species"].apply(normalize_taxon_id)
             if ID_COL not in df_occ.columns and "species" in df_occ.columns:
                 df_occ[ID_COL] = df_occ["species"].apply(normalize_taxon_id)
+        elif use_reference_seed:
+            df_pheno, df_occ = self.load_reference_phenotypic()
+        else:
+            df_pheno, df_occ = load_pantheria_database(
+                file_path=pantheria_file,
+                target_orders=target_orders,
+                max_taxa=max_taxa,
+            )
 
+        print(f"[UnifiedDataPipeline] Ingested {len(df_pheno)} candidate taxa.")
         validate_occurrence_data(df_occ)
 
         print("[UnifiedDataPipeline] Step 2: Ingesting WorldClim bioclimatic & habitat parameters...")
@@ -152,7 +248,7 @@ class UnifiedDataPipeline:
 
         taxa_list = sorted(list(set(df_pheno[ID_COL]).intersection(set(df_env[ID_COL]))))
 
-        print("[UnifiedDataPipeline] Step 3: Processing functional genomic features & ESM-2 embeddings...")
+        print(f"[UnifiedDataPipeline] Step 3: Processing functional genomic features & ESM-2 embeddings for {len(taxa_list)} taxa...")
         df_genomic = self.genomic_pipeline.assemble(taxa=taxa_list)
 
         print("[UnifiedDataPipeline] Step 4: Assessing data completeness across candidate taxa...")
@@ -161,6 +257,7 @@ class UnifiedDataPipeline:
             df_env=df_env,
             df_genomic=df_genomic,
             group_col="order" if "order" in df_pheno.columns else None,
+            min_trait_fraction=min_completeness,
         )
 
         # Confirm target taxon group selection
@@ -187,13 +284,13 @@ class UnifiedDataPipeline:
         # Deterministic sorting for 1:1 row index and identity matching
         locked_taxa = sorted(selected_taxa)
 
-        print(f"[UnifiedDataPipeline] Step 5: Locking alignment for {len(locked_taxa)} target taxa...")
+        print(f"[UnifiedDataPipeline] Step 5: Locking alignment for {len(locked_taxa)} target taxa across {len(valid_groups)} orders...")
         # Subset and re-index tables strictly in the exact same locked order
         pheno_clean = df_pheno.set_index(ID_COL).loc[locked_taxa].reset_index()
         env_clean = df_env.set_index(ID_COL).loc[locked_taxa].reset_index()
         genomic_clean = df_genomic.set_index(ID_COL).loc[locked_taxa].reset_index()
 
-        # Remove string/category columns from environmental and genomic matrices to maintain pure numeric feature spaces
+        # Remove non-numeric columns from environmental matrix
         env_num_cols = [c for c in env_clean.columns if c == ID_COL or pd.api.types.is_numeric_dtype(env_clean[c])]
         env_clean = env_clean[env_num_cols]
 
@@ -242,18 +339,28 @@ def main():
     parser = argparse.ArgumentParser(description="Unified Data Pipeline: Side B Phase 1")
     parser.add_argument("--output-dir", type=Path, default=Path("data/processed"))
     parser.add_argument("--raster-dir", type=Path, default=None)
+    parser.add_argument("--pantheria-file", type=Path, default=DEFAULT_PANTHERIA_PATH)
+    parser.add_argument("--target-orders", nargs="*", default=None, help="Filter by orders e.g. Carnivora Primates Rodentia")
     parser.add_argument("--min-completeness", type=float, default=0.80)
+    parser.add_argument("--use-reference-seed", action="store_true", help="Use small 29-species seed instead of full PanTHERIA")
+    parser.add_argument("--max-taxa", type=int, default=None, help="Limit number of taxa for quick testing")
     args = parser.parse_args()
 
     pipeline = UnifiedDataPipeline(
         output_dir=args.output_dir,
         raster_dir=args.raster_dir,
     )
-    result = pipeline.run_pipeline(min_completeness=args.min_completeness)
+    result = pipeline.run_pipeline(
+        use_reference_seed=args.use_reference_seed,
+        pantheria_file=args.pantheria_file,
+        target_orders=args.target_orders,
+        min_completeness=args.min_completeness,
+        max_taxa=args.max_taxa,
+    )
     print("=" * 60)
     print("ALIGNMENT MANIFEST SUMMARY:")
     print(f"Locked taxa count: {result['manifest']['locked_taxa_count']}")
-    print(f"Target taxonomic orders: {result['manifest']['target_orders']}")
+    print(f"Target taxonomic orders count: {len(result['manifest']['target_orders'])}")
     print(f"Phenotypic shape: {result['manifest']['phenotypic_shape']}")
     print(f"Environmental shape: {result['manifest']['environmental_shape']}")
     print(f"Genomic shape: {result['manifest']['genomic_shape']}")

@@ -135,6 +135,7 @@ def evaluate_data_completeness(
     df_env: Optional[pd.DataFrame] = None,
     df_genomic: Optional[pd.DataFrame] = None,
     group_col: Optional[str] = "order",
+    min_trait_fraction: float = 0.0,
 ) -> pd.DataFrame:
     """
     Evaluates data completeness across phenotypic, environmental, and genomic modalities.
@@ -162,7 +163,7 @@ def evaluate_data_completeness(
         has_env = t_id in env_taxa if df_env is not None else True
         has_gen = t_id in gen_taxa if df_genomic is not None else True
         
-        all_modalities = (pheno_completeness > 0.5) and has_env and has_gen
+        all_modalities = (pheno_completeness >= min_trait_fraction) and has_env and has_gen
 
         records.append({
             ID_COL: t_id,
