@@ -89,26 +89,75 @@ def load_pantheria_database(
     max_taxa: Optional[int] = None,
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
-    Ingests and normalizes the full PanTHERIA mammal database (~5,416 species).
+    Ingests and normalizes the PanTHERIA mammal database (~5,416 species).
+    Supports both friend's processed pantheria.csv and raw ESA TSV archives.
     Pivots long/raw tabular data into standardized phenotypic and occurrence matrices.
     """
-    path = Path(file_path) if file_path else DEFAULT_PANTHERIA_PATH
-    if not path.exists():
-        path = download_pantheria_database(path)
+    candidates = [
+        Path(file_path) if file_path else None,
+        Path("pantheria.csv"),
+        Path("data/raw/phenotypic/pantheria.csv"),
+        DEFAULT_PANTHERIA_PATH,
+    ]
+    path = None
+    for cand in candidates:
+        if cand and cand.exists():
+            path = cand
+            break
 
-    df_raw = pd.read_csv(path, sep="\t")
-    # In PanTHERIA, missing values are denoted by -999.00 or -999
+    if path is None:
+        path = download_pantheria_database(DEFAULT_PANTHERIA_PATH)
+
+    # Detect delimiter
+    sep = "," if path.suffix == ".csv" else "\t"
+    df_raw = pd.read_csv(path, sep=sep)
+    # Replace sentinel missing values
     df_raw = df_raw.replace(-999.0, np.nan).replace(-999, np.nan)
 
-    lat_col = "26-4_GR_MidRangeLat_dd"
-    lon_col = "26-7_GR_MidRangeLong_dd"
+    # Detect column names based on format
+    if "species_original_name" in df_raw.columns:
+        species_col = "species_original_name"
+        order_col = "msw05_order"
+        family_col = "msw05_family"
+        genus_col = None
+        lat_col = "gr_midrangelat_dd"
+        lon_col = "gr_midrangelong_dd"
+        mass_col = "adultbodymass_g"
+        gest_col = "gestationlen_d"
+        litter_col = "littersize"
+        wean_col = "weaningage_d"
+        range_col = "homerange_km2"
+        trophic_col = "trophiclevel"
+        long_col = "maxlongevity_m"
+        density_col = "populationdensity_n_km2"
+        matched_col = "species_matched_name"
+        ott_col = "open_tree_id"
+        syn_col = "is_synonym"
+    else:
+        species_col = "MSW05_Binomial"
+        order_col = "MSW05_Order"
+        family_col = "MSW05_Family"
+        genus_col = "MSW05_Genus"
+        lat_col = "26-4_GR_MidRangeLat_dd"
+        lon_col = "26-7_GR_MidRangeLong_dd"
+        mass_col = "5-1_AdultBodyMass_g"
+        gest_col = "9-1_GestationLen_d"
+        litter_col = "15-1_LitterSize"
+        wean_col = "25-1_WeaningAge_d"
+        range_col = "22-1_HomeRange_km2"
+        trophic_col = "6-2_TrophicLevel"
+        long_col = "17-1_MaxLongevity_m"
+        density_col = "21-1_PopulationDensity_n/km2"
+        matched_col = None
+        ott_col = None
+        syn_col = None
 
     # Canonical taxon identifier
-    df_raw[ID_COL] = df_raw["MSW05_Binomial"].astype(str).apply(normalize_taxon_id)
+    df_raw[ID_COL] = df_raw[species_col].astype(str).apply(normalize_taxon_id)
     df_raw = df_raw.drop_duplicates(subset=[ID_COL])
 
     if target_orders:
-        df_raw = df_raw[df_raw["MSW05_Order"].isin(target_orders)]
+        df_raw = df_raw[df_raw[order_col].isin(target_orders)]
 
     if require_coords:
         valid_coords = (
@@ -119,27 +168,36 @@ def load_pantheria_database(
         )
         df_raw = df_raw[valid_coords]
 
-    if require_target_traits:
-        # Require adult body mass (primary benchmark trait)
-        df_raw = df_raw[df_raw["5-1_AdultBodyMass_g"].notnull()]
+    if require_target_traits and mass_col in df_raw.columns:
+        df_raw = df_raw[df_raw[mass_col].notnull()]
 
     if max_taxa and len(df_raw) > max_taxa:
         df_raw = df_raw.head(max_taxa)
 
-    pheno_df = pd.DataFrame({
+    pheno_dict = {
         ID_COL: df_raw[ID_COL].values,
-        "species": df_raw["MSW05_Binomial"].values,
-        "order": df_raw["MSW05_Order"].values,
-        "family": df_raw["MSW05_Family"].values,
-        "genus": df_raw["MSW05_Genus"].values,
-        "adult_body_mass_g": df_raw["5-1_AdultBodyMass_g"].astype(float).values,
-        "gestation_length_d": df_raw["9-1_GestationLen_d"].astype(float).values,
-        "litter_size": df_raw["15-1_LitterSize"].astype(float).values,
-        "weaning_age_d": df_raw["25-1_WeaningAge_d"].astype(float).values,
-        "home_range_km2": df_raw["22-1_HomeRange_km2"].astype(float).values,
-        "trophic_level": df_raw["6-2_TrophicLevel"].astype(float).values,
-        "max_longevity_m": df_raw["17-1_MaxLongevity_m"].astype(float).values,
-    })
+        "species": df_raw[species_col].values,
+        "order": df_raw[order_col].values,
+        "family": df_raw[family_col].values,
+        "adult_body_mass_g": df_raw[mass_col].astype(float).values,
+        "gestation_length_d": df_raw[gest_col].astype(float).values if gest_col in df_raw.columns else np.nan,
+        "litter_size": df_raw[litter_col].astype(float).values if litter_col in df_raw.columns else np.nan,
+        "weaning_age_d": df_raw[wean_col].astype(float).values if wean_col in df_raw.columns else np.nan,
+        "home_range_km2": df_raw[range_col].astype(float).values if range_col in df_raw.columns else np.nan,
+        "trophic_level": df_raw[trophic_col].astype(float).values if trophic_col in df_raw.columns else np.nan,
+        "max_longevity_m": df_raw[long_col].astype(float).values if long_col in df_raw.columns else np.nan,
+    }
+
+    if genus_col and genus_col in df_raw.columns:
+        pheno_dict["genus"] = df_raw[genus_col].values
+    if matched_col and matched_col in df_raw.columns:
+        pheno_dict["species_matched_name"] = df_raw[matched_col].values
+    if ott_col and ott_col in df_raw.columns:
+        pheno_dict["open_tree_id"] = df_raw[ott_col].values
+    if syn_col and syn_col in df_raw.columns:
+        pheno_dict["is_synonym"] = df_raw[syn_col].values
+
+    pheno_df = pd.DataFrame(pheno_dict)
 
     occ_df = pd.DataFrame({
         ID_COL: df_raw[ID_COL].values,
