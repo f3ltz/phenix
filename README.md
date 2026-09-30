@@ -12,13 +12,14 @@ PHENIX bridges evolutionary biology and predictive machine learning by integrati
 | :---: | :--- | :--- | :--- | :--- | :---: |
 | **Phase 1** | Target Ingestion & Taxonomy Normalization | PanTHERIA mammal traits, coordinates & taxonomy | WorldClim v2.1 (bio1–bio19) + ESM-2 BUSCO genomics | **SYNC BARRIER 1: Target & Alignment Lock** | **LOCKED (PASS)** |
 | **Phase 2** | Tree Calibration & Feature Transformation | OToL topology, TimeTree BLADJ calibration, Patristic $D$ & PCoA | Baseline features, Cholesky whitening, PyG graph, Augmented features | **SYNC BARRIER 2: Architectural & Feature Freeze** | **LOCKED (PASS)** |
-| **Phase 3** | Validation Engine & Model Engineering | Monophyletic withholdings, $T_{\text{cut}}$ & buffer zones | Random 10-fold CV, Phylo-CV, ML models (Ridge, RF, XGBoost, GNN) | **SYNC BARRIER 3: Clade Leakage Audit** | *Upcoming* |
+| **Phase 3** | Validation Engine & Model Engineering | Monophyletic withholdings, $T_{\text{cut}}$ & buffer zones | Random 10-fold CV, Phylo-CV, ML models (Ridge, RF, XGBoost, GNN) | **SYNC BARRIER 3: Clade Leakage Audit** | **LOCKED (PASS)** |
 | **Phase 4** | Experimental Benchmarking & Extrapolation | Divergence tracking vs accuracy | Train & benchmark Baseline vs Augmented across CV protocols | **SYNC BARRIER 4: Benchmark Review** | *Upcoming* |
 | **Phase 5** | Residual Diagnostics & Manuscript Integration | Pagel's $\lambda$, Blomberg's $K$ error autocorrelation | Signal attribution (evolutionary proximity vs genomics) | **SYNC BARRIER 5: Final Freeze** | *Upcoming* |
 
 ## Documentation & Guides
 
-- **[Phase 2 Execution Guide](PHASE_2_EXECUTION_GUIDE.md)**: Detailed step-by-step operational hand-offs between Person A (Phylogenetics) and Person B (ML & Features), task dependencies, mathematical specifications, and audit checklist for Phase 2.
+- **[Phase 3 Execution Guide](PHASE_3_EXECUTION_GUIDE.md)**: Detailed step-by-step operational hand-offs between Person A (Taxonomic Withholdings & Buffer Zones) and Person B (CV Splitters, Model Engineering & Sync Barrier 3).
+- **[Phase 2 Execution Guide](PHASE_2_EXECUTION_GUIDE.md)**: Operational hand-offs for tree calibration, patristic distance eigenmaps, Cholesky whitening, and graph export.
 - **[Concepts & Architecture Guide](CONCEPTS_AND_ARCHITECTURE.md)**: Comprehensive guide covering theoretical foundations, Felsenstein's dilemma, ESM-2 protein language modeling, WorldClim bioclimatics, TimeTree BLADJ calibration, and Cholesky whitening.
 
 ---
@@ -80,7 +81,15 @@ python -m src.pipeline_phase2 --data-dir data/processed
 - Person B: Assembles Baseline features (85 vars), performs Cholesky whitening ($X^* = L^{-1} X$), exports PyTorch Geometric graph $G=(V, E)$, and builds Augmented features (117 vars).
 - Sync Barrier 2: Audits 0 tip mismatches, 0 NaNs, distance symmetry, and locks architecture.
 
-### 4. Verification & Audit Gates
+### 4. Run Phase 3 Pipeline (Validation Engine, Buffer Zones & Sync Barrier 3)
+```powershell
+python -m src.pipeline_phase3 --data-dir data/processed --d-buffer 140.0 --min-clade-size 50
+```
+- Person A: Partitions 10 monophyletic orders ($N \ge 50$), slices tree at $T_{\text{cut}} = 65.0$ Ma into 43 lineages, establishes patristic buffer zones ($d_{\text{buffer}} = 140.0$ Ma).
+- Person B: Generates Random 10-Fold CV and Phylo-CV splits, validates 4 model pipelines (Ridge, RF, XGBoost, PhyloGNN).
+- Sync Barrier 3: Audits zero clade leakage, buffer compliance, monophyly, and locks validation engine.
+
+### 5. Verification & Audit Gates
 ```powershell
 # Sync Barrier 1 Gate
 python -m src.validation.sync_barrier_1
@@ -88,7 +97,10 @@ python -m src.validation.sync_barrier_1
 # Sync Barrier 2 Gate
 python -m src.validation.sync_barrier_2
 
-# Full Test Suite (26 automated unit and integration tests)
+# Sync Barrier 3 Gate
+python -m src.validation.sync_barrier_3 --data-dir data/processed --d-buffer 140.0
+
+# Full Test Suite (44 automated unit and integration tests)
 python -m pytest -v
 ```
 
@@ -96,7 +108,7 @@ python -m pytest -v
 
 ## Processed Dataset Artifacts (`data/processed/`)
 
-| Artifact | Dimensions | Description |
+| Artifact | Dimensions / Format | Description |
 | :--- | :--- | :--- |
 | `phenotypic_clean.csv` | $3,268 \times 12$ | 11 cleaned life-history traits (adult body mass, gestation length, litter size, etc.) |
 | `environmental_clean.csv` | $3,268 \times 22$ | 19 WorldClim v2.1 bioclimatic variables + elevation + habitat suitability |
@@ -108,5 +120,8 @@ python -m pytest -v
 | `features_whitened.csv` | $3,268 \times 86$ | Cholesky-whitened baseline features ($\text{Cov}(X^*) \approx I$) |
 | `features_augmented.csv` | $3,268 \times 118$ | Augmented Feature Set: 85 Baseline + 32 Phylo-PCoA eigenmaps |
 | `phylo_graph.json` | Graph topology | PyTorch Geometric compatible node/edge structure with branch length attributes |
+| `cv_random_folds.json` | JSON fold mapping | Random 10-Fold CV partition mapping 3,268 species |
+| `cv_phylo_folds.json` | JSON fold mapping | Phylogenetic CV folds for 10 orders with patristic buffer quarantines |
 | `sync_barrier_1_report.json` | JSON audit report | **STATUS: PASS** (3,268 taxa locked) |
 | `sync_barrier_2_report.json` | JSON audit report | **STATUS: PASS** (Architecture and features frozen) |
+| `sync_barrier_3_report.json` | JSON audit report | **STATUS: PASS** (Clade leakage & buffer isolation locked) |

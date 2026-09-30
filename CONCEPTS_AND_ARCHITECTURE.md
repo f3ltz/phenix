@@ -300,15 +300,17 @@ flowchart TD
     P4 --> P5[Phase 5: Residual Diagnostics & Manuscript]
 ```
 
-### Phase 3: Validation Engine & Model Engineering
+### Phase 3: Validation Engine & Model Engineering (LOCKED - PASS)
 - **Person A**:
-  - Define monophyletic taxonomic withholdings (e.g., holding out entire orders like *Rodentia* or *Carnivora*).
-  - Establish tree-cut depths ($T_{\text{cut}}$) and patristic distance buffer zones around evaluation clades to prevent boundary leakage.
+  - Defined monophyletic taxonomic withholdings (10 major mammalian orders with $N \ge 50$ species).
+  - Established chronological tree-cut depths ($T_{\text{cut}} = 65.0$ Ma) partitioning 43 monophyletic lineages.
+  - Formulated and verified patristic distance buffer zones ($d_{\text{buffer}} = 140.0$ Ma) around evaluation clades, strictly quarantining sister taxa.
 - **Person B**:
-  - Implement standard Random 10-Fold Cross-Validation generator.
-  - Code the **Phylogenetic Cross-Validation (Phylo-CV)** engine to isolate target subtrees.
-  - Build model pipelines for **Ridge Regression**, **Random Forest**, **XGBoost**, and **PyTorch GNN** architectures.
-- **SYNC BARRIER 3**: Clade Leakage Audit (verify zero sister-taxa overlap in Phylo-CV folds).
+  - Implemented standard Random 10-Fold Cross-Validation generator (`RandomKFoldSplitter`).
+  - Implemented Phylogenetic Cross-Validation (`PhyloCVSplitter`) engine with buffer isolation.
+  - Built unified model pipelines for **Ridge Regression**, **Random Forest**, **XGBoost**, and **PyTorch Geometric GNN** (`PhyloGNNPipeline`).
+  - Built the cross-validation `ValidationEngine` for fold-level and out-of-fold benchmark metrics.
+- **SYNC BARRIER 3**: Clade Leakage Audit (**STATUS: PASS** locked in `sync_barrier_3_report.json`).
 
 ### Phase 4: Experimental Benchmarking & Extrapolation
 - Train all models across both feature sets (**Baseline vs Phylo-Augmented**) under both evaluation protocols (**Random CV vs Phylo-CV**).
@@ -329,9 +331,11 @@ flowchart TD
 
 ```
 d:\Projects\Phenix
-├── CONCEPTS_AND_ARCHITECTURE.md       # This comprehensive explanation document
+├── CONCEPTS_AND_ARCHITECTURE.md       # Comprehensive explanation document
+├── PHASE_2_EXECUTION_GUIDE.md         # Phase 2 operational hand-offs & math specs
+├── PHASE_3_EXECUTION_GUIDE.md         # Phase 3 operational hand-offs & validation specs
 ├── README.md                          # Quickstart, installation, and CLI guides
-├── requirements.txt                   # Environment dependencies
+├── requirements.txt                   # Environment dependencies (including PyG, torch, xgboost)
 │
 ├── data/
 │   ├── raw/
@@ -351,7 +355,11 @@ d:\Projects\Phenix
 │       ├── features_whitened.csv      # 3,268 species x 85 Cholesky-whitened features
 │       ├── features_augmented.csv     # 3,268 species x 117 phylogenetic-augmented features
 │       ├── phylo_graph.json           # PyG-compatible tree graph structure G=(V,E)
-│       └── sync_barrier_2_report.json # Sync Barrier 2 Audit Gate (STATUS: PASS)
+│       ├── sync_barrier_2_report.json # Sync Barrier 2 Audit Gate (STATUS: PASS)
+│       │
+│       ├── cv_random_folds.json       # Random 10-Fold CV partition mapping
+│       ├── cv_phylo_folds.json        # Phylo-CV folds with buffer quarantines
+│       └── sync_barrier_3_report.json # Sync Barrier 3 Audit Gate (STATUS: PASS)
 │
 ├── src/
 │   ├── data/
@@ -363,7 +371,8 @@ d:\Projects\Phenix
 │   ├── phylogenetics/
 │   │   ├── otol.py                    # OToL consensus topology & Newick parser
 │   │   ├── calibration.py             # TimeTree calibration & BLADJ algorithm
-│   │   └── patristic.py               # Patristic matrix D, double-centering & PCoA
+│   │   ├── patristic.py               # Patristic matrix D, double-centering & PCoA
+│   │   └── withholding.py             # Monophyletic withholdings, T_cut & buffer zones
 │   │
 │   ├── features/
 │   │   ├── baseline.py                # Baseline feature set builder (Env + Genomic)
@@ -372,10 +381,20 @@ d:\Projects\Phenix
 │   │   └── augmented.py               # Augmented feature assembler (Baseline + PCoA)
 │   │
 │   ├── validation/
+│   │   ├── cv.py                      # CVFold, RandomKFoldSplitter, PhyloCVSplitter
 │   │   ├── sync_barrier_1.py          # Sync Barrier 1 Alignment Audit Gate
-│   │   └── sync_barrier_2.py          # Sync Barrier 2 Architectural Freeze Audit Gate
+│   │   ├── sync_barrier_2.py          # Sync Barrier 2 Architectural Freeze Audit Gate
+│   │   └── sync_barrier_3.py          # Sync Barrier 3 Clade Leakage Audit Gate
 │   │
-│   └── pipeline_phase2.py             # Phase 2 Unified Pipeline CLI runner
+│   ├── models/
+│   │   ├── base.py                    # PhenixModel ABC, log10 transformer, metrics
+│   │   ├── ridge.py                   # Ridge regression with L2 CV tuning
+│   │   ├── tree_models.py             # Random Forest & XGBoost pipelines
+│   │   ├── gnn.py                     # PhyloGNN architecture & PyG convolution pipeline
+│   │   └── benchmark.py               # ValidationEngine for cross-validation evaluation
+│   │
+│   ├── pipeline_phase2.py             # Phase 2 Unified Pipeline CLI runner
+│   └── pipeline_phase3.py             # Phase 3 Unified Pipeline CLI runner
 │
 └── tests/
     ├── test_schemas.py                # Schema validators & ID canonicalization tests
@@ -385,5 +404,9 @@ d:\Projects\Phenix
     ├── test_sync_barrier_1.py         # Sync Barrier 1 gate audit tests
     ├── test_phylogenetics.py          # OToL topology, BLADJ, and PCoA unit tests
     ├── test_features.py               # Baseline, whitening, PyG graph, augmented tests
-    └── test_sync_barrier_2.py         # Sync Barrier 2 gate audit tests
+    ├── test_sync_barrier_2.py         # Sync Barrier 2 gate audit tests
+    ├── test_withholding.py            # Monophyletic withholdings & buffer zone tests
+    ├── test_validation.py             # Random CV and Phylo-CV splitter tests
+    ├── test_models.py                 # Ridge, RF, XGBoost, PhyloGNN & metric tests
+    └── test_sync_barrier_3.py         # Sync Barrier 3 gate audit tests
 ```

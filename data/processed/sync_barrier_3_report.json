@@ -1,0 +1,50 @@
+{
+  "status": "PASS",
+  "errors": [],
+  "warnings": [],
+  "taxa_count": 3268,
+  "clade_leakage_audit_locked": true,
+  "buffer_isolation_verified": true,
+  "monophyletic_clades_verified": [
+    "Artiodactyla",
+    "Carnivora",
+    "Chiroptera",
+    "Dasyuromorphia",
+    "Didelphimorphia",
+    "Diprotodontia",
+    "Lagomorpha",
+    "Primates",
+    "Rodentia",
+    "Soricomorpha"
+  ],
+  "phylo_cv_folds_count": 10,
+  "random_cv_folds_count": 10,
+  "models_verified": [
+    "Ridge",
+    "RandomForest",
+    "XGBoost",
+    "PhyloGNN"
+  ],
+  "smoke_test_metrics": {
+    "Ridge": {
+      "r2": -22.3362,
+      "rmse": 2.66,
+      "mae": 2.6017
+    },
+    "RandomForest": {
+      "r2": -21.7542,
+      "rmse": 2.6267,
+      "mae": 2.5545
+    },
+    "XGBoost": {
+      "r2": -22.1135,
+      "rmse": 2.6473,
+      "mae": 2.5884
+    },
+    "PhyloGNN": {
+      "r2": -1121.8071,
+      "rmse": 18.4512,
+      "mae": 18.2513
+    }
+  }
+}
