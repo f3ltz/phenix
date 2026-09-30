@@ -5,7 +5,6 @@ from scipy.stats import pearsonr, spearmanr
 
 class PhyloDivergenceTracker:
     """
-    Person A (Phylogenetics Lead):
     Evolutionary Divergence Tracking Engine.
     Quantifies patristic separation between evaluation test clades and training
     pools, and analyzes accuracy degradation as evolutionary distance increases.

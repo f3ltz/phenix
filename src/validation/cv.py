@@ -48,7 +48,7 @@ class CVFold:
 
 class RandomKFoldSplitter:
     """
-    Person B (ML Lead): Standard Random K-Fold Cross-Validation generator.
+    Standard Random K-Fold Cross-Validation generator.
     Represents the classical 'interpolation' regime where species are randomly
     assigned across folds without evolutionary structure.
     """
@@ -85,7 +85,7 @@ class RandomKFoldSplitter:
 
 class PhyloCVSplitter:
     """
-    Person B (ML Lead): Phylogenetic Cross-Validation (Phylo-CV) Generator.
+    Phylogenetic Cross-Validation (Phylo-CV) Generator.
     Evaluates true macroevolutionary extrapolation by withholding monophyletic
     taxonomic clades (orders, T_cut lineages) and quarantining sister taxa in
     patristic buffer zones.

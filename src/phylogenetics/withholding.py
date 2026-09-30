@@ -7,7 +7,6 @@ from src.phylogenetics.otol import PhyloNode
 
 class MonophyleticWithholdingEngine:
     """
-    Person A (Phylogenetics Lead):
     Engine for defining monophyletic taxonomic withholdings, phylogenetic tree-cut
     depths (T_cut), and patristic distance buffer zones to eliminate clade leakage.
     """

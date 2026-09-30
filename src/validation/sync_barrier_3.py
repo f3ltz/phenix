@@ -29,7 +29,7 @@ def audit_sync_barrier_3(
     """
     Sync Barrier 3: Clade Leakage Audit Gate.
     Verifies:
-      1. Foundational Phase 1 & 2 artifacts existence and integrity.
+      1. Foundational data and feature artifacts existence and integrity.
       2. Zero sister-taxa / evaluation clade leakage in Phylogenetic CV folds.
       3. Strict buffer zone compliance (min distance between Train and Test >= d_buffer).
       4. Monophyletic integrity of held-out evaluation clades.
@@ -80,7 +80,7 @@ def audit_sync_barrier_3(
             tree_root = PhyloNode.from_newick(f.read())
     except Exception as e:
         report["status"] = "FAIL"
-        report["errors"].append(f"Error loading Phase 1/2 artifacts: {e}")
+        report["errors"].append(f"Error loading foundational artifacts: {e}")
         return False, report
 
     all_taxa = df_pheno[ID_COL].tolist()

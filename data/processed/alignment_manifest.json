@@ -1,6 +1,7 @@
 {
-  "phase": "Phase 1: Target Ingestion & Taxonomy Normalization",
-  "side": "Side B (ML & Benchmarking Lead)",
+  "pipeline": "Data Ingestion & Taxonomy Normalization",
+  "phase": "Multimodal Data Ingestion & Taxonomy Alignment",
+  "quality_gate": "Target & Alignment Lock",
   "sync_barrier": "SYNC BARRIER 1: Target & Alignment Lock",
   "locked_taxa_count": 3268,
   "target_orders": [

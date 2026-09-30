@@ -7,7 +7,6 @@ from src.validation.cv import CVFold, RandomKFoldSplitter, PhyloCVSplitter
 
 class ValidationEngine:
     """
-    Person B (ML & Benchmarking Lead):
     Validation Engine for executing cross-validation experiments across
     Random CV and Phylogenetic CV (Phylo-CV) protocols.
     """

@@ -20,7 +20,6 @@ from src.phylogenetics.divergence import PhyloDivergenceTracker
 
 class BenchmarkMatrixRunner:
     """
-    Person B (ML & Benchmarking Lead):
     Orchestrates the complete 16-configuration experimental benchmarking matrix:
       4 Models (Ridge, Random Forest, XGBoost, PhyloGNN)
       x 2 Feature Sets (Baseline [85 vars], Augmented [117 vars])

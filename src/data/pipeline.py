@@ -210,7 +210,7 @@ def load_pantheria_database(
 
 class UnifiedDataPipeline:
     """
-    Unified Data Pipeline for Phase 1: Target Ingestion & Taxonomy Normalization.
+    Unified Data Pipeline: Target Ingestion & Taxonomy Normalization.
     Coordinates:
       1. Phenotypic Trait Ingestion (Full PanTHERIA mammal database, 5,416 species)
       2. WorldClim v2.1 Bioclimatic & Habitat Ingestion
@@ -367,8 +367,9 @@ class UnifiedDataPipeline:
         genomic_clean.to_csv(genomic_path, index=False)
 
         manifest = {
-            "phase": "Phase 1: Target Ingestion & Taxonomy Normalization",
-            "side": "Side B (ML & Benchmarking Lead)",
+            "pipeline": "Data Ingestion & Taxonomy Normalization",
+            "phase": "Multimodal Data Ingestion & Taxonomy Alignment",
+            "quality_gate": "Target & Alignment Lock",
             "sync_barrier": "SYNC BARRIER 1: Target & Alignment Lock",
             "locked_taxa_count": len(locked_taxa),
             "target_orders": valid_groups,
@@ -392,9 +393,16 @@ class UnifiedDataPipeline:
             "genomic_path": genomic_path,
         }
 
+    def run_full_pantheria_pipeline(self, **kwargs) -> Dict[str, Any]:
+        """Convenience method to execute pipeline with full PanTHERIA mammal traits."""
+        return self.run_pipeline(**kwargs)
+
+
+IngestionPipeline = UnifiedDataPipeline
+
 
 def main():
-    parser = argparse.ArgumentParser(description="Unified Data Pipeline: Side B Phase 1")
+    parser = argparse.ArgumentParser(description="Unified Data Pipeline: Multimodal Ingestion & Alignment")
     parser.add_argument("--output-dir", type=Path, default=Path("data/processed"))
     parser.add_argument("--raster-dir", type=Path, default=None)
     parser.add_argument("--pantheria-file", type=Path, default=DEFAULT_PANTHERIA_PATH)
