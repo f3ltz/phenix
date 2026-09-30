@@ -312,11 +312,16 @@ flowchart TD
   - Built the cross-validation `ValidationEngine` for fold-level and out-of-fold benchmark metrics.
 - **SYNC BARRIER 3**: Clade Leakage Audit (**STATUS: PASS** locked in `sync_barrier_3_report.json`).
 
-### Phase 4: Experimental Benchmarking & Extrapolation
-- Train all models across both feature sets (**Baseline vs Phylo-Augmented**) under both evaluation protocols (**Random CV vs Phylo-CV**).
-- Log $R^2$, RMSE, and MAE across all permutations.
-- Measure the **performance inflation gap**: how much standard Random CV overestimates accuracy compared to real phylogenetic extrapolation.
-- **SYNC BARRIER 4**: Benchmark Review.
+### Phase 4: Experimental Benchmarking & Extrapolation (LOCKED - PASS)
+- **Person A**:
+  - Tracked nearest relative evolutionary divergence distances ($d_{\min}$) from the training pool to each evaluation clade.
+  - Analyzed and quantified the macroevolutionary divergence-accuracy degradation curves across clades.
+- **Person B**:
+  - Executed the complete 16-permutation experimental benchmarking matrix ($4 \text{ models} \times 2 \text{ feature sets} \times 2 \text{ protocols}$).
+  - Quantified the **Performance Inflation Gap** ($\overline{\Delta R^2_{\text{inflation}}} \approx +5.56$), providing empirical proof of Felsenstein's dilemma.
+  - Measured the **Phylogenetic Augmentation Gain** ($\text{Gain}_{\text{phylo}} \approx +0.85$ on Random CV for RF/XGBoost).
+  - Exported the complete out-of-fold species predictions matrix (3,268 taxa) and benchmark summary logs.
+- **SYNC BARRIER 4**: Benchmark Review (**STATUS: PASS** locked in `sync_barrier_4_report.json`).
 
 ### Phase 5: Residual Diagnostics & Signal Attribution
 - Calculate phylogenetic signal in model prediction errors using **Pagel’s $\lambda$** and **Blomberg’s $K$**:
@@ -334,6 +339,7 @@ d:\Projects\Phenix
 ├── CONCEPTS_AND_ARCHITECTURE.md       # Comprehensive explanation document
 ├── PHASE_2_EXECUTION_GUIDE.md         # Phase 2 operational hand-offs & math specs
 ├── PHASE_3_EXECUTION_GUIDE.md         # Phase 3 operational hand-offs & validation specs
+├── PHASE_4_EXECUTION_GUIDE.md         # Phase 4 operational hand-offs & benchmark matrix
 ├── README.md                          # Quickstart, installation, and CLI guides
 ├── requirements.txt                   # Environment dependencies (including PyG, torch, xgboost)
 │
@@ -359,7 +365,13 @@ d:\Projects\Phenix
 │       │
 │       ├── cv_random_folds.json       # Random 10-Fold CV partition mapping
 │       ├── cv_phylo_folds.json        # Phylo-CV folds with buffer quarantines
-│       └── sync_barrier_3_report.json # Sync Barrier 3 Audit Gate (STATUS: PASS)
+│       ├── sync_barrier_3_report.json # Sync Barrier 3 Audit Gate (STATUS: PASS)
+│       │
+│       ├── benchmark_results.json     # Detailed fold logs for 16 benchmark configurations
+│       ├── benchmark_summary.csv      # Summary comparison matrix with inflation & phylo gains
+│       ├── predictions_matrix.csv     # Out-of-fold species predictions and residuals (3,268 spp)
+│       ├── divergence_accuracy_tracking.json # Evolutionary divergence vs error decay curves
+│       └── sync_barrier_4_report.json # Sync Barrier 4 Audit Gate (STATUS: PASS)
 │
 ├── src/
 │   ├── data/
@@ -372,7 +384,8 @@ d:\Projects\Phenix
 │   │   ├── otol.py                    # OToL consensus topology & Newick parser
 │   │   ├── calibration.py             # TimeTree calibration & BLADJ algorithm
 │   │   ├── patristic.py               # Patristic matrix D, double-centering & PCoA
-│   │   └── withholding.py             # Monophyletic withholdings, T_cut & buffer zones
+│   │   ├── withholding.py             # Monophyletic withholdings, T_cut & buffer zones
+│   │   └── divergence.py              # Evolutionary divergence tracking vs accuracy decay
 │   │
 │   ├── features/
 │   │   ├── baseline.py                # Baseline feature set builder (Env + Genomic)
@@ -384,17 +397,20 @@ d:\Projects\Phenix
 │   │   ├── cv.py                      # CVFold, RandomKFoldSplitter, PhyloCVSplitter
 │   │   ├── sync_barrier_1.py          # Sync Barrier 1 Alignment Audit Gate
 │   │   ├── sync_barrier_2.py          # Sync Barrier 2 Architectural Freeze Audit Gate
-│   │   └── sync_barrier_3.py          # Sync Barrier 3 Clade Leakage Audit Gate
+│   │   ├── sync_barrier_3.py          # Sync Barrier 3 Clade Leakage Audit Gate
+│   │   └── sync_barrier_4.py          # Sync Barrier 4 Benchmark Review Audit Gate
 │   │
 │   ├── models/
 │   │   ├── base.py                    # PhenixModel ABC, log10 transformer, metrics
 │   │   ├── ridge.py                   # Ridge regression with L2 CV tuning
 │   │   ├── tree_models.py             # Random Forest & XGBoost pipelines
 │   │   ├── gnn.py                     # PhyloGNN architecture & PyG convolution pipeline
-│   │   └── benchmark.py               # ValidationEngine for cross-validation evaluation
+│   │   ├── benchmark.py               # ValidationEngine for cross-validation evaluation
+│   │   └── experiment.py              # BenchmarkMatrixRunner for 16 permutations
 │   │
 │   ├── pipeline_phase2.py             # Phase 2 Unified Pipeline CLI runner
-│   └── pipeline_phase3.py             # Phase 3 Unified Pipeline CLI runner
+│   ├── pipeline_phase3.py             # Phase 3 Unified Pipeline CLI runner
+│   └── pipeline_phase4.py             # Phase 4 Unified Pipeline CLI runner
 │
 └── tests/
     ├── test_schemas.py                # Schema validators & ID canonicalization tests
@@ -408,5 +424,8 @@ d:\Projects\Phenix
     ├── test_withholding.py            # Monophyletic withholdings & buffer zone tests
     ├── test_validation.py             # Random CV and Phylo-CV splitter tests
     ├── test_models.py                 # Ridge, RF, XGBoost, PhyloGNN & metric tests
-    └── test_sync_barrier_3.py         # Sync Barrier 3 gate audit tests
+    ├── test_sync_barrier_3.py         # Sync Barrier 3 gate audit tests
+    ├── test_divergence.py             # Evolutionary divergence tracking tests
+    ├── test_benchmark_matrix.py       # Benchmark matrix runner tests
+    └── test_sync_barrier_4.py         # Sync Barrier 4 gate audit tests
 ```

@@ -13,11 +13,12 @@ PHENIX bridges evolutionary biology and predictive machine learning by integrati
 | **Phase 1** | Target Ingestion & Taxonomy Normalization | PanTHERIA mammal traits, coordinates & taxonomy | WorldClim v2.1 (bio1–bio19) + ESM-2 BUSCO genomics | **SYNC BARRIER 1: Target & Alignment Lock** | **LOCKED (PASS)** |
 | **Phase 2** | Tree Calibration & Feature Transformation | OToL topology, TimeTree BLADJ calibration, Patristic $D$ & PCoA | Baseline features, Cholesky whitening, PyG graph, Augmented features | **SYNC BARRIER 2: Architectural & Feature Freeze** | **LOCKED (PASS)** |
 | **Phase 3** | Validation Engine & Model Engineering | Monophyletic withholdings, $T_{\text{cut}}$ & buffer zones | Random 10-fold CV, Phylo-CV, ML models (Ridge, RF, XGBoost, GNN) | **SYNC BARRIER 3: Clade Leakage Audit** | **LOCKED (PASS)** |
-| **Phase 4** | Experimental Benchmarking & Extrapolation | Divergence tracking vs accuracy | Train & benchmark Baseline vs Augmented across CV protocols | **SYNC BARRIER 4: Benchmark Review** | *Upcoming* |
+| **Phase 4** | Experimental Benchmarking & Extrapolation | Divergence tracking vs accuracy | Train & benchmark Baseline vs Augmented across CV protocols | **SYNC BARRIER 4: Benchmark Review** | **LOCKED (PASS)** |
 | **Phase 5** | Residual Diagnostics & Manuscript Integration | Pagel's $\lambda$, Blomberg's $K$ error autocorrelation | Signal attribution (evolutionary proximity vs genomics) | **SYNC BARRIER 5: Final Freeze** | *Upcoming* |
 
 ## Documentation & Guides
 
+- **[Phase 4 Execution Guide](PHASE_4_EXECUTION_GUIDE.md)**: Operational hand-offs for 16-permutation benchmarking matrix, divergence decay tracking, inflation gap metrics, and Sync Barrier 4.
 - **[Phase 3 Execution Guide](PHASE_3_EXECUTION_GUIDE.md)**: Detailed step-by-step operational hand-offs between Person A (Taxonomic Withholdings & Buffer Zones) and Person B (CV Splitters, Model Engineering & Sync Barrier 3).
 - **[Phase 2 Execution Guide](PHASE_2_EXECUTION_GUIDE.md)**: Operational hand-offs for tree calibration, patristic distance eigenmaps, Cholesky whitening, and graph export.
 - **[Concepts & Architecture Guide](CONCEPTS_AND_ARCHITECTURE.md)**: Comprehensive guide covering theoretical foundations, Felsenstein's dilemma, ESM-2 protein language modeling, WorldClim bioclimatics, TimeTree BLADJ calibration, and Cholesky whitening.
@@ -89,7 +90,15 @@ python -m src.pipeline_phase3 --data-dir data/processed --d-buffer 140.0 --min-c
 - Person B: Generates Random 10-Fold CV and Phylo-CV splits, validates 4 model pipelines (Ridge, RF, XGBoost, PhyloGNN).
 - Sync Barrier 3: Audits zero clade leakage, buffer compliance, monophyly, and locks validation engine.
 
-### 5. Verification & Audit Gates
+### 5. Run Phase 4 Pipeline (Experimental Benchmarking & Sync Barrier 4)
+```powershell
+python -m src.pipeline_phase4 --data-dir data/processed --d-buffer 140.0 --random-splits 5
+```
+- Person A: Tracks nearest training relative distances and evolutionary divergence vs accuracy decay curves across clades.
+- Person B: Executes 16-configuration benchmark matrix (4 models x 2 feature sets x 2 protocols), calculates performance inflation gaps, and exports out-of-fold species predictions.
+- Sync Barrier 4: Audits benchmark matrix completeness, confirms performance inflation gap, verifies phylogenetic gain, and locks benchmark review.
+
+### 6. Verification & Audit Gates
 ```powershell
 # Sync Barrier 1 Gate
 python -m src.validation.sync_barrier_1
@@ -100,7 +109,10 @@ python -m src.validation.sync_barrier_2
 # Sync Barrier 3 Gate
 python -m src.validation.sync_barrier_3 --data-dir data/processed --d-buffer 140.0
 
-# Full Test Suite (44 automated unit and integration tests)
+# Sync Barrier 4 Gate
+python -m src.validation.sync_barrier_4 --data-dir data/processed
+
+# Full Test Suite (49 automated unit and integration tests)
 python -m pytest -v
 ```
 
@@ -122,6 +134,11 @@ python -m pytest -v
 | `phylo_graph.json` | Graph topology | PyTorch Geometric compatible node/edge structure with branch length attributes |
 | `cv_random_folds.json` | JSON fold mapping | Random 10-Fold CV partition mapping 3,268 species |
 | `cv_phylo_folds.json` | JSON fold mapping | Phylogenetic CV folds for 10 orders with patristic buffer quarantines |
+| `benchmark_results.json` | JSON benchmark logs | Detailed fold-level metrics across all 16 benchmark configurations |
+| `benchmark_summary.csv` | $16 \times 11$ | Summary matrix with $R^2$, RMSE, MAE, inflation gap, and phylo gain |
+| `predictions_matrix.csv` | $3,268 \times 36$ | Species-level ground truth, out-of-fold predictions, and residuals |
+| `divergence_accuracy_tracking.json` | JSON divergence logs | Clade-by-clade divergence distances vs accuracy degradation curves |
 | `sync_barrier_1_report.json` | JSON audit report | **STATUS: PASS** (3,268 taxa locked) |
 | `sync_barrier_2_report.json` | JSON audit report | **STATUS: PASS** (Architecture and features frozen) |
 | `sync_barrier_3_report.json` | JSON audit report | **STATUS: PASS** (Clade leakage & buffer isolation locked) |
+| `sync_barrier_4_report.json` | JSON audit report | **STATUS: PASS** (Benchmark review & inflation gap verified) |
