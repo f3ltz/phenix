@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "errors": [],
+  "warnings": [],
+  "benchmark_review_locked": true,
+  "configurations_tested_count": 16,
+  "required_configurations_count": 16,
+  "species_in_predictions": 3268,
+  "inflation_gap_verified": true,
+  "phylo_gain_verified": true,
+  "divergence_tracking_verified": true,
+  "key_findings": {
+    "average_baseline_inflation_gap_r2": 5.5571,
+    "average_phylo_augmentation_gain_r2": 0.619
+  }
+}

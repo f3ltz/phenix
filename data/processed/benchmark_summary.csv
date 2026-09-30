@@ -1,0 +1,17 @@
+model,feature_set,protocol,r2_mean,r2_std,rmse_mean,rmse_std,mae_mean,mae_std,inflation_gap_r2,phylo_gain_r2
+Ridge,Baseline,Random_CV,0.0011,0.006,1.1625,0.0297,0.9463,0.0298,5.0153,0.7795
+Ridge,Baseline,Phylo_CV,-5.0142,6.1978,1.2909,0.5314,1.1892,0.5391,5.0153,-50.053
+Ridge,Augmented,Random_CV,0.7806,0.0333,0.5427,0.0327,0.3898,0.0105,55.8478,0.7795
+Ridge,Augmented,Phylo_CV,-55.0672,83.3647,3.1865,2.8699,2.4614,1.8258,55.8478,-50.053
+RandomForest,Baseline,Random_CV,-0.0253,0.0112,1.1777,0.0302,0.9596,0.0313,5.0937,0.8744
+RandomForest,Baseline,Phylo_CV,-5.119,6.1068,1.3091,0.5222,1.2022,0.5284,5.0937,-2.8621
+RandomForest,Augmented,Random_CV,0.8491,0.0182,0.4504,0.0184,0.3356,0.0087,8.8302,0.8744
+RandomForest,Augmented,Phylo_CV,-7.9811,11.7214,1.4226,0.7263,1.2762,0.7398,8.8302,-2.8621
+XGBoost,Baseline,Random_CV,-0.0336,0.0051,1.1825,0.0302,0.9584,0.0279,5.1121,0.8814
+XGBoost,Baseline,Phylo_CV,-5.1457,5.9876,1.3201,0.5092,1.2047,0.519,5.1121,-0.471
+XGBoost,Augmented,Random_CV,0.8478,0.0206,0.4521,0.0221,0.3385,0.0107,6.4645,0.8814
+XGBoost,Augmented,Phylo_CV,-5.6167,8.024,1.2737,0.5769,1.1322,0.5664,6.4645,-0.471
+PhyloGNN,Baseline,Random_CV,-0.4856,0.6474,1.3956,0.3135,1.0936,0.2473,7.0072,-0.0593
+PhyloGNN,Baseline,Phylo_CV,-7.4928,10.0323,1.5169,0.7728,1.3995,0.7845,7.0072,-6.3908
+PhyloGNN,Augmented,Random_CV,-0.5449,0.2835,1.4414,0.157,1.1208,0.124,13.3387,-0.0593
+PhyloGNN,Augmented,Phylo_CV,-13.8836,16.5684,1.9683,0.9757,1.7507,0.9936,13.3387,-6.3908

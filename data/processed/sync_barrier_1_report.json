@@ -9,7 +9,7 @@
   },
   "overlap_count": 3268,
   "feature_counts": {
-    "phenotypic_traits": 13,
+    "phenotypic_traits": 11,
     "environmental_vars": 21,
     "genomic_features": 64
   },
