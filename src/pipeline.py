@@ -27,6 +27,7 @@ from src.models import (
     ValidationEngine,
 )
 from src.models.experiment import BenchmarkMatrixRunner
+from src.models.diagnostics import run_stage_5_diagnostics
 from src.validation.sync_barrier_1 import audit_sync_barrier_1
 from src.validation.sync_barrier_2 import audit_sync_barrier_2
 from src.validation.sync_barrier_3 import audit_sync_barrier_3
@@ -292,6 +293,10 @@ class PhenixPipeline:
 
         return {"status": "SUCCESS", "report": report}
 
+    def run_diagnostics(self) -> Dict[str, Any]:
+        """Stage 5: Runs residual diagnostics and multimodal variance partitioning."""
+        return run_stage_5_diagnostics(data_dir=self.data_dir)
+
     def run_all(self, random_splits: int = 5) -> Dict[str, Any]:
         """Runs the entire pipeline end-to-end."""
         print("\n" + "#" * 70)
@@ -312,7 +317,7 @@ if __name__ == "__main__":
         "--stage",
         type=str,
         default="all",
-        choices=["all", "ingest", "transform", "validate", "benchmark"],
+        choices=["all", "ingest", "transform", "validate", "benchmark", "diagnostics"],
         help="Pipeline stage to execute (default: all)",
     )
     parser.add_argument("--data-dir", type=str, default="data/processed", help="Path to processed data directory")
@@ -341,3 +346,6 @@ if __name__ == "__main__":
         pipeline.run_benchmark(random_splits=args.random_splits)
     elif args.stage == "all":
         pipeline.run_all(random_splits=args.random_splits)
+        pipeline.run_diagnostics()
+    elif args.stage == "diagnostics":
+        pipeline.run_diagnostics()

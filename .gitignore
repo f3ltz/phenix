@@ -22,3 +22,5 @@ data/raw/genomic/*.gz
 .coverage
 htmlcov/
 .pytest_cache/
+
+.agents/

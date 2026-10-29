@@ -111,9 +111,9 @@ Evaluated on 3,268 mammalian species for $\log_{10}(\text{adult\_body\_mass\_g})
 | **PhyloGNN (PyG)** | Augmented (+ 32 Phylo-PCoA) | Phylo-CV | $-13.884 \pm 16.568$ | 1.968 | 1.751 | $+13.339$ | $-6.391$ |
 
 ### Primary Insights:
-1. **Phylogenetic Spatial Eigenmaps Unlock Predictive Power**: Baseline models without tree coordinates exhibit $R^2 \approx 0.00$ on body mass, whereas adding 32 Phylo-PCoA eigenmaps surges performance to **$R^2 = 0.849$** (Random Forest) and **$R^2 = 0.848$** (XGBoost), yielding an MAE of $0.336$ ($\approx 2.1\times$ mass factor across 8 orders of magnitude).
+1. **Phylogenetic Spatial Eigenmaps Unlock Interpolation Accuracy**: Baseline models without tree coordinates exhibit $R^2 \approx 0.00$ on body mass, whereas adding 32 Phylo-PCoA eigenmaps surges performance to **$R^2 = 0.849$** (Random Forest) and **$R^2 = 0.848$** (XGBoost), yielding an MAE of $0.336$ ($\approx 2.1\times$ mass factor across 8 orders of magnitude).
 2. **Empirical Validation of Felsenstein's Dilemma**: Standard Random CV produces an average baseline inflation gap of $\mathbf{+5.56}$ $R^2$ points over Phylo-CV, proving that naive machine learning benchmarks largely measure phylogenetic interpolation rather than generalized biological learning.
-3. **XGBoost Demonstrates Superior Out-of-Clade Generalization**: Under rigorous out-of-order extrapolation (Phylo-CV), XGBoost achieves the lowest test RMSE ($1.274$) and MAE ($1.132$) among all architectures.
+3. **The Macroevolutionary Extrapolation Frontier**: When entire orders are withheld with a 140 Ma patristic buffer (Phylo-CV), all model architectures experience negative $R^2$, demonstrating that global tree coordinates cannot extrapolate beyond their observed geometric support. XGBoost demonstrates the highest relative stability under this regime (test RMSE $1.274$, MAE $1.132$).
 
 ---
 

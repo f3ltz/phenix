@@ -1,0 +1,36 @@
+{
+  "ridge_linear_partitioning": {
+    "R2_total": 0.7826,
+    "pure_environmental": 0.0011,
+    "pure_genomic": 0.0,
+    "pure_phylogenetic": 0.781,
+    "shared_intersection": 0.0041,
+    "unexplained": 0.2174,
+    "raw_R2": {
+      "E": -0.0006,
+      "G": 0.0025,
+      "P": 0.7852,
+      "EG": 0.0016,
+      "EP": 0.7861,
+      "GP": 0.7815,
+      "EGP": 0.7826
+    }
+  },
+  "random_forest_nonlinear_partitioning": {
+    "R2_total": 0.8505,
+    "pure_environmental": 0.0004,
+    "pure_genomic": 0.0,
+    "pure_phylogenetic": 0.8693,
+    "shared_intersection": -0.0136,
+    "unexplained": 0.1495,
+    "raw_R2": {
+      "E": -0.0499,
+      "G": -0.0194,
+      "P": 0.8663,
+      "EG": -0.0188,
+      "EP": 0.8562,
+      "GP": 0.8502,
+      "EGP": 0.8505
+    }
+  }
+}

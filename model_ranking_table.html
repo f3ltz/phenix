@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PHENIX: Model Performance Table</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #f7f4ec;
+    }
+    .font-rounded {
+      font-family: 'Nunito', sans-serif;
+    }
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    /* Presentation Theme Tokens */
+    :root {
+      --slide-bg: #fcf8f2;
+      --navy-primary: #1d4e6d;
+      --navy-dark: #14384f;
+      --navy-light: #e3edf4;
+      --navy-border: #b8cfdf;
+      --navy-chevron: #23506e;
+    }
+  </style>
+</head>
+<body class="p-6 md:p-12 flex flex-col items-center justify-center min-h-screen text-slate-800 antialiased">
+
+  <!-- INSTRUCTION BANNER (NOT IN SCREENSHOT) -->
+  <div class="w-full max-w-5xl mb-4 flex items-center justify-between text-xs text-slate-500 px-2 print:hidden">
+    <div class="flex items-center gap-2">
+      <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+      <span><strong>Screenshot Guide:</strong> Press <kbd class="px-1.5 py-0.5 bg-white border border-slate-300 rounded text-slate-700 font-mono">Win + Shift + S</kbd> to capture the card below.</span>
+    </div>
+    <span class="text-slate-400">Resolution: 1200px &bull; Matches Presentation Theme</span>
+  </div>
+
+  <!-- SLIDE COMPONENT CARD (THE SCREENSHOT TARGET) -->
+  <div id="slide-capture-area" class="w-full max-w-5xl bg-[#fcf8f2] border border-[#d6e2eb] rounded-2xl p-8 md:p-10 shadow-xl transition-all">
+    
+    <!-- Title & Subtitle Matching Theme -->
+    <div class="mb-6 border-b border-[#d8e5ef] pb-5 flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div>
+        <h2 class="font-rounded text-2xl md:text-3xl font-extrabold text-[#1d4e6d] tracking-tight">
+          Model Leaderboard: Architectural Benchmark
+        </h2>
+        <p class="text-xs md:text-sm text-[#45677f] mt-1 font-medium">
+          Evaluated across <strong>3,268 mammalian species</strong> on <strong>117 Augmented features</strong> (Bioclimatics + Functional Genomics + 32 Phylo-PCoA eigenmaps).
+        </p>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <span class="text-xs font-bold font-rounded text-[#1d4e6d] bg-[#e3edf4] px-3 py-1.5 rounded-lg border border-[#c2d7e6]">
+          Target: log<sub>10</sub>(body_mass_g)
+        </span>
+      </div>
+    </div>
+
+    <!-- MAIN COMPARISON TABLE -->
+    <div class="overflow-hidden rounded-xl border border-[#c8d9e6] bg-white shadow-sm mb-6">
+      <table class="w-full text-left border-collapse text-xs md:text-sm">
+        
+        <!-- Table Header -->
+        <thead>
+          <tr class="bg-[#e3edf4] text-[#1d4e6d] border-b border-[#c8d9e6] font-rounded font-extrabold text-xs uppercase tracking-wider">
+            <th class="py-3.5 px-4">Rank / Model</th>
+            <th class="py-3.5 px-3">Architecture</th>
+            <th class="py-3.5 px-3 text-center">Random CV R&sup2;<br><span class="text-[10px] font-normal normal-case text-[#45677f]">(Interpolation)</span></th>
+            <th class="py-3.5 px-3 text-center">Biological Accuracy<br><span class="text-[10px] font-normal normal-case text-[#45677f]">(MAE Factor)</span></th>
+            <th class="py-3.5 px-3 text-center">Phylo-CV RMSE<br><span class="text-[10px] font-normal normal-case text-[#45677f]">(Extrapolation)</span></th>
+            <th class="py-3.5 px-4 text-left">Architectural Verdict</th>
+          </tr>
+        </thead>
+
+        <!-- Table Body -->
+        <tbody class="divide-y divide-slate-100 font-medium text-slate-700">
+          
+          <!-- ROW 1: RANDOM FOREST (GOLD) -->
+          <tr class="bg-[#fafcff] hover:bg-[#f1f7fc] transition-colors">
+            <td class="py-3.5 px-4 font-rounded font-extrabold text-[#14384f] flex items-center gap-2">
+              <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 text-amber-800 text-xs font-black border border-amber-300">1</span>
+              <span>Random Forest</span>
+            </td>
+            <td class="py-3.5 px-3 text-[#3d5d73]">Ensemble (Bagged Trees)</td>
+            <td class="py-3.5 px-3 text-center font-bold mono text-[#14384f] text-sm">
+              <span class="bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded border border-emerald-200">0.849 &plusmn; 0.02</span>
+            </td>
+            <td class="py-3.5 px-3 text-center font-bold text-[#1d4e6d]">
+              &plusmn; 2.16&times; <span class="text-[11px] font-normal text-slate-500">(0.336)</span>
+            </td>
+            <td class="py-3.5 px-3 text-center mono text-slate-700">1.423</td>
+            <td class="py-3.5 px-4 text-xs text-[#2b4c63] font-normal leading-tight">
+              <strong class="text-[#14384f] font-semibold">Top Precision:</strong> Captures nonlinear phylogenetic spatial gradients cleanly without hyperparameter tuning.
+            </td>
+          </tr>
+
+          <!-- ROW 2: XGBOOST (SILVER) -->
+          <tr class="bg-white hover:bg-[#f1f7fc] transition-colors">
+            <td class="py-3.5 px-4 font-rounded font-extrabold text-[#14384f] flex items-center gap-2">
+              <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-slate-200 text-slate-800 text-xs font-black border border-slate-300">2</span>
+              <span>XGBoost Regressor</span>
+            </td>
+            <td class="py-3.5 px-3 text-[#3d5d73]">Gradient Boosted Trees</td>
+            <td class="py-3.5 px-3 text-center font-bold mono text-[#14384f] text-sm">
+              <span class="bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded border border-emerald-200">0.848 &plusmn; 0.02</span>
+            </td>
+            <td class="py-3.5 px-3 text-center font-bold text-[#1d4e6d]">
+              &plusmn; 2.18&times; <span class="text-[11px] font-normal text-slate-500">(0.338)</span>
+            </td>
+            <td class="py-3.5 px-3 text-center font-bold mono text-emerald-800">
+              <span class="bg-emerald-100/70 text-emerald-900 px-2 py-0.5 rounded border border-emerald-300">1.274 ★</span>
+            </td>
+            <td class="py-3.5 px-4 text-xs text-[#2b4c63] font-normal leading-tight">
+              <strong class="text-emerald-900 font-semibold">Best Extrapolator:</strong> Gradient shrinkage (&eta;=0.05) prevents extreme drift when predicting unseen clades.
+            </td>
+          </tr>
+
+          <!-- ROW 3: RIDGE REGRESSION (BRONZE) -->
+          <tr class="bg-[#fafcff] hover:bg-[#f1f7fc] transition-colors">
+            <td class="py-3.5 px-4 font-rounded font-bold text-[#14384f] flex items-center gap-2">
+              <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-50 text-amber-700 text-xs font-bold border border-amber-200">3</span>
+              <span>Ridge Regression (L2)</span>
+            </td>
+            <td class="py-3.5 px-3 text-[#3d5d73]">Cross-Validated Linear</td>
+            <td class="py-3.5 px-3 text-center font-bold mono text-[#2b4c63] text-sm">0.781 &plusmn; 0.03</td>
+            <td class="py-3.5 px-3 text-center text-slate-700">
+              &plusmn; 2.45&times; <span class="text-[11px] text-slate-500">(0.390)</span>
+            </td>
+            <td class="py-3.5 px-3 text-center mono text-rose-700 font-medium">3.187</td>
+            <td class="py-3.5 px-4 text-xs text-slate-600 font-normal leading-tight">
+              <strong class="text-slate-800 font-semibold">Linear Baseline:</strong> High in-domain accuracy, but unbounded hyperplanes produce unstable extrapolation on distant clades.
+            </td>
+          </tr>
+
+          <!-- ROW 4: PHYLOGNN (GNN) -->
+          <tr class="bg-white hover:bg-[#f1f7fc] transition-colors">
+            <td class="py-3.5 px-4 font-rounded font-semibold text-[#45677f] flex items-center gap-2">
+              <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-slate-100 text-slate-500 text-xs font-semibold">4</span>
+              <span>PhyloGNN (PyG)</span>
+            </td>
+            <td class="py-3.5 px-3 text-slate-500">2-Layer Graph Convolution (GCN)</td>
+            <td class="py-3.5 px-3 text-center mono text-rose-600 font-medium text-sm">&minus;0.545 &plusmn; 0.28</td>
+            <td class="py-3.5 px-3 text-center text-slate-500">
+              &plusmn; 13.2&times; <span class="text-[11px]">(1.121)</span>
+            </td>
+            <td class="py-3.5 px-3 text-center mono text-slate-500">1.968</td>
+            <td class="py-3.5 px-4 text-xs text-slate-500 font-normal leading-tight">
+              <strong class="text-slate-700 font-semibold">Over-Smoothing:</strong> Graph message passing across 3,442 tree nodes diffuses fine-grained species signals toward the root.
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <!-- BOTTOM THEME-MATCHED CARDS (MATCHING THE USER'S TWO-CARD LAYOUT) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      
+      <!-- Left Card: Outlined Box Matching Left Card in Image -->
+      <div class="border border-[#1d4e6d] rounded-xl p-4 bg-white/70 flex flex-col justify-between">
+        <div>
+          <div class="text-xs font-rounded font-extrabold text-[#1d4e6d] uppercase tracking-wider mb-1">
+            Finding 1: Tree Ensembles Dominate Interpolation
+          </div>
+          <p class="text-xs text-slate-700 leading-relaxed">
+            Augmenting features with <strong>32 Phylo-PCoA spatial eigenmaps</strong> lifts explained variance from <strong>R&sup2; &approx; 0.00</strong> to <strong>0.849</strong> (Random Forest). Non-phylogenetic climate and genomic baselines fail because distant species share overlapping bioclimates.
+          </p>
+        </div>
+        <div class="mt-3 pt-2 border-t border-slate-200/80 flex items-center justify-between text-[11px] text-[#3d5d73]">
+          <span>Mass Factor Precision:</span>
+          <span class="font-bold text-[#14384f] font-rounded">&plusmn;2.1&times; across 8 orders of magnitude</span>
+        </div>
+      </div>
+
+      <!-- Right Card: Pale Blue Fill Matching Right Callout in Image -->
+      <div class="bg-[#e3edf4] border border-[#c2d7e6] rounded-xl p-4 flex flex-col justify-between">
+        <div>
+          <div class="text-xs font-rounded font-extrabold text-[#1d4e6d] uppercase tracking-wider mb-1">
+            Finding 2: XGBoost Excels in Out-of-Clade Extrapolation
+          </div>
+          <p class="text-xs text-[#20455e] leading-relaxed">
+            Under rigorous Phylogenetic Cross-Validation (Phylo-CV with 140 Ma buffer zones), <strong>XGBoost achieves the lowest test RMSE (1.274)</strong>. Gradient boosting with depth constraints anchors predictions and resists ancestral drift better than unconstrained trees.
+          </p>
+        </div>
+        <div class="mt-3 pt-2 border-t border-[#c6dbe8] flex items-center justify-between text-[11px] text-[#1d4e6d]">
+          <span>Extrapolation Resilience:</span>
+          <span class="font-bold font-rounded">Lowest error on held-out mammalian orders</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SUBTLE FOOTER TAG -->
+    <div class="mt-5 pt-3 border-t border-[#d8e5ef] flex items-center justify-between text-[11px] text-[#4d7088]">
+      <span>PHENIX Systematic Benchmark &bull; 10 Monophyletic Orders &bull; Patristic Buffer: 140 Ma</span>
+      <span>RMSE: root mean square error &bull; MAE: mean absolute error</span>
+    </div>
+
+  </div>
+
+</body>
+</html>
