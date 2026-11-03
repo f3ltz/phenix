@@ -8,83 +8,83 @@
   "residual_diagnostics": {
     "resid__Ridge__Baseline__Random_CV": {
       "N": 3268,
-      "blomberg_k": 2.3225,
+      "blomberg_k": 0.8677,
       "pagel_lambda": 1.0
     },
     "resid__Ridge__Baseline__Phylo_CV": {
       "N": 3100,
-      "blomberg_k": 2.5799,
+      "blomberg_k": 2.201,
       "pagel_lambda": 1.0
     },
     "resid__Ridge__Augmented__Random_CV": {
       "N": 3268,
-      "blomberg_k": 0.3954,
+      "blomberg_k": 0.3942,
       "pagel_lambda": 1.0
     },
     "resid__Ridge__Augmented__Phylo_CV": {
       "N": 3100,
-      "blomberg_k": 6.2115,
+      "blomberg_k": 6.1371,
       "pagel_lambda": 1.0
     },
     "resid__RandomForest__Baseline__Random_CV": {
       "N": 3268,
-      "blomberg_k": 2.0013,
-      "pagel_lambda": 1.0
+      "blomberg_k": 0.4711,
+      "pagel_lambda": 0.9999
     },
     "resid__RandomForest__Baseline__Phylo_CV": {
       "N": 3100,
-      "blomberg_k": 2.1916,
+      "blomberg_k": 2.1102,
       "pagel_lambda": 1.0
     },
     "resid__RandomForest__Augmented__Random_CV": {
       "N": 3268,
-      "blomberg_k": 0.2812,
-      "pagel_lambda": 0.8591
+      "blomberg_k": 0.2738,
+      "pagel_lambda": 0.8129
     },
     "resid__RandomForest__Augmented__Phylo_CV": {
       "N": 3100,
-      "blomberg_k": 2.0504,
+      "blomberg_k": 1.9775,
       "pagel_lambda": 1.0
     },
     "resid__XGBoost__Baseline__Random_CV": {
       "N": 3268,
-      "blomberg_k": 1.8582,
+      "blomberg_k": 0.542,
       "pagel_lambda": 1.0
     },
     "resid__XGBoost__Baseline__Phylo_CV": {
       "N": 3100,
-      "blomberg_k": 1.9782,
+      "blomberg_k": 2.0927,
       "pagel_lambda": 1.0
     },
     "resid__XGBoost__Augmented__Random_CV": {
       "N": 3268,
-      "blomberg_k": 0.2908,
-      "pagel_lambda": 0.8998
+      "blomberg_k": 0.2834,
+      "pagel_lambda": 0.8806
     },
     "resid__XGBoost__Augmented__Phylo_CV": {
       "N": 3100,
-      "blomberg_k": 2.0737,
+      "blomberg_k": 2.1678,
       "pagel_lambda": 1.0
     },
     "resid__PhyloGNN__Baseline__Random_CV": {
       "N": 3268,
-      "blomberg_k": 0.8386,
-      "pagel_lambda": 0.9904
+      "blomberg_k": 0.8321,
+      "pagel_lambda": 0.9912
     },
     "resid__PhyloGNN__Baseline__Phylo_CV": {
       "N": 3100,
-      "blomberg_k": 2.1527,
+      "blomberg_k": 0.9543,
       "pagel_lambda": 1.0
     },
     "resid__PhyloGNN__Augmented__Random_CV": {
       "N": 3268,
-      "blomberg_k": 0.7381,
-      "pagel_lambda": 0.9434
+      "blomberg_k": 0.5828,
+      "pagel_lambda": 0.872
     },
     "resid__PhyloGNN__Augmented__Phylo_CV": {
       "N": 3100,
-      "blomberg_k": 1.3671,
-      "pagel_lambda": 1.0
+      "blomberg_k": 1.1171,
+      "pagel_lambda": 0.999
     }
   }
 }

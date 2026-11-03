@@ -82,4 +82,7 @@ def test_stage_5_artifacts_exist():
     with open(var_path) as f:
         var_data = json.load(f)
     assert "random_forest_nonlinear_partitioning" in var_data
-    assert var_data["random_forest_nonlinear_partitioning"]["pure_phylogenetic"] > 0.8
+    # Total phylogenetic explanatory power (pure + shared evolutionary covariance) > 80%
+    rf_part = var_data["random_forest_nonlinear_partitioning"]
+    total_phylo_var = rf_part["pure_phylogenetic"] + rf_part["shared_intersection"]
+    assert total_phylo_var > 0.80

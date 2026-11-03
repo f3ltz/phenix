@@ -511,7 +511,7 @@ math {{
     </div>
     
     <p>
-        When trained on baseline features alone (climate and genomics), all models exhibit near-zero predictive power under random cross-validation: Ridge yields <i>R</i><sup>2</sup> = 0.001, Random Forest yields <i>R</i><sup>2</sup> = -0.025, and XGBoost yields <i>R</i><sup>2</sup> = -0.034. Incorporating 32 Phylo-PCoA tree coordinates transforms within-clade accuracy, elevating <i>R</i><sup>2</sup> to 0.849 &plusmn; 0.02 for Random Forest and 0.848 &plusmn; 0.02 for XGBoost. However, under phylogenetic cross-validation (withholding entire clades with the 140 Ma buffer), all models produce negative <i>R</i><sup>2</sup> values, demonstrating that out-of-clade extrapolation represents a fundamentally distinct regime.
+        When trained on baseline features alone (WorldClim climate and NCBI GenBank genomics), models achieve moderate within-clade predictive capability (<i>R</i><sup>2</sup> = 0.666 for Ridge, <i>R</i><sup>2</sup> = 0.690 for Random Forest, and <i>R</i><sup>2</sup> = 0.697 for XGBoost). Incorporating 32 Phylo-PCoA tree coordinates transforms within-clade accuracy, elevating <i>R</i><sup>2</sup> to 0.855 &plusmn; 0.01 for Random Forest and 0.860 &plusmn; 0.02 for XGBoost. However, under phylogenetic cross-validation (withholding entire clades with the 140 Ma buffer), all models produce negative <i>R</i><sup>2</sup> values, demonstrating that out-of-clade extrapolation represents a fundamentally distinct macroevolutionary regime.
     </p>
     
     <div class="page-footer">6</div>
@@ -524,18 +524,18 @@ math {{
         The contrast between in-domain interpolation and out-of-clade extrapolation highlights the structural limitations of different model families when navigating phylogenetic manifolds:
     </p>
     <p>
-        Under in-domain random cross-validation, tree-based models (Random Forest and XGBoost) achieve tight biological accuracy, predicting mammalian body mass within a factor of &plusmn;2.16&times; to &plusmn;2.18&times; of true values (MAE of 0.336 and 0.338). Within known clades, Phylo-PCoA coordinates act as effective spatial coordinates, allowing decision trees to partition phenotypic variance along continuous evolutionary trajectories. Ridge Regression achieves <i>R</i><sup>2</sup> = 0.781 &plusmn; 0.03 with an MAE of 0.390 (&plusmn;2.45&times; factor error).
+        Under in-domain random cross-validation, tree-based models achieve tight biological accuracy: XGBoost achieves <i>R</i><sup>2</sup> = 0.860 &plusmn; 0.02 with an MAE of 0.322 (predicting mammalian body mass within an error factor of &plusmn;2.10&times; across 6 orders of magnitude), while Random Forest achieves <i>R</i><sup>2</sup> = 0.855 &plusmn; 0.01 with an MAE of 0.329 (&plusmn;2.13&times; factor error). Within known clades, Phylo-PCoA coordinates act as effective spatial coordinates, allowing decision trees to partition phenotypic variance along continuous evolutionary trajectories. Ridge Regression achieves <i>R</i><sup>2</sup> = 0.789 &plusmn; 0.03 with an MAE of 0.383 (&plusmn;2.41&times; factor error).
     </p>
     <p>
-        However, under out-of-clade extrapolation with the 140 Ma buffer, test clades occupy distant regions in the 32-dimensional spectral coordinate space that were never observed during training. Ridge Regression collapses catastrophically to <i>R</i><sup>2</sup> &approx; -55.07 and an RMSE of 3.187. Because linear hyperplanes are unbounded, evaluating distant coordinates produces extreme drift. In contrast, XGBoost maintains bounded predictions due to gradient shrinkage (&eta; = 0.05), achieving the lowest extrapolation RMSE (1.274) and MAE (1.132) among all evaluated models. Random Forest achieves an extrapolation RMSE of 1.423.
+        However, under out-of-clade extrapolation with the 140 Ma buffer, test clades occupy distant regions in the 32-dimensional spectral coordinate space that were never observed during training. Ridge Regression collapses catastrophically to <i>R</i><sup>2</sup> &approx; -91.47 and an RMSE of 4.071. Because linear hyperplanes are unbounded, evaluating distant coordinates produces extreme drift. In contrast, XGBoost maintains bounded predictions due to gradient shrinkage (&eta; = 0.08), achieving the lowest extrapolation RMSE (1.314 ★) and MAE (1.166) among all evaluated models. Random Forest achieves an extrapolation RMSE of 1.425 (MAE = 1.278).
     </p>
     
     <div class="section-title" style="margin-top: 5mm; margin-bottom: 3.5mm;">4.3 Clade Withholding and Inflation Gap Analysis</div>
     <p>
-        Evaluating models under both validation schemes reveals massive performance inflation in standard benchmarks. The inflation gap &Delta;<i>R</i><sup>2</sup> = <i>R</i><sup>2</sup><sub>Random CV</sub> - <i>R</i><sup>2</sup><sub>Phylo-CV</sub> ranges from +5.02 to +5.11 on baseline features and expands up to +8.83 (and &Delta;<i>R</i><sup>2</sup> &ge; +5.56 across tree models) on augmented features.
+        Evaluating models under both validation schemes reveals massive performance inflation in standard benchmarks. The inflation gap &Delta;<i>R</i><sup>2</sup> = <i>R</i><sup>2</sup><sub>Random CV</sub> - <i>R</i><sup>2</sup><sub>Phylo-CV</sub> ranges from +4.44 to +6.32 on baseline features and expands up to +6.83 (XGBoost), +8.62 (Random Forest), and +92.26 (Ridge) on augmented features.
     </p>
     <p>
-        PhyloGNN (the 2-layer Graph Convolutional Network) fails under both validation protocols, achieving <i>R</i><sup>2</sup> = -0.545 &plusmn; 0.28 on Random CV (&plusmn;13.2&times; error factor, MAE = 1.121) and an RMSE of 1.968 under Phylo-CV. Graph convolution across 3,442 hierarchical tree nodes causes severe over-smoothing, diffusing fine-grained species signals toward the ancestral root.
+        PhyloGNN (the 2-layer Graph Convolutional Network) fails under both validation protocols, achieving <i>R</i><sup>2</sup> = -0.773 &plusmn; 0.74 on Random CV (&plusmn;16.3&times; error factor, MAE = 1.213) and an RMSE of 1.661 under Phylo-CV. Graph convolution across 3,442 hierarchical tree nodes causes severe over-smoothing, diffusing fine-grained species signals toward the ancestral root.
     </p>
     
     <div class="page-footer">7</div>
@@ -565,42 +565,42 @@ math {{
         </thead>
         <tbody>
             <tr>
-                <td><strong>1. Random Forest</strong></td>
-                <td>Ensemble (Bagged Trees)</td>
-                <td>0.849 &plusmn; 0.02</td>
-                <td>&plusmn;2.16&times; (0.336)</td>
-                <td>1.423</td>
-                <td><strong>Top Precision:</strong> Captures nonlinear phylogenetic gradients cleanly without hyperparameter tuning.</td>
+                <td><strong>1. XGBoost Regressor</strong></td>
+                <td>Gradient Boosted Trees</td>
+                <td>0.860 &plusmn; 0.02</td>
+                <td>&plusmn;2.10&times; (0.322)</td>
+                <td><strong>1.314 ★</strong></td>
+                <td><strong>Best Extrapolator:</strong> Gradient shrinkage (&eta;=0.08) bounds predictions on unseen clades.</td>
             </tr>
             <tr>
-                <td><strong>2. XGBoost Regressor</strong></td>
-                <td>Gradient Boosted Trees</td>
-                <td>0.848 &plusmn; 0.02</td>
-                <td>&plusmn;2.18&times; (0.338)</td>
-                <td><strong>1.274 ★</strong></td>
-                <td><strong>Best Extrapolator:</strong> Gradient shrinkage (&eta;=0.05) prevents extreme drift on unseen clades.</td>
+                <td><strong>2. Random Forest</strong></td>
+                <td>Ensemble (Bagged Trees)</td>
+                <td>0.855 &plusmn; 0.01</td>
+                <td>&plusmn;2.13&times; (0.329)</td>
+                <td>1.425</td>
+                <td><strong>High Precision:</strong> Captures nonlinear phylogenetic manifold transitions cleanly.</td>
             </tr>
             <tr>
                 <td><strong>3. Ridge Regression</strong></td>
                 <td>Cross-Validated Linear (L2)</td>
-                <td>0.781 &plusmn; 0.03</td>
-                <td>&plusmn;2.45&times; (0.390)</td>
-                <td>3.187</td>
-                <td><strong>Linear Baseline:</strong> High in-domain fit, but unbounded hyperplanes produce unstable extrapolation.</td>
+                <td>0.789 &plusmn; 0.03</td>
+                <td>&plusmn;2.41&times; (0.383)</td>
+                <td>4.071</td>
+                <td><strong>Linear Baseline:</strong> High in-domain fit, but unbounded hyperplanes produce catastrophic extrapolation.</td>
             </tr>
             <tr>
                 <td><strong>4. PhyloGNN (PyG)</strong></td>
                 <td>2-Layer Graph Conv (GCN)</td>
-                <td>-0.545 &plusmn; 0.28</td>
-                <td>&plusmn;13.2&times; (1.121)</td>
-                <td>1.968</td>
-                <td><strong>Over-Smoothing:</strong> Message passing across 3,442 tree nodes diffuses fine-grained species signals toward the root.</td>
+                <td>-0.773 &plusmn; 0.74</td>
+                <td>&plusmn;16.3&times; (1.213)</td>
+                <td>1.661</td>
+                <td><strong>Over-Smoothing:</strong> Message passing across 3,442 tree nodes diffuses fine-grained species signals toward root.</td>
             </tr>
         </tbody>
     </table>
     
     <p>
-        The most critical insight is that <em>random cross-validation measures relative relatedness, not biological transferability</em>. When close relatives are present in training, Phylo-PCoA reaches <i>R</i><sup>2</sup> &approx; 0.85 and cuts residual phylogenetic autocorrelation by 85.9% (as measured by Blomberg’s <i>K</i> and Pagel’s <i>&lambda;</i>). However, variance partitioning indicates that 86.93% of predictable body-mass variation represents pure phylogenetic inertia; bioclimatic covariates contribute under 0.1%.
+        The most critical insight is that <em>random cross-validation measures relative relatedness, not biological transferability</em>. When close relatives are present in training, Phylo-PCoA reaches <i>R</i><sup>2</sup> &approx; 0.86 and cuts residual phylogenetic autocorrelation by 88.4% (as measured by Blomberg’s <i>K</i> and Pagel’s <i>&lambda;</i>). However, variance partitioning indicates that 69.69% of predictable body-mass variation represents shared collinear evolutionary history (<i>E</i> &cap; <i>G</i> &cap; <i>P</i>), while pure tree topology accounts for 16.40%; bioclimatic covariates contribute under 0.01% pure explanatory power.
     </p>
     <p>
         Consequently, when tested on an unseen evolutionary clade, the learned coordinates cannot be interpolated, driving out-of-clade <i>R</i><sup>2</sup> below zero. These findings demand the implementation of the <em>Dual-Protocol Standard</em>: studies predicting phenotypic traits must report both in-domain imputation accuracy and out-of-clade extrapolation performance.
@@ -619,10 +619,10 @@ math {{
         This project set out to evaluate how evolutionary history and phylogenetic relatedness constrain machine learning predictions of phenotypic traits across 3,268 mammal species. By benchmarking Ridge Regression, Random Forest, XGBoost, and PhyloGNN under both naive random cross-validation and rigorous clade-withholding phylogenetic cross-validation (Phylo-CV) with a 140 Ma temporal buffer, this study resolves Felsenstein’s dilemma in modern biological machine learning.
     </p>
     <p>
-        The results show that the two evaluation regimes behave very differently. Within known clades, Phylogenetic Principal Coordinate Analysis (Phylo-PCoA) successfully compresses the global mammalian tree of life into 32 continuous spectral coordinates, capturing 89.98% of phylogenetic variance. Combining these coordinates with whitened climate and genomic covariates enables high-precision trait imputation: Random Forest and XGBoost achieve <i>R</i><sup>2</sup> &approx; 0.85 with a biological error factor of &plusmn;2.16&times; to &plusmn;2.18&times;, while cutting residual phylogenetic autocorrelation by 85.9%. In contrast, baseline environmental and genomic features alone achieve zero predictive capability (<i>R</i><sup>2</sup> &approx; 0).
+        The results show that the two evaluation regimes behave very differently. Within known clades, Phylogenetic Principal Coordinate Analysis (Phylo-PCoA) successfully compresses the global mammalian tree of life into 32 continuous spectral coordinates, capturing 89.98% of phylogenetic variance. Combining these coordinates with whitened climate and genomic covariates enables high-precision trait imputation: XGBoost and Random Forest achieve <i>R</i><sup>2</sup> &approx; 0.86 with a biological error factor of &plusmn;2.10&times; to &plusmn;2.13&times;, while cutting residual phylogenetic autocorrelation by 88.4%. In contrast, baseline environmental and genomic features alone achieve moderate within-clade fit (<i>R</i><sup>2</sup> &approx; 0.69) but collapse out-of-clade.
     </p>
     <p>
-        However, when evaluated on genuinely unseen lineages via Phylo-CV, all models exhibit negative <i>R</i><sup>2</sup>, demonstrating that out-of-clade extrapolation represents a fundamentally distinct and harder learning problem. Standard random cross-validation creates pervasive clade leakage, inflating perceived performance by &Delta;<i>R</i><sup>2</sup> &ge; +5.56 (up to +8.83). XGBoost proves to be the most robust architecture under lineage withholding, maintaining bounded error (RMSE = 1.274) through gradient shrinkage, whereas linear models diverge (<i>R</i><sup>2</sup> &approx; -55.07). Variance decomposition proves that 86.93% of predictable body-mass variation is phylogenetic inertia, while climate adds less than 0.1%. These findings establish that naive cross-validation fools researchers by evaluating memorization of relatives, establishing the imperative for the Dual-Protocol Standard in comparative biology.
+        However, when evaluated on genuinely unseen lineages via Phylo-CV, all models exhibit negative <i>R</i><sup>2</sup>, demonstrating that out-of-clade extrapolation represents a fundamentally distinct and harder learning problem. Standard random cross-validation creates pervasive clade leakage, inflating perceived performance by &Delta;<i>R</i><sup>2</sup> &ge; +6.83. XGBoost proves to be the most robust architecture under lineage withholding, maintaining bounded error (RMSE = 1.314) through gradient shrinkage, whereas linear models diverge (<i>R</i><sup>2</sup> &approx; -91.47). Variance decomposition proves that 86.09% of predictable body-mass variation is driven by evolutionary inertia (69.69% shared + 16.40% pure phylogenetic), while climate adds less than 0.01% pure variance. These findings establish that naive cross-validation fools researchers by evaluating memorization of relatives, establishing the imperative for the Dual-Protocol Standard in comparative biology.
     </p>
     
     <div class="page-footer">9</div>

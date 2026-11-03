@@ -12,26 +12,26 @@
       "precip_factor": 1.02,
       "mean_shift_ou_ground_truth": -0.0035216831602156162,
       "shifts": {
-        "rf_augmented": 0.00814671243360763,
-        "rf_baseline": 0.0646674814133467,
-        "xgb_augmented": 0.005002187564969063,
-        "xgb_baseline": 0.04678398370742798
+        "rf_augmented": 0.04477307997448446,
+        "rf_baseline": 0.20108379605428706,
+        "xgb_augmented": 0.04346492514014244,
+        "xgb_baseline": 0.1301933079957962
       },
       "inertia_drag_factors": {
-        "rf_augmented": 2.3133007891342627,
-        "xgb_augmented": 1.420396820894814,
-        "rf_baseline": 18.3626630992515,
-        "xgb_baseline": 13.284552181168852
+        "rf_augmented": 12.71354575002233,
+        "xgb_augmented": 12.342088473819798,
+        "rf_baseline": 57.098775473593605,
+        "xgb_baseline": 36.96905771268335
       },
       "coordinate_locking_ratios": {
-        "rf": 7.937862289894261,
-        "xgb": 9.352704811603227
+        "rf": 4.491176308819537,
+        "xgb": 2.9953648275251474
       },
       "adaptive_tracking_errors": {
-        "rf_augmented": 0.25555099420295413,
-        "rf_baseline": 0.8032203551703775,
-        "xgb_augmented": 0.3423663377761841,
-        "xgb_baseline": 0.8854854106903076
+        "rf_augmented": 0.3438577398539713,
+        "rf_baseline": 1.2419756426727935,
+        "xgb_augmented": 0.4451749622821808,
+        "xgb_baseline": 1.1773557662963867
       }
     },
     "SSP2-4.5": {
@@ -40,26 +40,26 @@
       "precip_factor": 1.05,
       "mean_shift_ou_ground_truth": -0.0019024034263566136,
       "shifts": {
-        "rf_augmented": 0.009484272319656132,
-        "rf_baseline": 0.09024412841097458,
-        "xgb_augmented": 0.004920878913253546,
-        "xgb_baseline": 0.08801882714033127
+        "rf_augmented": 0.05831271983719182,
+        "rf_baseline": 0.23368085270255276,
+        "xgb_augmented": 0.05084267631173134,
+        "xgb_baseline": 0.1409667730331421
       },
       "inertia_drag_factors": {
-        "rf_augmented": 4.9854159156031,
-        "xgb_augmented": 2.586664240127954,
-        "rf_baseline": 47.43690384526144,
-        "xgb_baseline": 46.26717231523308
+        "rf_augmented": 30.65213141929069,
+        "xgb_augmented": 26.72549660463062,
+        "rf_baseline": 122.83454154100555,
+        "xgb_baseline": 74.09930568886458
       },
       "coordinate_locking_ratios": {
-        "rf": 9.515134674480386,
-        "xgb": 17.886810200362298
+        "rf": 4.007373577411343,
+        "xgb": 2.772607251609524
       },
       "adaptive_tracking_errors": {
-        "rf_augmented": 0.26776991189072646,
-        "rf_baseline": 0.8417062667484834,
-        "xgb_augmented": 0.344241738319397,
-        "xgb_baseline": 0.9048771262168884
+        "rf_augmented": 0.37475117124518226,
+        "rf_baseline": 1.2674645977458847,
+        "xgb_augmented": 0.455162912607193,
+        "xgb_baseline": 1.1858125925064087
       }
     },
     "SSP5-8.5": {
@@ -68,26 +68,26 @@
       "precip_factor": 1.08,
       "mean_shift_ou_ground_truth": -0.007529907859861851,
       "shifts": {
-        "rf_augmented": 0.013831007587682527,
-        "rf_baseline": 0.11611087467620566,
-        "xgb_augmented": 0.006934729870408773,
-        "xgb_baseline": 0.14658121764659882
+        "rf_augmented": 0.07276495430123979,
+        "rf_baseline": 0.23260086355778467,
+        "xgb_augmented": 0.05638904124498367,
+        "xgb_baseline": 0.12266232073307037
       },
       "inertia_drag_factors": {
-        "rf_augmented": 1.8368096721885094,
-        "xgb_augmented": 0.9209581311577966,
-        "rf_baseline": 15.419959558221729,
-        "xgb_baseline": 19.46653536465559
+        "rf_augmented": 9.66345879065973,
+        "xgb_augmented": 7.48867612916823,
+        "rf_baseline": 30.890266904547772,
+        "xgb_baseline": 16.29001616167463
       },
       "coordinate_locking_ratios": {
-        "rf": 8.394968619611666,
-        "xgb": 21.13726423174411
+        "rf": 3.1966056433546273,
+        "xgb": 2.1752865100181555
       },
       "adaptive_tracking_errors": {
-        "rf_augmented": 0.26974576106562315,
-        "rf_baseline": 0.8631614439233988,
-        "xgb_augmented": 0.34477728605270386,
-        "xgb_baseline": 0.9188441634178162
+        "rf_augmented": 0.3937225226821655,
+        "rf_baseline": 1.264374782599268,
+        "xgb_augmented": 0.46327343583106995,
+        "xgb_baseline": 1.1814230680465698
       }
     }
   }
