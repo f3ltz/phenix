@@ -1,0 +1,94 @@
+{
+  "target_trait": "adult_body_mass_g",
+  "species_count": 3268,
+  "years_forward_ma": 0.5,
+  "alpha_selection": 0.15,
+  "sigma2_drift": 0.02,
+  "bergmann_coef": -0.015,
+  "scenarios": {
+    "SSP1-2.6": {
+      "scenario": "SSP1-2.6",
+      "delta_temp_c": 1.5,
+      "precip_factor": 1.02,
+      "mean_shift_ou_ground_truth": -0.0035216831602156162,
+      "shifts": {
+        "rf_augmented": 0.00814671243360763,
+        "rf_baseline": 0.0646674814133467,
+        "xgb_augmented": 0.005002187564969063,
+        "xgb_baseline": 0.04678398370742798
+      },
+      "inertia_drag_factors": {
+        "rf_augmented": 2.3133007891342627,
+        "xgb_augmented": 1.420396820894814,
+        "rf_baseline": 18.3626630992515,
+        "xgb_baseline": 13.284552181168852
+      },
+      "coordinate_locking_ratios": {
+        "rf": 7.937862289894261,
+        "xgb": 9.352704811603227
+      },
+      "adaptive_tracking_errors": {
+        "rf_augmented": 0.25555099420295413,
+        "rf_baseline": 0.8032203551703775,
+        "xgb_augmented": 0.3423663377761841,
+        "xgb_baseline": 0.8854854106903076
+      }
+    },
+    "SSP2-4.5": {
+      "scenario": "SSP2-4.5",
+      "delta_temp_c": 3.0,
+      "precip_factor": 1.05,
+      "mean_shift_ou_ground_truth": -0.0019024034263566136,
+      "shifts": {
+        "rf_augmented": 0.009484272319656132,
+        "rf_baseline": 0.09024412841097458,
+        "xgb_augmented": 0.004920878913253546,
+        "xgb_baseline": 0.08801882714033127
+      },
+      "inertia_drag_factors": {
+        "rf_augmented": 4.9854159156031,
+        "xgb_augmented": 2.586664240127954,
+        "rf_baseline": 47.43690384526144,
+        "xgb_baseline": 46.26717231523308
+      },
+      "coordinate_locking_ratios": {
+        "rf": 9.515134674480386,
+        "xgb": 17.886810200362298
+      },
+      "adaptive_tracking_errors": {
+        "rf_augmented": 0.26776991189072646,
+        "rf_baseline": 0.8417062667484834,
+        "xgb_augmented": 0.344241738319397,
+        "xgb_baseline": 0.9048771262168884
+      }
+    },
+    "SSP5-8.5": {
+      "scenario": "SSP5-8.5",
+      "delta_temp_c": 5.0,
+      "precip_factor": 1.08,
+      "mean_shift_ou_ground_truth": -0.007529907859861851,
+      "shifts": {
+        "rf_augmented": 0.013831007587682527,
+        "rf_baseline": 0.11611087467620566,
+        "xgb_augmented": 0.006934729870408773,
+        "xgb_baseline": 0.14658121764659882
+      },
+      "inertia_drag_factors": {
+        "rf_augmented": 1.8368096721885094,
+        "xgb_augmented": 0.9209581311577966,
+        "rf_baseline": 15.419959558221729,
+        "xgb_baseline": 19.46653536465559
+      },
+      "coordinate_locking_ratios": {
+        "rf": 8.394968619611666,
+        "xgb": 21.13726423174411
+      },
+      "adaptive_tracking_errors": {
+        "rf_augmented": 0.26974576106562315,
+        "rf_baseline": 0.8631614439233988,
+        "xgb_augmented": 0.34477728605270386,
+        "xgb_baseline": 0.9188441634178162
+      }
+    }
+  }
+}

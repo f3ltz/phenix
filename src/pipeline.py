@@ -28,6 +28,8 @@ from src.models import (
 )
 from src.models.experiment import BenchmarkMatrixRunner
 from src.models.diagnostics import run_stage_5_diagnostics
+from src.simulation.forecaster import EcoEvolutionaryForecaster
+from src.visualization.dashboard import run_dashboard_cli
 from src.validation.sync_barrier_1 import audit_sync_barrier_1
 from src.validation.sync_barrier_2 import audit_sync_barrier_2
 from src.validation.sync_barrier_3 import audit_sync_barrier_3
@@ -41,6 +43,8 @@ class PhenixPipeline:
       Stage 2: Evolutionary Geometry & Feature Transformations
       Stage 3: Macroevolutionary Validation Engine & Buffer Quarantine
       Stage 4: Experimental Benchmarking Matrix & Inflation Gap Analysis
+      Stage 5: Residual Diagnostics & Variance Partitioning
+      Stage 6: Eco-Evolutionary Forecasting & Simulation Benchmarking
     """
 
     def __init__(
@@ -297,6 +301,15 @@ class PhenixPipeline:
         """Stage 5: Runs residual diagnostics and multimodal variance partitioning."""
         return run_stage_5_diagnostics(data_dir=self.data_dir)
 
+    def run_simulation(self) -> Dict[str, Any]:
+        """Stage 6: Runs forward eco-evolutionary forecasting and simulation benchmarking."""
+        forecaster = EcoEvolutionaryForecaster(data_dir=self.data_dir, target_trait=self.target_trait)
+        return forecaster.run_forecasting_experiment()
+
+    def run_dashboard(self) -> None:
+        """Launches the interactive research dashboard."""
+        run_dashboard_cli()
+
     def run_all(self, random_splits: int = 5) -> Dict[str, Any]:
         """Runs the entire pipeline end-to-end."""
         print("\n" + "#" * 70)
@@ -308,7 +321,10 @@ class PhenixPipeline:
 
         self.run_transform()
         self.run_validate()
-        return self.run_benchmark(random_splits=random_splits)
+        res = self.run_benchmark(random_splits=random_splits)
+        self.run_diagnostics()
+        self.run_simulation()
+        return res
 
 
 if __name__ == "__main__":
@@ -317,7 +333,7 @@ if __name__ == "__main__":
         "--stage",
         type=str,
         default="all",
-        choices=["all", "ingest", "transform", "validate", "benchmark", "diagnostics"],
+        choices=["all", "ingest", "transform", "validate", "benchmark", "diagnostics", "simulate", "dashboard"],
         help="Pipeline stage to execute (default: all)",
     )
     parser.add_argument("--data-dir", type=str, default="data/processed", help="Path to processed data directory")
@@ -346,6 +362,9 @@ if __name__ == "__main__":
         pipeline.run_benchmark(random_splits=args.random_splits)
     elif args.stage == "all":
         pipeline.run_all(random_splits=args.random_splits)
-        pipeline.run_diagnostics()
     elif args.stage == "diagnostics":
         pipeline.run_diagnostics()
+    elif args.stage == "simulate":
+        pipeline.run_simulation()
+    elif args.stage == "dashboard":
+        pipeline.run_dashboard()

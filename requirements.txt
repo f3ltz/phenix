@@ -12,3 +12,6 @@ pytest>=7.4.0
 xgboost>=2.0.0
 torch>=2.0.0
 torch_geometric>=2.5.0
+streamlit>=1.30.0
+matplotlib>=3.7.0
+
