@@ -1,6 +1,6 @@
 {
   "fold_0": {
-    "train_taxa": [
+    "train": [
       "abeomelomys_sevia",
       "abrawayaomys_ruschii",
       "abrocoma_bennettii",
@@ -2943,7 +2943,7 @@
       "zyzomys_pedunculatus",
       "zyzomys_woodwardi"
     ],
-    "test_taxa": [
+    "test": [
       "abditomys_latidens",
       "acerodon_jubatus",
       "acomys_kempi",
@@ -3274,7 +3274,7 @@
     ]
   },
   "fold_1": {
-    "train_taxa": [
+    "train": [
       "abditomys_latidens",
       "abeomelomys_sevia",
       "abrawayaomys_ruschii",
@@ -6217,7 +6217,7 @@
       "zyzomys_pedunculatus",
       "zyzomys_woodwardi"
     ],
-    "test_taxa": [
+    "test": [
       "aconaemys_sagei",
       "aeromys_tephromelas",
       "akodon_dayi",
@@ -6548,7 +6548,7 @@
     ]
   },
   "fold_2": {
-    "train_taxa": [
+    "train": [
       "abditomys_latidens",
       "abeomelomys_sevia",
       "abrawayaomys_ruschii",
@@ -9491,7 +9491,7 @@
       "zyzomys_palatilis",
       "zyzomys_woodwardi"
     ],
-    "test_taxa": [
+    "test": [
       "abrothrix_illuteus",
       "abrothrix_sanborni",
       "acomys_spinosissimus",
@@ -9822,7 +9822,7 @@
     ]
   },
   "fold_3": {
-    "train_taxa": [
+    "train": [
       "abditomys_latidens",
       "abeomelomys_sevia",
       "abrawayaomys_ruschii",
@@ -12765,7 +12765,7 @@
       "zyzomys_pedunculatus",
       "zyzomys_woodwardi"
     ],
-    "test_taxa": [
+    "test": [
       "acomys_louisae",
       "akodon_dolores",
       "akodon_mimus",
@@ -13096,7 +13096,7 @@
     ]
   },
   "fold_4": {
-    "train_taxa": [
+    "train": [
       "abditomys_latidens",
       "abeomelomys_sevia",
       "abrawayaomys_ruschii",
@@ -16039,7 +16039,7 @@
       "zyzomys_pedunculatus",
       "zyzomys_woodwardi"
     ],
-    "test_taxa": [
+    "test": [
       "abrothrix_jelskii",
       "acerodon_celebensis",
       "acomys_percivali",
@@ -16370,7 +16370,7 @@
     ]
   },
   "fold_5": {
-    "train_taxa": [
+    "train": [
       "abditomys_latidens",
       "abeomelomys_sevia",
       "abrocoma_bennettii",
@@ -19313,7 +19313,7 @@
       "zyzomys_pedunculatus",
       "zyzomys_woodwardi"
     ],
-    "test_taxa": [
+    "test": [
       "abrawayaomys_ruschii",
       "abrothrix_andinus",
       "acerodon_mackloti",
@@ -19644,7 +19644,7 @@
     ]
   },
   "fold_6": {
-    "train_taxa": [
+    "train": [
       "abditomys_latidens",
       "abeomelomys_sevia",
       "abrawayaomys_ruschii",
@@ -22587,7 +22587,7 @@
       "zyzomys_palatilis",
       "zyzomys_pedunculatus"
     ],
-    "test_taxa": [
+    "test": [
       "abrothrix_longipilis",
       "acomys_wilsoni",
       "aepeomys_lugens",
@@ -22918,7 +22918,7 @@
     ]
   },
   "fold_7": {
-    "train_taxa": [
+    "train": [
       "abditomys_latidens",
       "abeomelomys_sevia",
       "abrawayaomys_ruschii",
@@ -25861,7 +25861,7 @@
       "zyzomys_pedunculatus",
       "zyzomys_woodwardi"
     ],
-    "test_taxa": [
+    "test": [
       "abrocoma_bennettii",
       "abrocoma_cinerea",
       "abrothrix_lanosus",
@@ -26192,7 +26192,7 @@
     ]
   },
   "fold_8": {
-    "train_taxa": [
+    "train": [
       "abditomys_latidens",
       "abeomelomys_sevia",
       "abrawayaomys_ruschii",
@@ -29136,7 +29136,7 @@
       "zyzomys_pedunculatus",
       "zyzomys_woodwardi"
     ],
-    "test_taxa": [
+    "test": [
       "abrocoma_boliviensis",
       "abrothrix_olivaceus",
       "acinonyx_jubatus",
@@ -29466,7 +29466,7 @@
     ]
   },
   "fold_9": {
-    "train_taxa": [
+    "train": [
       "abditomys_latidens",
       "abrawayaomys_ruschii",
       "abrocoma_bennettii",
@@ -32410,7 +32410,7 @@
       "zyzomys_pedunculatus",
       "zyzomys_woodwardi"
     ],
-    "test_taxa": [
+    "test": [
       "abeomelomys_sevia",
       "acomys_russatus",
       "aethomys_chrysophilus",

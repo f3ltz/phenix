@@ -182,17 +182,23 @@ class WorldClimExtractor:
     def __init__(self, raster_dir: Optional[Union[str, Path]] = None):
         self.raster_dir = Path(raster_dir) if raster_dir else None
         self.raster_paths: Dict[str, Path] = self._find_rasters() if self.raster_dir else {}
+        self._raster_cache: Dict[Path, np.ndarray] = {}
 
     def _find_rasters(self) -> Dict[str, Path]:
         if not self.raster_dir or not self.raster_dir.exists():
             return {}
         found = {}
         for var in BIOCLIM_VARS + ["elev", "elevation"]:
+            num = var.replace("bio", "")
             patterns = [
                 f"*_{var}.tif",
                 f"*_{var}_*.tif",
                 f"*{var}.bil",
                 f"*wc2.1_*_{var}*.tif",
+                f"*bio_{num}.tif",
+                f"*bio_{num}_*.tif",
+                f"*wc2.1_*_bio_{num}.tif",
+                f"*elev*.tif",
             ]
             matches = []
             for pat in patterns:
@@ -206,17 +212,22 @@ class WorldClimExtractor:
 
     def sample_point(self, lat: float, lon: float, raster_path: Path) -> Optional[float]:
         try:
-            import rasterio
-            with rasterio.open(raster_path) as src:
-                coords = [(lon, lat)]
-                val = list(src.sample(coords))[0][0]
-                if src.nodata is not None and val == src.nodata:
-                    return np.nan
-                return float(val)
-        except ImportError:
-            return None
+            if raster_path not in self._raster_cache:
+                from PIL import Image
+                self._raster_cache[raster_path] = np.array(Image.open(raster_path), dtype=np.float32)
+            arr = self._raster_cache[raster_path]
+            H, W = arr.shape
+            r = int(np.clip((90.0 - lat) / 180.0 * H, 0, H - 1))
+            c = int(np.clip((lon + 180.0) / 360.0 * W, 0, W - 1))
+            val = arr[r, c]
+            if val < -1000.0 or np.isnan(val):
+                # Search 5x5 spatial neighborhood for nearest valid land cell
+                sub = arr[max(0, r - 2) : min(H, r + 3), max(0, c - 2) : min(W, c + 3)]
+                valid = sub[sub > -1000.0]
+                val = float(np.mean(valid)) if len(valid) > 0 else np.nan
+            return float(val) if not np.isnan(val) and val > -1000.0 else None
         except Exception:
-            return np.nan
+            return None
 
     def extract_environmental_profile(
         self, lat: float, lon: float, elevation: Optional[float] = None

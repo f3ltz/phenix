@@ -229,6 +229,8 @@ class UnifiedDataPipeline:
     ):
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
+        if raster_dir is None and Path("data/raw/environmental").exists():
+            raster_dir = Path("data/raw/environmental")
         self.worldclim_extractor = WorldClimExtractor(raster_dir=raster_dir)
         self.genomic_pipeline = CompositeGenomicPipeline(
             esm2_components=esm2_dims,

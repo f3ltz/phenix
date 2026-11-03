@@ -134,11 +134,7 @@ class PhenixPipeline:
         baseline_path = self.data_dir / "features_baseline.csv"
         df_baseline.to_csv(baseline_path, index=False)
 
-        whitened_mat = self.whitener.fit_transform(
-            df_baseline[[c for c in df_baseline.columns if c != ID_COL]].values
-        )
-        df_whitened = pd.DataFrame(whitened_mat, columns=[c for c in df_baseline.columns if c != ID_COL])
-        df_whitened.insert(0, ID_COL, target_taxa)
+        df_whitened, _ = self.whitener.fit_transform(df_baseline)
         whitened_path = self.data_dir / "features_whitened.csv"
         df_whitened.to_csv(whitened_path, index=False)
 
