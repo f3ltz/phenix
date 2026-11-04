@@ -85,24 +85,32 @@ def audit_sync_barrier_4(
                 if cfg_key not in matrix_results:
                     missing_configs.append(cfg_key)
 
-    report["configurations_tested_count"] = len(matrix_results)
+    report["configurations_tested_count"] = sum(
+        1 for m in expected_models for f_name in expected_feats for p_name in expected_protos
+        if f"{m}__{f_name}__{p_name}" in matrix_results
+    )
+    report["reference_configurations_count"] = sum(1 for k in matrix_results if "__Reference__" in k)
     if missing_configs:
         report["status"] = "FAIL"
         report["errors"].append(f"Missing benchmark configurations: {missing_configs}")
 
     # Check for NaN summary metrics
-    for col in ["r2_mean", "rmse_mean", "mae_mean"]:
+    for col in ["r2_pooled", "r2_mean", "rmse_mean", "mae_mean"]:
         if col in df_summary.columns and df_summary[col].isnull().any():
             report["status"] = "FAIL"
             report["errors"].append(f"Summary table contains NaN in '{col}'.")
+
+    # Pooled out-of-fold R^2 is comparable across protocols; older summaries only have per-fold means
+    r2_col = "r2_pooled" if "r2_pooled" in df_summary.columns else "r2_mean"
+    report["key_findings"]["r2_metric"] = r2_col
 
     # 3. Performance Inflation Gap Verification: Random CV vs Phylo-CV
     # On Baseline features, Random CV should show significantly higher R^2 than Phylo-CV
     inflation_gaps = []
     for m in expected_models:
         m_base = df_summary[(df_summary["model"] == m) & (df_summary["feature_set"] == "Baseline")]
-        r_rand = m_base[m_base["protocol"] == "Random_CV"]["r2_mean"].values
-        r_phylo = m_base[m_base["protocol"] == "Phylo_CV"]["r2_mean"].values
+        r_rand = m_base[m_base["protocol"] == "Random_CV"][r2_col].values
+        r_phylo = m_base[m_base["protocol"] == "Phylo_CV"][r2_col].values
         if len(r_rand) > 0 and len(r_phylo) > 0:
             gap = float(r_rand[0] - r_phylo[0])
             inflation_gaps.append((m, gap))
@@ -123,8 +131,8 @@ def audit_sync_barrier_4(
     phylo_gains_random = []
     for m in expected_models:
         m_rows = df_summary[(df_summary["model"] == m) & (df_summary["protocol"] == "Random_CV")]
-        r_aug = m_rows[m_rows["feature_set"] == "Augmented"]["r2_mean"].values
-        r_base = m_rows[m_rows["feature_set"] == "Baseline"]["r2_mean"].values
+        r_aug = m_rows[m_rows["feature_set"] == "Augmented"][r2_col].values
+        r_base = m_rows[m_rows["feature_set"] == "Baseline"][r2_col].values
         if len(r_aug) > 0 and len(r_base) > 0:
             gain = float(r_aug[0] - r_base[0])
             phylo_gains_random.append((m, gain))

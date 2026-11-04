@@ -1,36 +1,36 @@
 {
   "ridge_linear_partitioning": {
-    "R2_total": 0.7826,
-    "pure_environmental": 0.0011,
-    "pure_genomic": 0.0,
-    "pure_phylogenetic": 0.781,
-    "shared_intersection": 0.0041,
-    "unexplained": 0.2174,
+    "R2_total": 0.7943,
+    "pure_environmental": 0.0016,
+    "pure_genomic": 0.0069,
+    "pure_phylogenetic": 0.6409,
+    "shared_intersection": 0.145,
+    "unexplained": 0.2057,
     "raw_R2": {
-      "E": -0.0006,
-      "G": 0.0025,
+      "E": 0.0143,
+      "G": 0.1449,
       "P": 0.7852,
-      "EG": 0.0016,
-      "EP": 0.7861,
-      "GP": 0.7815,
-      "EGP": 0.7826
+      "EG": 0.1534,
+      "EP": 0.7874,
+      "GP": 0.7927,
+      "EGP": 0.7943
     }
   },
   "random_forest_nonlinear_partitioning": {
-    "R2_total": 0.8505,
-    "pure_environmental": 0.0004,
-    "pure_genomic": 0.0,
-    "pure_phylogenetic": 0.8693,
-    "shared_intersection": -0.0136,
-    "unexplained": 0.1495,
+    "R2_total": 0.8692,
+    "pure_environmental": 0.0,
+    "pure_genomic": 0.0114,
+    "pure_phylogenetic": 0.5612,
+    "shared_intersection": 0.3004,
+    "unexplained": 0.1308,
     "raw_R2": {
-      "E": -0.0499,
-      "G": -0.0194,
+      "E": -0.0017,
+      "G": 0.3206,
       "P": 0.8663,
-      "EG": -0.0188,
-      "EP": 0.8562,
-      "GP": 0.8502,
-      "EGP": 0.8505
+      "EG": 0.308,
+      "EP": 0.8578,
+      "GP": 0.873,
+      "EGP": 0.8692
     }
   }
 }

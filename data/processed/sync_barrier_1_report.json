@@ -11,7 +11,7 @@
   "feature_counts": {
     "phenotypic_traits": 11,
     "environmental_vars": 21,
-    "genomic_features": 64
+    "genomic_features": 17
   },
   "alignment_verified": true
 }

@@ -1,7 +1,13 @@
 """
 Eco-Evolutionary Forecaster for PHENIX
-Compares Machine Learning trait forecasts against macroevolutionary adaptive ground truth
-(Ornstein-Uhlenbeck selection dynamics) under future climate and proteomic scenarios.
+Compares Machine Learning trait forecasts against an Ornstein-Uhlenbeck (OU) REFERENCE
+trajectory under future climate scenarios.
+
+The OU reference is not observed data: its direction and size are set by the assumed
+Bergmann coefficient (bergmann_coef, log10 g per degree C) together with alpha_selection and
+years_forward_ma. Results are therefore a sensitivity analysis of the ML models against that
+assumption, not a validation against ground truth. Note also that the SSP presets describe
+warming by ~2070, while years_forward_ma is in millions of years.
 """
 
 import json
@@ -57,6 +63,7 @@ class EcoEvolutionaryForecaster:
         alpha_selection: float = 0.15,
         sigma2_drift: float = 0.02,
         bergmann_coef: float = -0.015,
+        n_replicates: int = 200,
         verbose: bool = True,
     ) -> Dict[str, Any]:
         """
@@ -164,17 +171,26 @@ class EcoEvolutionaryForecaster:
             )
             future_optima_dict = {taxa[i]: float(shifted_optima_arr[i]) for i in range(N)}
 
-            ou_sim_future = self.simulator.forward_simulate_tips(
-                current_traits=current_traits_dict,
-                future_optima=future_optima_dict,
-                years_forward_ma=years_forward_ma,
-                alpha=alpha_selection,
-                sigma2=sigma2_drift,
-            )
-            y_ou_fut = np.array([ou_sim_future[t] for t in taxa], dtype=np.float32)
+            # Expected OU trajectory (noise-free): E[X(dt)] = theta + (x0 - theta) * exp(-alpha * dt).
+            # A single stochastic draw is dominated by drift noise at these effect sizes, so the
+            # reference is the expectation; replicate draws only quantify the noise spread.
+            decay = np.exp(-alpha_selection * years_forward_ma)
+            y_ou_fut = shifted_optima_arr + (y_log_current - shifted_optima_arr) * decay
+
+            replicate_shifts = []
+            for _ in range(n_replicates):
+                ou_sim_future = self.simulator.forward_simulate_tips(
+                    current_traits=current_traits_dict,
+                    future_optima=future_optima_dict,
+                    years_forward_ma=years_forward_ma,
+                    alpha=alpha_selection,
+                    sigma2=sigma2_drift,
+                )
+                replicate_shifts.append(np.mean([ou_sim_future[t] for t in taxa]) - np.mean(y_log_current))
+            ou_shift_replicate_sd = float(np.std(replicate_shifts))
 
             # 5. Compute Diagnostic Shifts and Metrics
-            # Ground truth shifts
+            # OU reference shift (expected value under the assumed Bergmann coefficient)
             mean_shift_ou = float(np.mean(y_ou_fut - y_log_current))
 
             # ML predicted shifts
@@ -198,14 +214,17 @@ class EcoEvolutionaryForecaster:
             clr_rf = abs(shift_rf_base) / denom_rf
             clr_xgb = abs(shift_xgb_base) / denom_xgb
 
-            # Adaptive Tracking Error (ATE) vs OU Ground Truth
+            # Adaptive Tracking Error (ATE) vs the expected OU reference trajectory
             ate_rf_base = float(np.sqrt(np.mean((pred_rf_base_fut - y_ou_fut) ** 2)))
             ate_rf_aug = float(np.sqrt(np.mean((pred_rf_aug_fut - y_ou_fut) ** 2)))
             ate_xgb_base = float(np.sqrt(np.mean((pred_xgb_base_fut - y_ou_fut) ** 2)))
             ate_xgb_aug = float(np.sqrt(np.mean((pred_xgb_aug_fut - y_ou_fut) ** 2)))
 
             if verbose:
-                print(f"  • OU Adaptive Shift (Ground Truth):  {mean_shift_ou:+.4f} log10(g)")
+                print(
+                    f"  • OU Reference Shift (assumed):      {mean_shift_ou:+.4f} log10(g) "
+                    f"(single-draw noise SD: {ou_shift_replicate_sd:.4f})"
+                )
                 print(f"  • RF Augmented Shift (With Phylo):   {shift_rf_aug:+.4f} log10(g) (IDF: {idf_rf_aug:.3f})")
                 print(f"  • RF Baseline Shift (No Phylo):      {shift_rf_base:+.4f} log10(g) (CLR: {clr_rf:.1f}x)")
                 print(f"  • XGB Augmented Shift (With Phylo):  {shift_xgb_aug:+.4f} log10(g) (IDF: {idf_xgb_aug:.3f})")
@@ -216,7 +235,8 @@ class EcoEvolutionaryForecaster:
                 "scenario": scen,
                 "delta_temp_c": delta_t,
                 "precip_factor": preset["precip_factor"],
-                "mean_shift_ou_ground_truth": mean_shift_ou,
+                "mean_shift_ou_reference": mean_shift_ou,
+                "ou_shift_replicate_sd": ou_shift_replicate_sd,
                 "shifts": {
                     "rf_augmented": shift_rf_aug,
                     "rf_baseline": shift_rf_base,
@@ -245,7 +265,8 @@ class EcoEvolutionaryForecaster:
             summary_rows.append({
                 "Scenario": scen,
                 "Delta_T_Celsius": delta_t,
-                "OU_Ground_Truth_Shift": mean_shift_ou,
+                "OU_Reference_Shift": mean_shift_ou,
+                "OU_Shift_Replicate_SD": ou_shift_replicate_sd,
                 "RF_Augmented_Shift": shift_rf_aug,
                 "RF_Baseline_Shift": shift_rf_base,
                 "XGB_Augmented_Shift": shift_xgb_aug,
@@ -268,6 +289,11 @@ class EcoEvolutionaryForecaster:
             "alpha_selection": alpha_selection,
             "sigma2_drift": sigma2_drift,
             "bergmann_coef": bergmann_coef,
+            "n_replicates": n_replicates,
+            "reference_note": (
+                "OU reference shifts are expected values under the assumed bergmann_coef, "
+                "alpha_selection and years_forward_ma; they are not observed data."
+            ),
             "scenarios": scenario_results,
         }
 

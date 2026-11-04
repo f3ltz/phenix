@@ -730,7 +730,10 @@ def render_dashboard():
             gen_std = float(drift_rate * np.sqrt(max(dt_ma, 1e-4)))
             rng_gen = np.random.default_rng(42 + sp_idx)
 
-            gen_cols = [c for c in row_base_fut.index if c.startswith("esm2_") or c.startswith("snp_") or c.startswith("func_")]
+            gen_cols = [
+                c for c in row_base_fut.index
+                if c.startswith(("esm2_", "snp_", "func_", "gen_seq_"))
+            ]
             noise = rng_gen.normal(0.0, gen_std, size=len(gen_cols)).astype(np.float32)
 
             for i, col in enumerate(gen_cols):

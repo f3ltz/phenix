@@ -1,7 +1,7 @@
 {
   "num_nodes": 3442,
   "num_tips": 3268,
-  "num_features": 85,
+  "num_features": 38,
   "edge_index_shape": [
     2,
     6882

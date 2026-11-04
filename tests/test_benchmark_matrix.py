@@ -60,6 +60,34 @@ class TestBenchmarkMatrix(unittest.TestCase):
         self.assertEqual(len(pred_df), 30)
         self.assertIn("true_y_log10", pred_df.columns)
 
+    def test_pooled_metrics_and_reference_models(self):
+        # Two orders, 160 Ma apart; species within an order 20 Ma apart
+        order_idx = np.array([0] * 15 + [1] * 15)
+        D = np.where(order_idx[:, None] == order_idx[None, :], 20.0, 160.0)
+        np.fill_diagonal(D, 0.0)
+
+        runner = BenchmarkMatrixRunner(
+            df_pheno=self.df_pheno,
+            df_baseline=self.df_baseline,
+            df_augmented=self.df_augmented,
+            random_folds=self.random_folds,
+            phylo_folds=self.phylo_folds,
+            target_trait="adult_body_mass_g",
+            patristic_matrix=D,
+        )
+        summary_df = runner.run_benchmark(verbose=False)["summary_df"]
+
+        # 16 model configurations + 2 reference predictors x 2 protocols
+        self.assertEqual(len(summary_df), 20)
+        self.assertIn("r2_pooled", summary_df.columns)
+        self.assertEqual(set(summary_df[summary_df["feature_set"] == "Reference"]["model"]), {"GlobalMean", "PhyloBM"})
+
+        # Inflation gap is defined on pooled R^2
+        ridge = summary_df[(summary_df["model"] == "Ridge") & (summary_df["feature_set"] == "Baseline")]
+        r_rand = ridge[ridge["protocol"] == "Random_CV"]["r2_pooled"].iloc[0]
+        r_phylo = ridge[ridge["protocol"] == "Phylo_CV"]["r2_pooled"].iloc[0]
+        self.assertAlmostEqual(ridge["inflation_gap_r2"].iloc[0], round(r_rand - r_phylo, 4), places=3)
+
 
 if __name__ == "__main__":
     unittest.main()

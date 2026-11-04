@@ -5,89 +5,94 @@
   "alpha_selection": 0.15,
   "sigma2_drift": 0.02,
   "bergmann_coef": -0.015,
+  "n_replicates": 200,
+  "reference_note": "OU reference shifts are expected values under the assumed bergmann_coef, alpha_selection and years_forward_ma; they are not observed data.",
   "scenarios": {
     "SSP1-2.6": {
       "scenario": "SSP1-2.6",
       "delta_temp_c": 1.5,
       "precip_factor": 1.02,
-      "mean_shift_ou_ground_truth": -0.0035216831602156162,
+      "mean_shift_ou_reference": -0.001625773814499198,
+      "ou_shift_replicate_sd": 0.0017091876689367196,
       "shifts": {
-        "rf_augmented": 0.00814671243360763,
-        "rf_baseline": 0.0646674814133467,
-        "xgb_augmented": 0.005002187564969063,
-        "xgb_baseline": 0.04678398370742798
+        "rf_augmented": 0.014815902676929331,
+        "rf_baseline": -0.010932793997690173,
+        "xgb_augmented": 0.005081384442746639,
+        "xgb_baseline": 0.03019748628139496
       },
       "inertia_drag_factors": {
-        "rf_augmented": 2.3133007891342627,
-        "xgb_augmented": 1.420396820894814,
-        "rf_baseline": 18.3626630992515,
-        "xgb_baseline": 13.284552181168852
+        "rf_augmented": 9.113138952538247,
+        "xgb_augmented": 3.1255174597038917,
+        "rf_baseline": 6.724670984480029,
+        "xgb_baseline": 18.574223555628475
       },
       "coordinate_locking_ratios": {
-        "rf": 7.937862289894261,
-        "xgb": 9.352704811603227
+        "rf": 0.7379094096449647,
+        "xgb": 5.9427674921349425
       },
       "adaptive_tracking_errors": {
-        "rf_augmented": 0.25555099420295413,
-        "rf_baseline": 0.8032203551703775,
-        "xgb_augmented": 0.3423663377761841,
-        "xgb_baseline": 0.8854854106903076
+        "rf_augmented": 0.2609551308778832,
+        "rf_baseline": 0.6784318150575915,
+        "xgb_augmented": 0.33641932139559133,
+        "xgb_baseline": 0.7826866079771518
       }
     },
     "SSP2-4.5": {
       "scenario": "SSP2-4.5",
       "delta_temp_c": 3.0,
       "precip_factor": 1.05,
-      "mean_shift_ou_ground_truth": -0.0019024034263566136,
+      "mean_shift_ou_reference": -0.00325154463445116,
+      "ou_shift_replicate_sd": 0.0015897529264377076,
       "shifts": {
-        "rf_augmented": 0.009484272319656132,
-        "rf_baseline": 0.09024412841097458,
-        "xgb_augmented": 0.004920878913253546,
-        "xgb_baseline": 0.08801882714033127
+        "rf_augmented": 0.024307722621536243,
+        "rf_baseline": 0.01707671774577987,
+        "xgb_augmented": 0.010184172540903091,
+        "xgb_baseline": 0.04728329926729202
       },
       "inertia_drag_factors": {
-        "rf_augmented": 4.9854159156031,
-        "xgb_augmented": 2.586664240127954,
-        "rf_baseline": 47.43690384526144,
-        "xgb_baseline": 46.26717231523308
+        "rf_augmented": 7.475746254253475,
+        "xgb_augmented": 3.132102949779164,
+        "rf_baseline": 5.251878619424922,
+        "xgb_baseline": 14.541796156297618
       },
       "coordinate_locking_ratios": {
-        "rf": 9.515134674480386,
-        "xgb": 17.886810200362298
+        "rf": 0.7025223222948158,
+        "xgb": 4.642821896171363
       },
       "adaptive_tracking_errors": {
-        "rf_augmented": 0.26776991189072646,
-        "rf_baseline": 0.8417062667484834,
-        "xgb_augmented": 0.344241738319397,
-        "xgb_baseline": 0.9048771262168884
+        "rf_augmented": 0.2921197333253209,
+        "rf_baseline": 0.7276677641501623,
+        "xgb_augmented": 0.347214597666993,
+        "xgb_baseline": 0.8078827213268772
       }
     },
     "SSP5-8.5": {
       "scenario": "SSP5-8.5",
       "delta_temp_c": 5.0,
       "precip_factor": 1.08,
-      "mean_shift_ou_ground_truth": -0.007529907859861851,
+      "mean_shift_ou_reference": -0.0054192399676436884,
+      "ou_shift_replicate_sd": 0.0017343271866058008,
       "shifts": {
-        "rf_augmented": 0.013831007587682527,
-        "rf_baseline": 0.11611087467620566,
-        "xgb_augmented": 0.006934729870408773,
-        "xgb_baseline": 0.14658121764659882
+        "rf_augmented": 0.032580618191175394,
+        "rf_baseline": 0.058334863978670985,
+        "xgb_augmented": 0.013139317743480206,
+        "xgb_baseline": 0.057835329324007034
       },
       "inertia_drag_factors": {
-        "rf_augmented": 1.8368096721885094,
-        "xgb_augmented": 0.9209581311577966,
-        "rf_baseline": 15.419959558221729,
-        "xgb_baseline": 19.46653536465559
+        "rf_augmented": 6.0120272188909185,
+        "xgb_augmented": 2.4245683568046985,
+        "rf_baseline": 10.76439949641781,
+        "xgb_baseline": 10.672221505104178
       },
       "coordinate_locking_ratios": {
-        "rf": 8.394968619611666,
-        "xgb": 21.13726423174411
+        "rf": 1.790477505257136,
+        "xgb": 4.401699574751909
       },
       "adaptive_tracking_errors": {
-        "rf_augmented": 0.26974576106562315,
-        "rf_baseline": 0.8631614439233988,
-        "xgb_augmented": 0.34477728605270386,
-        "xgb_baseline": 0.9188441634178162
+        "rf_augmented": 0.3129134119984902,
+        "rf_baseline": 0.7647338107434709,
+        "xgb_augmented": 0.3555934534111991,
+        "xgb_baseline": 0.8232332929008055
       }
     }
   }

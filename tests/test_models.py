@@ -7,6 +7,8 @@ from src.models import (
     RandomForestPipeline,
     XGBoostPipeline,
     PhyloGNNPipeline,
+    GlobalMeanModel,
+    PhyloBMImputer,
     ValidationEngine,
 )
 from src.validation.cv import CVFold
@@ -87,6 +89,59 @@ class TestModels(unittest.TestCase):
         preds = model.predict(self.X[self.fold.test_indices])
         self.assertEqual(len(preds), 15)
         self.assertFalse(np.isnan(preds).any())
+
+    def test_global_mean_model(self):
+        model = GlobalMeanModel()
+        model.fit(self.X[self.fold.train_indices], self.y[self.fold.train_indices])
+        preds = model.predict(self.X[self.fold.test_indices])
+        expected = np.mean(np.log10(self.y[self.fold.train_indices]))
+        np.testing.assert_allclose(preds, expected)
+
+    def test_phylo_bm_imputer_uses_relatives(self):
+        # Two clades that split 100 Ma ago; species within a clade split 10 Ma ago
+        n = 8
+        clade = np.array([0, 0, 0, 0, 1, 1, 1, 1])
+        D = np.where(clade[:, None] == clade[None, :], 20.0, 200.0)
+        np.fill_diagonal(D, 0.0)
+        y = np.where(clade == 0, 10.0, 1000.0)
+
+        model = PhyloBMImputer(D)
+        train, test = np.array([0, 1, 2, 4, 5, 6]), np.array([3, 7])
+        model.fit(None, y[train], train_indices=train)
+        preds = model.predict(None, test_indices=test)
+        # Each held-out species is pulled to its own clade's value (log10: 1 and 3)
+        self.assertLess(abs(preds[0] - 1.0), 0.2)
+        self.assertLess(abs(preds[1] - 3.0), 0.2)
+
+    def test_phylo_gnn_tree_graph(self):
+        # Star tree: two internal nodes (one per clade) joined to a root; tips 0-3 and 4-7
+        n_tips = 8
+        clade_node = {0: 8, 1: 9}
+        root = 10
+        src, dst, attr = [], [], []
+        for tip in range(n_tips):
+            parent = clade_node[0] if tip < 4 else clade_node[1]
+            src += [tip, parent]; dst += [parent, tip]; attr += [[10.0], [10.0]]
+        for c in clade_node.values():
+            src += [c, root]; dst += [root, c]; attr += [[90.0], [90.0]]
+        x = np.zeros((11, 2), dtype=np.float32)
+        x[:n_tips] = np.random.randn(n_tips, 2)
+        graph = {
+            "num_nodes": 11,
+            "num_tips": n_tips,
+            "edge_index": np.array([src, dst], dtype=np.int64),
+            "edge_attr": np.array(attr, dtype=np.float32),
+            "x": x,
+        }
+        y = np.where(np.arange(n_tips) < 4, 10.0, 1000.0)
+        train, test = np.array([0, 1, 2, 4, 5, 6]), np.array([3, 7])
+
+        model = PhyloGNNPipeline(graph_dict=graph, hidden_dim=16, epochs=300)
+        model.fit(x[train], y[train], train_indices=train)
+        preds = model.predict(x[test], test_indices=test)
+        self.assertEqual(len(preds), 2)
+        # Labels of relatives propagate through the clade node: clade 1 must be predicted heavier
+        self.assertGreater(preds[1], preds[0])
 
     def test_validation_engine_fold(self):
         engine = ValidationEngine()

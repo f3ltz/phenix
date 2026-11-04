@@ -1,4 +1,4 @@
-from typing import Optional, Dict, Any, Union, List, Tuple
+from typing import Optional, Dict, Any, Tuple
 import numpy as np
 import torch
 import torch.nn as nn
@@ -44,18 +44,27 @@ class PhyloGNNNet(nn.Module):
 class PhyloGNNPipeline(PhenixModel):
     """
     Phylogenetic Graph Neural Network Pipeline.
-    Supports both tree-based graph topology and standalone feature matrix execution.
+
+    With a tree graph (graph_dict), training is transductive over the whole tree: tips are species,
+    internal nodes are ancestors. Node inputs are standardized features plus two label channels
+    (known log10 trait, is-known flag) so trait values of relatives can propagate along branches.
+    To stop a node from simply reading back its own label, each epoch hides a random share of the
+    training labels (mask_rate) and the loss is computed on those hidden nodes only.
+
+    Without a graph it degrades to a per-sample network (self-loops only, no label channels).
     """
 
     def __init__(
         self,
         graph_dict: Optional[Dict[str, Any]] = None,
         hidden_dim: int = 64,
-        epochs: int = 50,
+        epochs: int = 200,
         lr: float = 0.01,
         weight_decay: float = 1e-4,
         timescale_tau: float = 50.0,
+        mask_rate: float = 0.5,
         log_transform_target: bool = True,
+        random_state: int = 42,
         device: Optional[str] = None,
     ):
         super().__init__(log_transform_target=log_transform_target)
@@ -65,26 +74,23 @@ class PhyloGNNPipeline(PhenixModel):
         self.lr = lr
         self.weight_decay = weight_decay
         self.timescale_tau = timescale_tau
+        self.mask_rate = mask_rate
+        self.random_state = random_state
         self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
         self.model: Optional[PhyloGNNNet] = None
         self._cached_preds: Optional[np.ndarray] = None
+        self._feat_mean: Optional[np.ndarray] = None
+        self._feat_std: Optional[np.ndarray] = None
+        self._y_mean: float = 0.0
 
-    def _build_standalone_graph(self, X: np.ndarray) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-        """Builds a simple nearest-neighbor / chain graph when no tree graph is provided."""
-        N, P = X.shape
-        x_tensor = torch.from_numpy(X.astype(np.float32)).to(self.device)
+    def _standardize(self, X: np.ndarray) -> np.ndarray:
+        return ((X - self._feat_mean) / self._feat_std).astype(np.float32)
 
-        if N <= 1:
-            edge_index = torch.zeros((2, 1), dtype=torch.long, device=self.device)
-            edge_weight = torch.ones(1, dtype=torch.float32, device=self.device)
-            return x_tensor, edge_index, edge_weight
-
-        # Chain graph edges between consecutive samples + self loops
-        src = list(range(N - 1)) + list(range(1, N)) + list(range(N))
-        dst = list(range(1, N)) + list(range(N - 1)) + list(range(N))
-        edge_index = torch.tensor([src, dst], dtype=torch.long, device=self.device)
-        edge_weight = torch.ones(len(src), dtype=torch.float32, device=self.device)
-        return x_tensor, edge_index, edge_weight
+    def _self_loop_graph(self, n: int) -> Tuple[torch.Tensor, torch.Tensor]:
+        """Graph with only self-loops: each sample is predicted from its own features."""
+        idx = torch.arange(n, dtype=torch.long, device=self.device)
+        edge_index = torch.stack([idx, idx])
+        return edge_index, torch.ones(n, dtype=torch.float32, device=self.device)
 
     def fit(
         self,
@@ -93,51 +99,82 @@ class PhyloGNNPipeline(PhenixModel):
         train_indices: Optional[np.ndarray] = None,
         **kwargs,
     ) -> 'PhyloGNNPipeline':
+        torch.manual_seed(self.random_state)
+        rng = np.random.default_rng(self.random_state)
+
         X_arr = np.asarray(X, dtype=np.float32)
         y_arr = np.asarray(y, dtype=np.float32)
+        y_fit = self.transformer.fit_transform(y_arr) if self.log_transform_target and self.transformer else y_arr
+        self._y_mean = float(np.mean(y_fit))
+        y_centered = torch.from_numpy((y_fit - self._y_mean).astype(np.float32)).to(self.device)
 
-        if self.log_transform_target and self.transformer is not None:
-            y_fit = self.transformer.fit_transform(y_arr)
-        else:
-            y_fit = y_arr
+        use_tree = self.graph_dict is not None and train_indices is not None
+        if use_tree:
+            train_idx = np.asarray(train_indices, dtype=np.int64)
+            x_nodes = np.asarray(self.graph_dict["x"], dtype=np.float32)
+            n_tips = self.graph_dict["num_tips"]
+            # Scale with training-tip statistics only; internal nodes sit at the (scaled) mean
+            self._feat_mean = x_nodes[train_idx].mean(axis=0)
+            self._feat_std = x_nodes[train_idx].std(axis=0)
+            self._feat_std[self._feat_std == 0] = 1.0
+            x_scaled = self._standardize(x_nodes)
+            x_scaled[n_tips:] = 0.0
+            x_tensor = torch.from_numpy(x_scaled).to(self.device)
 
-        if self.graph_dict is not None:
-            x_tensor = torch.from_numpy(self.graph_dict["x"].astype(np.float32)).to(self.device)
             edge_index = torch.from_numpy(self.graph_dict["edge_index"].astype(np.int64)).to(self.device)
-            edge_attr = self.graph_dict["edge_attr"]
-            edge_weight = np.exp(-edge_attr.squeeze() / self.timescale_tau).astype(np.float32)
-            edge_weight_tensor = torch.from_numpy(edge_weight).to(self.device)
-
-            if train_indices is not None:
-                mask = torch.from_numpy(np.asarray(train_indices, dtype=np.int64)).to(self.device)
-                y_target = torch.from_numpy(y_fit.astype(np.float32)).to(self.device)
-            else:
-                n_samples = len(y_fit)
-                mask = torch.arange(n_samples, device=self.device)
-                y_target = torch.from_numpy(y_fit.astype(np.float32)).to(self.device)
+            edge_attr = np.asarray(self.graph_dict["edge_attr"], dtype=np.float32).reshape(-1)
+            edge_weight = torch.from_numpy(np.exp(-edge_attr / self.timescale_tau).astype(np.float32)).to(self.device)
+            num_nodes = x_tensor.shape[0]
         else:
-            x_tensor, edge_index, edge_weight_tensor = self._build_standalone_graph(X_arr)
-            mask = torch.arange(len(y_fit), device=self.device)
-            y_target = torch.from_numpy(y_fit.astype(np.float32)).to(self.device)
+            self._feat_mean = X_arr.mean(axis=0)
+            self._feat_std = X_arr.std(axis=0)
+            self._feat_std[self._feat_std == 0] = 1.0
+            x_tensor = torch.from_numpy(self._standardize(X_arr)).to(self.device)
+            edge_index, edge_weight = self._self_loop_graph(len(X_arr))
+            train_idx = np.arange(len(X_arr))
+            num_nodes = len(X_arr)
 
-        in_channels = x_tensor.shape[1]
+        train_idx_t = torch.from_numpy(train_idx).to(self.device)
+
+        def build_input(visible: np.ndarray) -> torch.Tensor:
+            """Appends label channels: centered label and known-flag for visible training nodes."""
+            if not use_tree:
+                return x_tensor
+            label = torch.zeros(num_nodes, device=self.device)
+            known = torch.zeros(num_nodes, device=self.device)
+            vis_t = torch.from_numpy(visible).to(self.device)
+            label[train_idx_t[vis_t]] = y_centered[vis_t]
+            known[train_idx_t[vis_t]] = 1.0
+            return torch.cat([x_tensor, label.unsqueeze(1), known.unsqueeze(1)], dim=1)
+
+        in_channels = x_tensor.shape[1] + (2 if use_tree else 0)
         self.model = PhyloGNNNet(in_channels=in_channels, hidden_dim=self.hidden_dim).to(self.device)
-        optimizer = torch.optim.Adam(
-            self.model.parameters(), lr=self.lr, weight_decay=self.weight_decay
-        )
+        optimizer = torch.optim.Adam(self.model.parameters(), lr=self.lr, weight_decay=self.weight_decay)
 
+        n_train = len(train_idx)
         self.model.train()
-        for epoch in range(self.epochs):
+        for _ in range(self.epochs):
+            if use_tree:
+                hidden = rng.random(n_train) < self.mask_rate
+                if not hidden.any():
+                    hidden[rng.integers(n_train)] = True
+            else:
+                hidden = np.ones(n_train, dtype=bool)
             optimizer.zero_grad()
-            preds = self.model(x_tensor, edge_index, edge_weight_tensor)
-            loss = F.mse_loss(preds[mask], y_target)
+            preds = self.model(build_input(~hidden), edge_index, edge_weight)
+            hidden_t = torch.from_numpy(hidden).to(self.device)
+            loss = F.mse_loss(preds[train_idx_t[hidden_t]], y_centered[hidden_t])
             loss.backward()
             optimizer.step()
 
         self.model.eval()
-        with torch.no_grad():
-            full_preds = self.model(x_tensor, edge_index, edge_weight_tensor)
-            self._cached_preds = full_preds.cpu().numpy()
+        if use_tree:
+            with torch.no_grad():
+                # At inference every training label is visible
+                full_preds = self.model(build_input(np.ones(n_train, dtype=bool)), edge_index, edge_weight)
+            self._cached_preds = full_preds.cpu().numpy() + self._y_mean
+        else:
+            self._cached_preds = None
 
         self.is_fitted = True
         return self
@@ -151,17 +188,14 @@ class PhyloGNNPipeline(PhenixModel):
         if not self.is_fitted or self.model is None:
             raise RuntimeError("Model must be fitted before predict() is called.")
 
-        if self.graph_dict is not None and self._cached_preds is not None:
-            if test_indices is not None:
-                test_idx = np.asarray(test_indices, dtype=int)
-                return self._cached_preds[test_idx]
-            else:
-                # If test size matches X rows
-                return self._cached_preds[:len(X)]
-        else:
-            X_arr = np.asarray(X, dtype=np.float32)
-            x_tensor, edge_index, edge_weight = self._build_standalone_graph(X_arr)
-            self.model.eval()
-            with torch.no_grad():
-                preds = self.model(x_tensor, edge_index, edge_weight)
-                return preds.cpu().numpy()
+        if self._cached_preds is not None:
+            if test_indices is None:
+                raise ValueError("Tree-graph PhyloGNN needs test_indices to locate species on the tree.")
+            return self._cached_preds[np.asarray(test_indices, dtype=int)]
+
+        X_arr = np.asarray(X, dtype=np.float32)
+        x_tensor = torch.from_numpy(self._standardize(X_arr)).to(self.device)
+        edge_index, edge_weight = self._self_loop_graph(len(X_arr))
+        with torch.no_grad():
+            preds = self.model(x_tensor, edge_index, edge_weight)
+        return preds.cpu().numpy() + self._y_mean

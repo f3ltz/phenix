@@ -101,10 +101,10 @@ class PhenixPipeline:
 
         target_taxa = pheno_df[ID_COL].tolist()
         N = len(target_taxa)
-        print(f"[Stage 2] Processing {N} taxa across 27 mammalian orders.")
+        print(f"[Stage 2] Processing {N} taxa across {pheno_df['order'].nunique()} mammalian orders.")
 
         # Divergence calibration
-        print("[Stage 2] Reconstructing consensus topology and applying BLADJ calibration (177.0 Ma)...")
+        print("[Stage 2] Building taxonomic backbone topology and assigning clade ages (root 177.0 Ma)...")
         tree_root = self.otol_client.build_mammal_backbone_topology(pheno_df)
         calibrated_tree = self.calibrator.calibrate_tree(tree_root)
 
@@ -113,7 +113,7 @@ class PhenixPipeline:
             f.write(calibrated_tree.to_newick(include_branch_lengths=True) + ";")
 
         # Patristic matrix D & PCoA eigenmaps
-        print("[Stage 2] Computing patristic evolutionary distance matrix D (3,268 x 3,268)...")
+        print(f"[Stage 2] Computing patristic evolutionary distance matrix D ({N} x {N})...")
         D = self.patristic_engine.compute_patristic_distance_matrix(calibrated_tree, target_taxa)
         patristic_path = self.data_dir / "patristic_distance_matrix.npy"
         np.save(patristic_path, D)
@@ -127,7 +127,7 @@ class PhenixPipeline:
         df_pcoa.to_csv(pcoa_path, index=False)
 
         # Baseline & Whitening
-        print("[Stage 2] Assembling Baseline features (85 vars) & applying Cholesky whitening...")
+        print("[Stage 2] Assembling Baseline features (climate + sequence) & applying Cholesky whitening...")
         df_baseline = self.baseline_builder.construct_baseline_features(
             df_env=env_df, df_genomic=gen_df, target_taxa=target_taxa
         )
@@ -139,7 +139,7 @@ class PhenixPipeline:
         df_whitened.to_csv(whitened_path, index=False)
 
         # PyG Graph & Augmented features
-        print("[Stage 2] Building PyTorch Geometric graph G=(V, E) & Augmented feature set (117 vars)...")
+        print("[Stage 2] Building PyTorch Geometric graph G=(V, E) & Augmented feature set (Baseline + Phylo-PCoA)...")
         graph_dict = self.graph_converter.tree_to_pyg_graph(calibrated_tree, df_baseline)
         graph_path = self.data_dir / "phylo_graph.json"
         with open(graph_path, "w") as f:
@@ -227,7 +227,7 @@ class PhenixPipeline:
 
         return {"status": "SUCCESS", "report": report}
 
-    def run_benchmark(self, random_splits: int = 5) -> Dict[str, Any]:
+    def run_benchmark(self, random_splits: int = 10) -> Dict[str, Any]:
         """Stage 4: Executes 16-permutation benchmark matrix, divergence tracking, and inflation gap."""
         print("\n" + "=" * 70)
         print("STAGE 4: EXPERIMENTAL BENCHMARKING & PERFORMANCE INFLATION ANALYSIS")
@@ -270,6 +270,7 @@ class PhenixPipeline:
             target_trait=self.target_trait,
             tree_graph_dict=tree_graph_dict,
             divergence_tracker=divergence_tracker,
+            patristic_matrix=D,
         )
         benchmark_outputs = runner.run_benchmark(verbose=True)
 
@@ -306,7 +307,7 @@ class PhenixPipeline:
         """Launches the interactive research dashboard."""
         run_dashboard_cli()
 
-    def run_all(self, random_splits: int = 5) -> Dict[str, Any]:
+    def run_all(self, random_splits: int = 10) -> Dict[str, Any]:
         """Runs the entire pipeline end-to-end."""
         print("\n" + "#" * 70)
         print("PHENIX: EXECUTING FULL PIPELINE END-TO-END")
@@ -337,7 +338,7 @@ if __name__ == "__main__":
     parser.add_argument("--d-buffer", type=float, default=140.0, help="Patristic buffer distance (Ma)")
     parser.add_argument("--min-clade-size", type=int, default=50, help="Minimum species in an evaluation clade")
     parser.add_argument("--t-cut", type=float, default=65.0, help="Tree cut depth (Ma)")
-    parser.add_argument("--random-splits", type=int, default=5, help="Number of random CV folds")
+    parser.add_argument("--random-splits", type=int, default=10, help="Number of random CV folds")
     args = parser.parse_args()
 
     pipeline = PhenixPipeline(

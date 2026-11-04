@@ -9,7 +9,7 @@
     3268,
     3268
   ],
-  "baseline_feature_count": 85,
-  "augmented_feature_count": 117,
+  "baseline_feature_count": 38,
+  "augmented_feature_count": 70,
   "architecture_freeze_locked": true
 }

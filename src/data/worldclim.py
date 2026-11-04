@@ -2,7 +2,7 @@ import os
 import zipfile
 import urllib.request
 from pathlib import Path
-from typing import List, Optional, Union, Dict, Any
+from typing import List, Optional, Union, Dict, Any, Tuple
 import numpy as np
 import pandas as pd
 from src.data.schemas import (
@@ -183,6 +183,9 @@ class WorldClimExtractor:
         self.raster_dir = Path(raster_dir) if raster_dir else None
         self.raster_paths: Dict[str, Path] = self._find_rasters() if self.raster_dir else {}
         self._raster_cache: Dict[Path, np.ndarray] = {}
+        # Coordinates where rasters were available but returned no data (e.g. range midpoints at sea),
+        # so values came from approximate_bioclim_from_coords instead
+        self.fallback_coords: List[Tuple[float, float]] = []
 
     def _find_rasters(self) -> Dict[str, Path]:
         if not self.raster_dir or not self.raster_dir.exists():
@@ -198,8 +201,9 @@ class WorldClimExtractor:
                 f"*bio_{num}.tif",
                 f"*bio_{num}_*.tif",
                 f"*wc2.1_*_bio_{num}.tif",
-                f"*elev*.tif",
             ]
+            if var in ("elev", "elevation"):
+                patterns.append("*elev*.tif")
             matches = []
             for pat in patterns:
                 matches.extend(list(self.raster_dir.glob(pat)))
@@ -252,6 +256,8 @@ class WorldClimExtractor:
 
         # Fill missing with physical-geographic bioclimatic approximation
         missing_vars = [v for v in BIOCLIM_VARS if v not in profile or np.isnan(profile[v])]
+        if self.raster_paths and missing_vars:
+            self.fallback_coords.append((lat, lon))
         if missing_vars or "elevation" not in profile:
             synthetic_vals = approximate_bioclim_from_coords(
                 lat=lat, lon=lon, elevation=elevation or profile.get("elevation")
@@ -288,6 +294,14 @@ class WorldClimExtractor:
         """
         validate_occurrence_data(occurrence_df)
 
+        if not self.raster_paths:
+            print(
+                "[WorldClimExtractor] WARNING: no WorldClim rasters found"
+                f"{f' in {self.raster_dir}' if self.raster_dir else ''}; ALL bioclimatic values will be "
+                "approximated from latitude/longitude, not measured."
+            )
+
+        n_fallback_before = len(self.fallback_coords)
         extracted_rows = []
         for _, row in occurrence_df.iterrows():
             taxon = row[ID_COL]
@@ -300,6 +314,14 @@ class WorldClimExtractor:
             extracted_rows.append(env_profile)
 
         raw_env_df = pd.DataFrame(extracted_rows)
+
+        n_fallback = len(self.fallback_coords) - n_fallback_before
+        if n_fallback:
+            print(
+                f"[WorldClimExtractor] WARNING: {n_fallback}/{len(occurrence_df)} coordinates had no raster data "
+                "(even within a 5x5 cell window) and used the lat/lon approximation instead. "
+                "Inspect extractor.fallback_coords for the affected points."
+            )
 
         # Numeric columns to aggregate
         numeric_cols = BIOCLIM_VARS + (["elevation", "habitat_suitability"] if include_habitat else [])

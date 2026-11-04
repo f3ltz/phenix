@@ -1,18 +1,25 @@
 """
-Fetches real mammalian molecular sequences from NCBI GenBank,
-extracts genuine biological features (GC content, codon usage, amino acid composition),
-and updates genomic_clean.csv with real molecular biology data.
+Fetches one real mitochondrial cytochrome b (CYTB) sequence per species from NCBI GenBank,
+extracts sequence-composition features (nucleotide, dinucleotide, amino acid composition and
+simple biochemical scores), and writes them to genomic_clean.csv as gen_seq_pc_* columns.
+
+These are composition features of a single gene, not ESM-2 embeddings or SNP genotypes.
+Species without a sequence are flagged with gen_has_sequence = 0.
+
+Run from the repository root:  python -m scripts.fetch_real_genomics
 """
 
 import urllib.request
 import urllib.parse
 import json
-import re
+import time
 from pathlib import Path
+from typing import Dict, Optional
 import numpy as np
 import pandas as pd
 from sklearn.decomposition import PCA
-from src.data.schemas import ID_COL, normalize_taxon_id
+from sklearn.preprocessing import StandardScaler
+from src.data.schemas import ID_COL
 
 # Vertebrate mitochondrial genetic code (NCBI translation table 2)
 # Translates codons to amino acids
@@ -87,172 +94,131 @@ def extract_real_sequence_features(seq: str) -> Dict[str, float]:
 
     return feats
 
+
+ESEARCH_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
+EFETCH_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi"
+NCBI_TOOL_PARAMS = {"tool": "phenix"}
+# NCBI allows ~3 requests/second without an API key
+NCBI_REQUEST_INTERVAL_S = 0.34
+N_SEQUENCE_COMPONENTS = 16
+
+
+def _ncbi_get(url: str, params: Dict[str, str], timeout: int = 30, retries: int = 3) -> str:
+    query = urllib.parse.urlencode({**params, **NCBI_TOOL_PARAMS})
+    req = urllib.request.Request(f"{url}?{query}", headers={"User-Agent": "Phenix/1.0"})
+    for attempt in range(retries):
+        try:
+            time.sleep(NCBI_REQUEST_INTERVAL_S)
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                return resp.read().decode("utf-8", errors="ignore")
+        except Exception as e:
+            if attempt == retries - 1:
+                raise
+            print(f"  NCBI request failed ({e}); retrying...")
+            time.sleep(2.0 * (attempt + 1))
+    return ""
+
+
+def find_cytb_accession(binomial: str) -> Optional[str]:
+    """Returns the GenBank accession.version of one full-length cytochrome b record for a species, if any."""
+    term = f'"{binomial}"[Organism] AND (CYTB[Gene] OR "cytochrome b"[Gene]) AND 1000:1300[Sequence Length]'
+    data = json.loads(_ncbi_get(ESEARCH_URL, {"db": "nuccore", "term": term, "retmax": "1", "retmode": "json", "idtype": "acc"}))
+    ids = data.get("esearchresult", {}).get("idlist", [])
+    return ids[0] if ids else None
+
+
+def parse_fasta(text: str) -> Dict[str, str]:
+    """Parses FASTA text into {header: sequence}."""
+    records: Dict[str, str] = {}
+    for entry in text.split(">"):
+        if not entry.strip():
+            continue
+        lines = entry.strip().splitlines()
+        records[lines[0].strip()] = "".join(l.strip() for l in lines[1:])
+    return records
+
+
 def fetch_and_build_real_genomics():
     genomic_dir = Path("data/raw/genomic")
     genomic_dir.mkdir(parents=True, exist_ok=True)
     fasta_file = genomic_dir / "mammalian_cytb_ncbi.fasta"
+    accession_file = genomic_dir / "cytb_accessions.json"
 
-    # Load target 3,268 species
     pheno = pd.read_csv("data/processed/phenotypic_clean.csv")
-    target_species = pheno[["canonical_taxon_id", "species", "order", "family", "genus"]].copy()
-    target_taxa_set = set(target_species["canonical_taxon_id"].values)
+    taxa = pheno[ID_COL].tolist()
 
-    species_seqs = {}
+    # 1. Resolve one cytochrome b record per species (resumable: cached lookups are reused)
+    accessions: Dict[str, Optional[str]] = {}
+    if accession_file.exists():
+        accessions = json.loads(accession_file.read_text())
 
-    # If already downloaded, parse from local file
-    if fasta_file.exists() and fasta_file.stat().st_size > 10000:
-        print(f"Reading existing cached FASTA: {fasta_file} ({fasta_file.stat().st_size} bytes)...")
-        with open(fasta_file, "r", encoding="utf-8", errors="ignore") as f:
-            current_header = None
-            current_seq = []
-            for line in f:
-                line = line.strip()
-                if line.startswith(">"):
-                    if current_header and current_seq:
-                        seq_str = "".join(current_seq)
-                        # Extract binomial name
-                        match = re.search(r'>\S+\s+([A-Z][a-z]+\s+[a-z]+)', current_header)
-                        if match:
-                            sp_id = normalize_taxon_id(match.group(1))
-                            if sp_id in target_taxa_set and sp_id not in species_seqs:
-                                species_seqs[sp_id] = seq_str
-                    current_header = line
-                    current_seq = []
-                else:
-                    current_seq.append(line)
-            if current_header and current_seq:
-                match = re.search(r'>\S+\s+([A-Z][a-z]+\s+[a-z]+)', current_header)
-                if match:
-                    sp_id = normalize_taxon_id(match.group(1))
-                    if sp_id in target_taxa_set and sp_id not in species_seqs:
-                        species_seqs[sp_id] = "".join(current_seq)
-        print(f"Loaded {len(species_seqs)} real species sequences from cached FASTA.")
+    pending = [(row[ID_COL], row["species"]) for _, row in pheno.iterrows() if row[ID_COL] not in accessions]
+    if pending:
+        print(f"Searching NCBI for cytochrome b of {len(pending)} species (cached: {len(accessions)})...")
+    for i, (taxon_id, binomial) in enumerate(pending):
+        accessions[taxon_id] = find_cytb_accession(str(binomial))
+        if (i + 1) % 100 == 0 or i + 1 == len(pending):
+            accession_file.write_text(json.dumps(accessions, indent=1))
+            found = sum(1 for v in accessions.values() if v)
+            print(f"  searched {len(accessions)}/{len(taxa)} species, {found} with a sequence")
 
-    # Fetch from NCBI if needed
-    if len(species_seqs) < 150:
-        print("Querying NCBI Entrez for mammalian cytochrome b sequences...")
-        query = 'Mammalia[Organism] AND CYTB[Gene] AND 1100:1200[Sequence Length]'
-        url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=nuccore&term=' + urllib.parse.quote(query) + '&retmax=400&retmode=json'
-        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Phenix/1.0; mailto:phenix@nitk.edu.in)'})
-        with urllib.request.urlopen(req, timeout=12) as resp:
-            data = json.loads(resp.read().decode('utf-8'))
-            id_list = data['esearchresult']['idlist']
+    # 2. Download the sequences, keyed by our taxon id
+    species_seqs: Dict[str, str] = {}
+    if fasta_file.exists():
+        for header, seq in parse_fasta(fasta_file.read_text(encoding="utf-8", errors="ignore")).items():
+            species_seqs[header.split()[0]] = seq
 
-        print(f"Fetching {len(id_list)} real sequences from NCBI in batches of 100...")
-        all_fasta = []
-        for i in range(0, len(id_list), 100):
-            batch = id_list[i:i+100]
-            fetch_url = f'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={",".join(batch)}&rettype=fasta&retmode=text'
-            req2 = urllib.request.Request(fetch_url, headers={'User-Agent': 'Mozilla/5.0 (Phenix/1.0)'})
-            with urllib.request.urlopen(req2, timeout=20) as resp2:
-                all_fasta.append(resp2.read().decode('utf-8', errors='ignore'))
-
-        full_fasta_text = "\n".join(all_fasta)
+    to_fetch = [(t, acc) for t, acc in accessions.items() if acc and t not in species_seqs]
+    if to_fetch:
+        print(f"Downloading {len(to_fetch)} sequences from NCBI...")
+    for i in range(0, len(to_fetch), 200):
+        batch = to_fetch[i:i + 200]
+        acc_to_taxon = {acc: t for t, acc in batch}
+        fasta_text = _ncbi_get(EFETCH_URL, {"db": "nuccore", "id": ",".join(acc_to_taxon), "rettype": "fasta", "retmode": "text"}, timeout=60)
+        # FASTA headers start with the accession.version we searched for
+        for header, seq in parse_fasta(fasta_text).items():
+            taxon_id = acc_to_taxon.get(header.split()[0])
+            if taxon_id and taxon_id not in species_seqs:
+                species_seqs[taxon_id] = seq
         with open(fasta_file, "w", encoding="utf-8") as f:
-            f.write(full_fasta_text)
-        print(f"Saved real NCBI FASTA to {fasta_file} ({len(full_fasta_text)} characters).")
+            for taxon_id, seq in species_seqs.items():
+                f.write(f">{taxon_id} {accessions.get(taxon_id)}\n{seq}\n")
 
-        # Parse fasta
-        for entry in full_fasta_text.split(">"):
-            if not entry.strip():
-                continue
-            lines = entry.strip().splitlines()
-            header = lines[0]
-            seq_str = "".join(lines[1:]).strip()
-            match = re.search(r'([A-Z][a-z]+\s+[a-z]+)', header)
-            if match:
-                sp_id = normalize_taxon_id(match.group(1))
-                if sp_id in target_taxa_set and sp_id not in species_seqs:
-                    species_seqs[sp_id] = seq_str
+    print(f"Species with a real cytochrome b sequence: {len(species_seqs)} / {len(taxa)}")
+    if not species_seqs:
+        raise RuntimeError("No sequences matched; cannot build genomic features.")
 
-    print(f"Total target species directly matched to real NCBI sequences: {len(species_seqs)}")
+    # 3. Sequence features for sequenced species only. Unsequenced species are NOT filled with
+    #    genus/family/order averages: that would inject taxonomy into the non-phylogenetic
+    #    Baseline feature set. They get the sequenced-species mean (0 after scaling) and a
+    #    gen_has_sequence = 0 flag instead.
+    feature_keys = sorted(extract_real_sequence_features("ATG").keys())
+    has_seq = np.array([t in species_seqs for t in taxa])
+    raw = np.array(
+        [[extract_real_sequence_features(species_seqs[t])[k] for k in feature_keys] for t in taxa if t in species_seqs],
+        dtype=np.float64,
+    )
 
-    # Extract real features for matched species
-    species_feature_map = {}
-    for sp_id, seq in species_seqs.items():
-        species_feature_map[sp_id] = extract_real_sequence_features(seq)
+    scaler = StandardScaler()
+    raw_scaled = scaler.fit_transform(raw)
+    n_comp = min(N_SEQUENCE_COMPONENTS, raw_scaled.shape[1], raw_scaled.shape[0])
+    pca = PCA(n_components=n_comp, random_state=42)
+    seq_pcs = pca.fit_transform(raw_scaled)
 
-    # For phylogenetic sister imputation of unsequenced species:
-    # Group by genus, then by family, then by order to compute biological lineage averages
-    target_species["has_real_seq"] = target_species["canonical_taxon_id"].isin(species_feature_map)
+    features = np.zeros((len(taxa), n_comp), dtype=np.float64)
+    features[has_seq] = seq_pcs
 
-    # Assemble feature matrix for all 3,268 species
-    # Feature keys
-    feature_keys = sorted(list(next(iter(species_feature_map.values())).keys()))
-
-    # Build reference genus/family/order mean feature profiles
-    genus_profiles = {}
-    family_profiles = {}
-    order_profiles = {}
-
-    for sp_id, feats in species_feature_map.items():
-        row = target_species[target_species["canonical_taxon_id"] == sp_id].iloc[0]
-        gen = row["genus"]
-        fam = row["family"]
-        ord_ = row["order"]
-
-        if gen not in genus_profiles: genus_profiles[gen] = []
-        genus_profiles[gen].append([feats[k] for k in feature_keys])
-
-        if fam not in family_profiles: family_profiles[fam] = []
-        family_profiles[fam].append([feats[k] for k in feature_keys])
-
-        if ord_ not in order_profiles: order_profiles[ord_] = []
-        order_profiles[ord_].append([feats[k] for k in feature_keys])
-
-    genus_means = {g: np.mean(v, axis=0) for g, v in genus_profiles.items()}
-    family_means = {f: np.mean(v, axis=0) for f, v in family_profiles.items()}
-    order_means = {o: np.mean(v, axis=0) for o, v in order_profiles.items()}
-    global_mean = np.mean(list(genus_means.values()), axis=0)
-
-    # Populate all 3,268 species
-    rows = []
-    for _, sp_row in target_species.iterrows():
-        sp_id = sp_row["canonical_taxon_id"]
-        gen = sp_row["genus"]
-        fam = sp_row["family"]
-        ord_ = sp_row["order"]
-
-        if sp_id in species_feature_map:
-            vec = np.array([species_feature_map[sp_id][k] for k in feature_keys])
-        elif gen in genus_means:
-            vec = genus_means[gen]
-        elif fam in family_means:
-            vec = family_means[fam]
-        elif ord_ in order_means:
-            vec = order_means[ord_]
-        else:
-            vec = global_mean
-
-        rows.append(vec)
-
-    raw_features = np.array(rows, dtype=np.float32)
-
-    # Reduce / project to exactly 64 standardized genomic columns:
-    # 32 esm2_dim, 16 snp_dim, 16 func_dim
-    # This guarantees 100% backwards compatibility with all models and sync barriers!
-    pca_esm = PCA(n_components=32, random_state=42)
-    esm_feats = pca_esm.fit_transform(raw_features)
-
-    # Add nucleotide / dinucleotide specific PCs as SNP dims
-    pca_snp = PCA(n_components=16, random_state=42)
-    snp_feats = pca_snp.fit_transform(raw_features[:, :17]) # nucleotide & dinuc features
-
-    # Add amino acid / biochemical scores as func dims
-    pca_func = PCA(n_components=16, random_state=42)
-    func_feats = pca_func.fit_transform(raw_features[:, 17:]) # amino acid & biochemical
-
-    out_df = pd.DataFrame({ID_COL: target_species["canonical_taxon_id"]})
-    for i in range(32):
-        out_df[f"esm2_dim_{i+1}"] = esm_feats[:, i]
-    for i in range(16):
-        out_df[f"snp_dim_{i+1}"] = snp_feats[:, i]
-    for i in range(16):
-        out_df[f"func_dim_{i+1}"] = func_feats[:, i]
+    out_df = pd.DataFrame({ID_COL: taxa})
+    for i in range(n_comp):
+        out_df[f"gen_seq_pc_{i+1}"] = features[:, i]
+    out_df["gen_has_sequence"] = has_seq.astype(np.float64)
 
     out_path = Path("data/processed/genomic_clean.csv")
     out_df.to_csv(out_path, index=False)
-    print(f"SUCCESS: Saved real biological genomic feature table to {out_path} ({out_df.shape})")
+    print(
+        f"SUCCESS: Saved cytochrome b sequence features to {out_path} {out_df.shape} "
+        f"({has_seq.mean():.1%} of species sequenced, {pca.explained_variance_ratio_.sum():.1%} variance kept)"
+    )
 
 if __name__ == "__main__":
     fetch_and_build_real_genomics()

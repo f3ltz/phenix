@@ -82,4 +82,7 @@ def test_stage_5_artifacts_exist():
     with open(var_path) as f:
         var_data = json.load(f)
     assert "random_forest_nonlinear_partitioning" in var_data
-    assert var_data["random_forest_nonlinear_partitioning"]["pure_phylogenetic"] > 0.8
+    rf_parts = var_data["random_forest_nonlinear_partitioning"]
+    assert rf_parts["R2_total"] > 0.8
+    # Phylogeny is the largest unique component (real sequence features share part of its variance)
+    assert rf_parts["pure_phylogenetic"] > max(rf_parts["pure_environmental"], rf_parts["pure_genomic"])

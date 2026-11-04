@@ -134,7 +134,8 @@ class ProteomicMutationGenerator:
         Preserves canonical_taxon_id and feature column definitions.
         """
         df_mutated = df_genomic.copy()
-        feature_cols = [c for c in df_mutated.columns if c != ID_COL]
+        # Indicator columns (e.g. gen_has_sequence) are not sequence coordinates and must not drift
+        feature_cols = [c for c in df_mutated.columns if c != ID_COL and not c.startswith("gen_has_")]
 
         dt = float(years_forward_ma)
         std = float(drift_rate * np.sqrt(max(dt, 1e-4)))
