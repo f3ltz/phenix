@@ -1,7 +1,8 @@
 # Resolving Felsenstein’s Dilemma in Phenomics: Continuous Spectral Timetree Manifolds Establish the Predictability Frontier of Organismal Traits
 
-**Authors:** The PHENIX Consortium (Computational Biology & Evolutionary Machine Learning Group)  
-**Target Venues:** ACM-BCB / ISMB (*Bioinformatics* Track) / Pacific Symposium on Biocomputing (PSB)  
+**Authors:** Asrith Singampalli$^1$, Samruddhi Deshpande$^1$, Akshith Vinu$^1$, A. V. Narasimhadhan$^{1\ddagger}$  
+**Affiliation:** $^1$Department of Electronics and Communication Engineering, National Institute of Technology Karnataka (NITK), Surathkal, Mangalore, India  
+**Correspondence:** `{asrith.211ec109, samruddhi.211ec143, akshith.211ec105}@nitk.edu.in, narasimhadhan@nitk.edu.in` ($^\ddagger$Corresponding author)  
 **Repository & Reproducibility:** https://github.com/phenix-project/phenix  
 **Artifact Integrity:** Audited via Automated Deterministic Verification Protocols | 67 Passing Unit Tests  
 
