@@ -8,10 +8,51 @@ import os
 import re
 import subprocess
 from pathlib import Path
+import latex2mathml.converter
+
+def convert_all_math_to_mathml(html_str: str) -> str:
+    """Replaces all Pandoc math spans with server-side rendered native MathML."""
+    def repl_display(m):
+        raw = m.group(1).strip()
+        if raw.startswith(r"\[") and raw.endswith(r"\]"):
+            raw = raw[2:-2].strip()
+        elif raw.startswith("$$") and raw.endswith("$$"):
+            raw = raw[2:-2].strip()
+        raw = raw.replace(r"\backslash", "")
+        raw = raw.replace(r"\overline", r"\bar")
+        try:
+            mathml = latex2mathml.converter.convert(raw, display="block")
+            return f'<div class="ieee-math-display">{mathml}</div>'
+        except Exception:
+            clean_tex = re.sub(r'\\text\{([^}]+)\}', r'\1', raw)
+            try:
+                mathml = latex2mathml.converter.convert(clean_tex, display="block")
+                return f'<div class="ieee-math-display">{mathml}</div>'
+            except Exception:
+                return f'<div class="ieee-math-display"><em>{raw}</em></div>'
+
+    def repl_inline(m):
+        raw = m.group(1).strip()
+        if raw.startswith("$") and raw.endswith("$"):
+            raw = raw[1:-1].strip()
+        raw = raw.replace(r"\backslash", "")
+        raw = raw.replace(r"\overline", r"\bar")
+        try:
+            return latex2mathml.converter.convert(raw, display="inline")
+        except Exception:
+            clean_tex = re.sub(r'\\text\{([^}]+)\}', r'\1', raw)
+            try:
+                return latex2mathml.converter.convert(clean_tex, display="inline")
+            except Exception:
+                return f'<em>{raw}</em>'
+
+    html_str = re.sub(r'<span class="math display">(.*?)</span>', repl_display, html_str, flags=re.DOTALL)
+    html_str = re.sub(r'<span class="math inline">(.*?)</span>', repl_inline, html_str, flags=re.DOTALL)
+    return html_str
 
 def generate_ieee_html():
     raw_html_path = Path("raw_content.html")
-    # Generate raw HTML using pandoc
+    # Generate raw HTML using pandoc without katex
     cmd = [
         "pandoc",
         "manuscript.md",
@@ -19,8 +60,7 @@ def generate_ieee_html():
         "-o",
         str(raw_html_path),
         "--citeproc",
-        "--bibliography=references.bib",
-        "--math-method=katex"
+        "--bibliography=references.bib"
     ]
     subprocess.run(cmd, check=True)
 
@@ -53,6 +93,10 @@ def generate_ieee_html():
     if kw_match:
         keywords_text = kw_match.group(1)
         content = content.replace(kw_match.group(0), "")
+
+    # Convert all math to native MathML
+    content = convert_all_math_to_mathml(content)
+    abstract_text = convert_all_math_to_mathml(abstract_text)
 
     # Clean up Figure 1 ascii box art
     content = re.sub(r"<pre><code>.*?\[High-Dimensional.*?</pre>", "", content, flags=re.DOTALL)
@@ -110,8 +154,6 @@ def generate_ieee_html():
 <head>
 <meta charset="utf-8">
 <title>Resolving Felsenstein's Dilemma in Phenomics</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
 <style>
 @page {{
     size: letter;

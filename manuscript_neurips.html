@@ -1,0 +1,2263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Resolving Felsenstein's Dilemma in Phenomics</title>
+<style>
+@page {
+    size: letter;
+    margin: 1.25in 1.5in 1.25in 1.5in;
+    @bottom-center {
+        content: counter(page);
+        font-family: "Times New Roman", Times, serif;
+        font-size: 10pt;
+    }
+}
+
+body {
+    font-family: "Times New Roman", Times, "Nimbus Roman No9 L", serif;
+    font-size: 10pt;
+    line-height: 1.38;
+    color: #000000;
+    background-color: #ffffff;
+    max-width: 5.5in;
+    margin: 0 auto;
+    text-align: justify;
+    text-justify: inter-word;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* NeurIPS Review / Preprint Banner */
+.neurips-banner {
+    border-top: 1px solid #000000;
+    border-bottom: 1px solid #000000;
+    padding: 3px 0;
+    margin-bottom: 24pt;
+    text-align: center;
+    font-size: 8.5pt;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+/* Title and Authors */
+.paper-title {
+    font-size: 16pt;
+    font-weight: bold;
+    text-align: center;
+    line-height: 1.22;
+    margin-bottom: 16pt;
+    letter-spacing: -0.2px;
+}
+
+.author-block {
+    text-align: center;
+    font-size: 10pt;
+    margin-bottom: 18pt;
+    line-height: 1.3;
+}
+
+.author-names {
+    font-weight: bold;
+    font-size: 10pt;
+    margin-bottom: 2pt;
+}
+
+.author-inst {
+    font-size: 9pt;
+    color: #222222;
+}
+
+.author-email {
+    font-size: 9pt;
+    font-family: "Courier New", Courier, monospace;
+    margin-top: 2pt;
+}
+
+/* Abstract Block */
+.abstract-block {
+    margin: 16pt 24pt 24pt 24pt;
+    font-size: 9pt;
+    line-height: 1.34;
+}
+
+.abstract-heading {
+    text-align: center;
+    font-size: 10pt;
+    font-weight: bold;
+    margin-bottom: 6pt;
+    letter-spacing: 0.2px;
+}
+
+.keywords-block {
+    margin-top: 8pt;
+    font-size: 8.5pt;
+}
+
+/* Headings */
+h2.neurips-h1 {
+    font-size: 11.5pt;
+    font-weight: bold;
+    margin-top: 18pt;
+    margin-bottom: 6pt;
+    border-bottom: none;
+    break-after: avoid;
+    letter-spacing: -0.1px;
+}
+
+h3.neurips-h2 {
+    font-size: 10pt;
+    font-weight: bold;
+    margin-top: 13pt;
+    margin-bottom: 4pt;
+    break-after: avoid;
+}
+
+.sec-num {
+    font-weight: bold;
+    margin-right: 4px;
+}
+
+/* Paragraphs */
+p {
+    margin-top: 0;
+    margin-bottom: 6pt;
+}
+
+/* MathML Display Styling */
+.neurips-math-display {
+    text-align: center;
+    margin: 10pt 0;
+    overflow-x: auto;
+    break-inside: avoid;
+}
+
+math {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 10pt;
+}
+
+math[display="block"] {
+    font-size: 10.5pt;
+}
+
+/* Booktabs Table Styling */
+.neurips-table-wrap {
+    margin: 14pt 0;
+    break-inside: avoid;
+    width: 100%;
+}
+
+.neurips-table-title {
+    font-size: 9pt;
+    font-weight: bold;
+    margin-bottom: 2pt;
+    text-align: left;
+    break-after: avoid;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8pt;
+    line-height: 1.25;
+    margin: 4pt 0 8pt 0;
+    border-top: 1.5pt solid #000000;
+    border-bottom: 1.5pt solid #000000;
+}
+
+thead tr {
+    border-bottom: 0.75pt solid #000000;
+}
+
+th {
+    font-weight: bold;
+    padding: 3.5pt 4pt;
+    text-align: left;
+    vertical-align: bottom;
+    background-color: transparent;
+    border-top: none;
+    border-bottom: none;
+    border-left: none;
+    border-right: none;
+}
+
+th:nth-child(n+4) {
+    text-align: center;
+}
+
+td {
+    padding: 3.2pt 4pt;
+    vertical-align: top;
+    border-top: none;
+    border-bottom: none;
+    border-left: none;
+    border-right: none;
+}
+
+td:nth-child(n+4) {
+    text-align: center;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #fbfbfb;
+}
+
+/* Figures */
+.neurips-figure {
+    margin: 16pt 0;
+    text-align: center;
+    break-inside: avoid;
+    width: 100%;
+}
+
+.figure-img-wrap img {
+    width: 100%;
+    max-width: 5.5in;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    border: 1px solid #e0e0e0;
+}
+
+.figure-caption {
+    font-size: 8.5pt;
+    line-height: 1.3;
+    margin-top: 6pt;
+    text-align: justify;
+    color: #222222;
+}
+
+/* Lists */
+ul, ol {
+    margin-top: 2pt;
+    margin-bottom: 6pt;
+    padding-left: 18pt;
+}
+
+li {
+    margin-bottom: 2pt;
+}
+
+/* References */
+#references, .references {
+    font-size: 8.5pt;
+    line-height: 1.25;
+}
+
+#refs div {
+    margin-bottom: 4pt;
+    padding-left: 1.8em;
+    text-indent: -1.8em;
+}
+
+/* Code spans */
+code {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 8.5pt;
+    background-color: #f6f6f6;
+    padding: 1px 3px;
+}
+</style>
+</head>
+<body>
+
+<div class="neurips-banner">Preprint. Under review at NeurIPS / Top-Tier Conference</div>
+
+<div class="paper-title">Resolving Felsenstein's Dilemma in Phenomics: Continuous Spectral Timetree Manifolds Establish the Predictability Frontier of Organismal Traits</div>
+
+<div class="author-block">
+    <div class="author-names">The PHENIX Consortium</div>
+    <div class="author-inst">Computational Biology and Evolutionary Machine Learning Group</div>
+    <div class="author-email">contact@phenix-project.org</div>
+</div>
+
+<div class="abstract-block">
+    <div class="abstract-heading">Abstract</div>
+    <p>Machine learning models applied to biodiversity, macroecology, and
+comparative phenomics increasingly report exceptional accuracy
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>R</mi><mn>2</mn></msup><mo>&gt;</mo><mn>0.85</mn></mrow><annotation encoding="application/x-tex">R^2 &gt; 0.85</annotation></semantics></math>)
+in predicting organismal life-history traits from geospatial
+bioclimatics and protein sequence embeddings. Here, we demonstrate that
+these performance metrics are fundamentally inflated by <strong>clade
+leakage</strong> caused by naive random cross-validation, an acute
+re-emergence of <strong>Felsenstein’s Dilemma (1985)</strong> at
+foundation-model scale. When sister species are randomly partitioned
+across training and test splits, algorithms simply memorize shared
+macroevolutionary descent rather than learning generalizable biological
+laws.</p>
+    <div class="keywords-block"><strong>Keywords:</strong> Computational Biology, Comparative
+Methods, Felsenstein’s Dilemma, Clade Leakage, Phylo-PCoA, Geometric
+Machine Learning, Protein Language Models, Out-of-Distribution
+Generalization.</div>
+</div>
+
+
+
+
+
+
+<p>To resolve this crisis, we introduce <strong>PHENIX</strong>, a
+mathematically audited computational framework evaluated on a
+harmonized, zero-missing-value dataset of <strong>3,268 mammalian
+species across 27 orders</strong>. PHENIX bridges macroevolutionary
+time, planetary bioclimatic rasters, and foundation protein language
+embeddings through three core innovations: (1) regularized Cholesky
+feature whitening
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi mathvariant="normal">Σ</mi><mtext mathvariant="normal">reg</mtext></msub><mo>=</mo><mi>L</mi><msup><mi>L</mi><mi>T</mi></msup></mrow><annotation encoding="application/x-tex">\Sigma_{\text{reg}} = L L^T</annotation></semantics></math>)
+that completely decouples collinear planetary climate rasters
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">Cov</mtext><mo stretchy="false" form="prefix">(</mo><msup><mi>Z</mi><mo>*</mo></msup><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>I</mi></mrow><annotation encoding="application/x-tex">\text{Cov}(Z^*) = I</annotation></semantics></math>);
+(2) spectral decomposition of TimeTree-calibrated ultrametric timetrees
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>177.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">177.0\text{ Ma}</annotation></semantics></math>
+root) via Gower’s double-centering, yielding <strong>32 continuous
+Phylo-PCoA spatial eigenmaps</strong> that capture
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>89.98</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">89.98\%</annotation></semantics></math>
+of total phylogenetic metric space variance; and (3) a macroevolutionary
+validation engine enforcing out-of-clade monophyletic withholding
+quarantined by a
+<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>140.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">140.0\text{ Ma}</annotation></semantics></math>
+patristic buffer</strong>.</p>
+<p>Across a systematic 16-configuration benchmark matrix, we discover
+the <strong>Performance Inflation Gap
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><msubsup><mi>R</mi><mtext mathvariant="normal">pooled</mtext><mn>2</mn></msubsup><mo>≈</mo><mi>+</mi><mn>1.25</mn></mrow><annotation encoding="application/x-tex">\Delta R^2_{\text{pooled}} \approx +1.25</annotation></semantics></math>
+to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>+</mi><mn>1.48</mn></mrow><annotation encoding="application/x-tex">+1.48</annotation></semantics></math>
+for tree ensembles, up to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>+</mi><mn>57.2</mn></mrow><annotation encoding="application/x-tex">+57.2</annotation></semantics></math>
+for unbounded linear models)</strong>: while gradient-boosted trees and
+random forests equipped with 32 Phylo-PCoA eigenmaps achieve
+state-of-the-art within-clade imputation
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>R</mi><mtext mathvariant="normal">pooled</mtext><mn>2</mn></msubsup><mo>=</mo><mn>0.856</mn></mrow><annotation encoding="application/x-tex">R^2_{\text{pooled}} = 0.856</annotation></semantics></math>
+to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.861</mn><annotation encoding="application/x-tex">0.861</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">MAE</mtext><mo>=</mo><mn>0.322</mn></mrow><annotation encoding="application/x-tex">\text{MAE} = 0.322</annotation></semantics></math>,
+predicting body mass within an average factor of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2.10</mn><mo>×</mo></mrow><annotation encoding="application/x-tex">2.10\times</annotation></semantics></math>
+across 8 orders of magnitude), out-of-clade extrapolation collapses
+below zero across all model families
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>R</mi><mtext mathvariant="normal">pooled</mtext><mn>2</mn></msubsup><mo>&lt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">R^2_{\text{pooled}} &lt; 0</annotation></semantics></math>),
+revealing an intrinsic <strong>Coordinate Support Boundary</strong>.
+Evaluating post-hoc model residuals proves that adding Phylo-PCoA
+reduces residual phylogenetic autocorrelation (Blomberg’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>)
+by
+<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>85.9</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">85.9\%</annotation></semantics></math></strong>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2.001</mn><mo>→</mo><mn>0.281</mn></mrow><annotation encoding="application/x-tex">2.001 \to 0.281</annotation></semantics></math>)
+during interpolation, whereas residuals rebound to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>&gt;</mo><mn>2.0</mn></mrow><annotation encoding="application/x-tex">K &gt; 2.0</annotation></semantics></math>
+under out-of-clade extrapolation, mathematically proving that
+out-of-clade failure represents structured historical contingency rather
+than stochastic noise. Finally, non-linear variance partitioning reveals
+that
+<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>86.93</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">86.93\%</annotation></semantics></math></strong>
+of predictable mammalian body mass variation is pure phylogenetic
+inertia, while ambient macroclimate explains
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mn>0.1</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">&lt;0.1\%</annotation></semantics></math>
+independently. We propose the <strong>Dual-Protocol Reporting
+Standard</strong>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>R</mi><mtext mathvariant="normal">impute</mtext><mn>2</mn></msubsup><annotation encoding="application/x-tex">R^2_{\text{impute}}</annotation></semantics></math>
+vs. <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>R</mi><mtext mathvariant="normal">extrap</mtext><mn>2</mn></msubsup><annotation encoding="application/x-tex">R^2_{\text{extrap}}</annotation></semantics></math>)
+as an essential benchmark prerequisite for all future cross-species
+predictive modeling.</p>
+
+
+<h2 class="neurips-h1"><span class="sec-num">1</span> Introduction</h2>
+<p>The integration of high-capacity machine learning algorithms into
+ecological genomics, biodiversity conservation, and comparative
+phenomics has catalyzed a surge in trait prediction studies [1, 2].
+Modern predictive pipelines routinely train gradient-boosted decision
+trees, random forests, and deep graph neural networks to predict missing
+morphological, physiological, and life-history attributes across
+thousands of organismal taxa [3, 4]. Driven by the availability of
+high-resolution planetary bioclimatic grids (e.g., WorldClim v2.1 [5])
+and deep transformer-based protein language models (e.g., Meta’s ESM-2
+[6]), recent publications frequently report test set coefficients of
+determination exceeding
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>R</mi><mn>2</mn></msup><mo>&gt;</mo><mn>0.80</mn></mrow><annotation encoding="application/x-tex">R^2 &gt; 0.80</annotation></semantics></math>
+to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.90</mn><annotation encoding="application/x-tex">0.90</annotation></semantics></math>,
+claiming that machine learning has decrypted the functional mapping
+between environmental selection pressures, proteomic stability, and
+organismal phenotype.</p>
+<p>Here, we demonstrate that these high performance metrics represent a
+dangerous statistical mirage. Standard machine learning workflows
+universally rely on the <strong>independent and identically distributed
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtext mathvariant="normal">i.i.d.</mtext><annotation encoding="application/x-tex">\text{i.i.d.}</annotation></semantics></math>)
+assumption</strong>:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="script">𝒫</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mn>1</mn></msub><mo>,</mo><msub><mi>X</mi><mn>2</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>X</mi><mi>N</mi></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><munderover><mo>∏</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>N</mi></munderover><mi mathvariant="script">𝒫</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mi>i</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathcal{P}(X_1, X_2, \dots, X_N) = \prod_{i=1}^N \mathcal{P}(X_i)</annotation></semantics></math>
+In biological organisms, this assumption is fundamentally false. Living
+species are not independent data points drawn at random from an abstract
+phenotypic space; they are the terminal tips of a single, deeply
+bifurcating evolutionary Tree of Life connected through hundreds of
+millions of years of shared ancestral descent [7]. A lion (<em>Panthera
+leo</em>) and a tiger (<em>Panthera tigris</em>) do not possess similar
+metabolic rates, skeletal architectures, and cranial volumes by
+coincidence; they inherited over
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>95</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">95\%</annotation></semantics></math>
+of their genomic architecture and physiological machinery from a common
+felid ancestor that lived merely a few million years ago.</p>
+<p>When researchers evaluate species trait predictors using standard
+random 10-fold cross-validation or random
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>80</mn><mi>/</mi><mn>20</mn></mrow><annotation encoding="application/x-tex">80/20</annotation></semantics></math>
+train/test splits, sister taxa are randomly scattered across the
+training and evaluation folds. Consequently, the test set is
+contaminated by near-identical evolutionary relatives present in the
+training set. We term this phenomenon <strong>clade leakage</strong>.
+Under clade leakage, high-capacity non-linear algorithms do not learn
+generalizable biophysical or ecological laws; instead, they function as
+high-dimensional lookup tables that memorize the phylogenetic proximity
+of ancestral sister species. This is the modern, high-dimensional
+manifestation of <strong>Felsenstein’s Dilemma (1985)</strong> [8].
+Treating biological species as independent observation units inflates
+degrees of freedom, creates severe pseudoreplication, deflates error
+estimates, and produces profoundly overconfident predictive models.</p>
+<p>While evolutionary biologists have addressed phylogenetic
+non-independence in low-dimensional linear settings through Phylogenetic
+Generalized Least Squares (PGLS) [9] and Independent Contrasts (PIC)
+[8], classical comparative methods cannot scale to modern
+high-dimensional Bio-ML. PGLS requires inverting an
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>×</mo><mi>N</mi></mrow><annotation encoding="application/x-tex">N \times N</annotation></semantics></math>
+phylogenetic covariance matrix
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi mathvariant="normal">Σ</mi><mtext mathvariant="normal">phylo</mtext></msub><annotation encoding="application/x-tex">\Sigma_{\text{phylo}}</annotation></semantics></math>,
+scaling as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="script">𝒪</mi><mo stretchy="false" form="prefix">(</mo><msup><mi>N</mi><mn>3</mn></msup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathcal{O}(N^3)</annotation></semantics></math>,
+and is strictly constrained to linear Gaussian assumptions. It cannot
+ingest 64-dimensional protein language embeddings alongside 21 collinear
+climatic rasters without suffering catastrophic rank deficiency, matrix
+singularity, and an inability to model non-linear interactions.
+Conversely, modern machine learning packages (e.g., XGBoost, PyTorch)
+lack native representations for branching timetree geometries, forcing
+practitioners to either ignore phylogeny entirely or resort to arbitrary
+taxonomic one-hot dummy variables that destroy continuous temporal
+divergence information.</p>
+<p>To resolve this methodological impasse, we present
+<strong>PHENIX</strong> (<em>Phylogenetically Informed Machine Learning
+in Phenotypic Trait Prediction</em>), an open, fully audited
+computational framework. Evaluated on a harmonized dataset of
+<strong>3,268 mammalian species across 27 orders</strong>, PHENIX
+delivers six principal contributions:</p>
+<ol type="1">
+<li><strong>Multimodal Alignment &amp; Feature Decorrelation</strong>:
+We establish a zero-missing-value multimodal harmonization engine
+locking phenotypic life-history traits (PanTHERIA [10]), 19 planetary
+bioclimatic variables (WorldClim v2.1 [5]), and Meta ESM-2 protein
+language embeddings across conserved BUSCO Mammalia orthologs [11]. We
+introduce regularized Cholesky whitening
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi mathvariant="normal">Σ</mi><mtext mathvariant="normal">reg</mtext></msub><mo>=</mo><mi>L</mi><msup><mi>L</mi><mi>T</mi></msup></mrow><annotation encoding="application/x-tex">\Sigma_{\text{reg}} = L L^T</annotation></semantics></math>)
+to completely decorrelate planetary rasters into white-noise feature
+spaces
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">Cov</mtext><mo stretchy="false" form="prefix">(</mo><msup><mi>Z</mi><mo>*</mo></msup><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>I</mi></mrow><annotation encoding="application/x-tex">\text{Cov}(Z^*) = I</annotation></semantics></math>).</li>
+<li><strong>Continuous Spectral Timetree Geometry (Phylo-PCoA)</strong>:
+By applying Gower’s double-centering to a
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>177.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">177.0\text{ Ma}</annotation></semantics></math>
+TimeTree-calibrated ultrametric distance matrix, we extract <strong>32
+orthogonal spatial eigenmaps</strong>. We prove that these 32 dimensions
+capture
+<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>89.98</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">89.98\%</annotation></semantics></math></strong>
+of the total phylogenetic variance of crown Mammalia, providing a
+continuous Euclidean coordinate system that gradient boosting and neural
+networks can natively ingest.</li>
+<li><strong>The Macroevolutionary Validation Engine</strong>: We
+formulate a leakage-free validation engine that combines monophyletic
+taxonomic order withholding
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>≥</mo><mn>50</mn></mrow><annotation encoding="application/x-tex">N \ge 50</annotation></semantics></math>)
+with a
+<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>140.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">140.0\text{ Ma}</annotation></semantics></math>
+patristic quarantine buffer</strong>, mathematically guaranteeing that
+training and test clades satisfy
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow><mi mathvariant="normal">min</mi><mo>&#8289;</mo></mrow><mrow><mi>t</mi><mo>∈</mo><msub><mi mathvariant="script">𝒞</mi><mtext mathvariant="normal">test</mtext></msub></mrow></msub><mi>D</mi><mo stretchy="false" form="prefix">(</mo><mi>s</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>≥</mo><mn>140.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">\min_{t \in \mathcal{C}_{\text{test}}} D(s, t) \ge 140.0\text{ Ma}</annotation></semantics></math>.</li>
+<li><strong>Quantification of the Performance Inflation Gap</strong>:
+Across a 16-configuration benchmark matrix (Ridge, Random Forest,
+XGBoost, PhyloGNN), we demonstrate that naive random cross-validation
+inflates predictive performance by
+<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><msubsup><mi>R</mi><mtext mathvariant="normal">pooled</mtext><mn>2</mn></msubsup><mo>≈</mo><mi>+</mi><mn>1.25</mn></mrow><annotation encoding="application/x-tex">\Delta R^2_{\text{pooled}} \approx +1.25</annotation></semantics></math>
+to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>+</mi><mn>1.48</mn></mrow><annotation encoding="application/x-tex">+1.48</annotation></semantics></math></strong>
+in non-linear models (and up to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>+</mi><mn>57.2</mn></mrow><annotation encoding="application/x-tex">+57.2</annotation></semantics></math>
+in unbounded linear models), while error factors jump from
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2.10</mn><mo>×</mo></mrow><annotation encoding="application/x-tex">2.10\times</annotation></semantics></math>
+to over
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>13.5</mn><mo>×</mo></mrow><annotation encoding="application/x-tex">13.5\times</annotation></semantics></math>.
+While Phylo-PCoA achieves exceptional within-clade imputation accuracy
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>R</mi><mtext mathvariant="normal">pooled</mtext><mn>2</mn></msubsup><mo>=</mo><mn>0.861</mn></mrow><annotation encoding="application/x-tex">R^2_{\text{pooled}} = 0.861</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">MAE</mtext><mo>=</mo><mn>0.322</mn></mrow><annotation encoding="application/x-tex">\text{MAE} = 0.322</annotation></semantics></math>),
+models withheld behind a 140 Ma buffer experience metric collapse
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>R</mi><mtext mathvariant="normal">pooled</mtext><mn>2</mn></msubsup><mo>&lt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">R^2_{\text{pooled}} &lt; 0</annotation></semantics></math>),
+revealing an intrinsic <strong>Coordinate Support
+Boundary</strong>.</li>
+<li><strong>Residual Autocorrelation &amp; Variance
+Partitioning</strong>: By implementing generalized spectral residual
+diagnostics, we prove that adding Phylo-PCoA eliminates
+<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>85.9</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">85.9\%</annotation></semantics></math></strong>
+of phylogenetic autocorrelation in test residuals (reducing Blomberg’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>
+from
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2.001</mn><mo>→</mo><mn>0.281</mn></mrow><annotation encoding="application/x-tex">2.001 \to 0.281</annotation></semantics></math>),
+while non-linear variance partitioning reveals that
+<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>86.93</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">86.93\%</annotation></semantics></math></strong>
+of predictable mammalian body mass variation represents deep-time
+phylogenetic inertia, with contemporary climate contributing
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mn>0.1</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">&lt;0.1\%</annotation></semantics></math>
+independently.</li>
+<li><strong>The Dual-Protocol Reporting Standard</strong>: We provide
+the community with a formalized benchmark standard and an open-source
+pipeline governed by rigorous automated verification gates, establishing
+a principled boundary between within-clade imputation and
+macroevolutionary extrapolation.</li>
+</ol>
+<hr />
+<h2 class="neurips-h1"><span class="sec-num">2</span> Related Work</h2>
+<p>The PHENIX framework synthesizes three foundational intellectual
+lineages that have historically remained disconnected: classical
+phylogenetic comparative methods, spatial and macroecological
+cross-validation, and foundation deep learning on biological graphs.</p>
+<div class="neurips-figure"><div class="figure-img-wrap"><img src="report_assets/fig_sys_overview_bw.png"
+alt="Figure 1: Conceptual quadrant map positioning PHENIX at the nexus of high-dimensional non-linear machine learning and macroevolutionary comparative theory." /></div><div class="figure-caption">Figure 1: Conceptual quadrant map positioning PHENIX at the nexus of
+high-dimensional non-linear machine learning and macroevolutionary
+comparative theory.</div></div>
+<h3 class="neurips-h2"><span class="sec-num">2.1</span> The Non-Independence Dilemma: From Felsenstein to PGLS</h3>
+<p>In his seminal 1985 paper, Joseph Felsenstein demonstrated that
+species cannot be treated as statistically independent draws from an
+underlying distribution [8]. Phenotypic values covary as a function of
+the shared branch length connecting taxa back to their Most Recent
+Common Ancestor (MRCA). Subsequent decades established Phylogenetic
+Generalized Least Squares (PGLS) [9, 12] and Ornstein-Uhlenbeck (OU)
+stabilizing selection models [13] as the gold standard for comparative
+biology. Simultaneously, diagnostic metrics such as Pagel’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math>
+(1999) [14] and Blomberg’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>
+(2003) [15] were developed to quantify the degree of phylogenetic signal
+in continuous traits. However, classical PCM was designed for parameter
+inference (estimating evolutionary rates
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>σ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\sigma^2</annotation></semantics></math>
+or evolutionary correlations
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>β</mi><annotation encoding="application/x-tex">\beta</annotation></semantics></math>),
+not for out-of-fold predictive machine learning. When faced with modern
+high-capacity feature matrices, PGLS collapses under severe
+computational and numerical bottlenecks
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="script">𝒪</mi><mo stretchy="false" form="prefix">(</mo><msup><mi>N</mi><mn>3</mn></msup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathcal{O}(N^3)</annotation></semantics></math>
+inversion of dense covariance matrices).</p>
+<h3 class="neurips-h2"><span class="sec-num">2.2</span> Spatial Eigenvector Maps &amp; Double-Centering in Ecology</h3>
+<p>Parallel to phylogenetic methods, spatial ecologists recognized that
+geographic spatial autocorrelation violates the i.i.d. assumption in
+species distribution modeling. To encode non-Euclidean spatial distances
+into linear models, Borcard and Legendre (2002) introduced Principal
+Coordinates of Neighbor Matrices (PCNM) [16], which was subsequently
+generalized into Moran’s Eigenvector Maps (MEM) by Dray et al. (2006)
+[17]. In evolutionary biology, Diniz-Filho et al. (1998) proposed
+Phylogenetic Eigenvector Regression (PVR) [18], using Gower’s
+double-centering [19] to extract eigenvectors from patristic distance
+matrices. However, PVR was traditionally restricted to low-dimensional
+linear regression on small clades
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>&lt;</mo><mn>200</mn></mrow><annotation encoding="application/x-tex">N &lt; 200</annotation></semantics></math>)
+and was heavily criticized for subjective eigenvector selection [20].
+PHENIX revives and scales Gower’s centering to 3,268 species, proving
+that spectral timetree eigenmaps can serve as continuous orthogonal
+inputs for modern gradient boosting (XGBoost) and random forests without
+linear restrictions.</p>
+<h3 class="neurips-h2"><span class="sec-num">2.3</span> The Cross-Validation Crisis in Ecological &amp; Biological ML</h3>
+<p>In geospatial modeling, Roberts et al. (2017) and Meyer et al. (2018)
+highlighted the catastrophic inflation of cross-validation metrics
+caused by spatial autocorrelation, demonstrating that spatial block
+cross-validation is mandatory to prevent spatial leakage [21, 22].
+Despite these advances in spatial modeling, <strong>phylogenetic
+cross-validation remains virtually absent from mainstream machine
+learning pipelines</strong>. High-profile studies attempting to impute
+missing values in global trait databases (e.g., PanTHERIA [10], TRY
+[23]) continue to evaluate Random Forests and deep neural networks via
+naive random cross-validation. While a few authors have experimented
+with taxonomic group-k-fold splits (e.g., holding out a taxonomic
+family), discrete taxonomic ranks discard continuous divergence time,
+allowing close sister lineages diverged by only a few million years to
+leak across splits. PHENIX solves this problem by introducing the
+continuous <strong>Patristic Quarantine Buffer</strong>.</p>
+<h3 class="neurips-h2"><span class="sec-num">2.4</span> Foundation Models &amp; Geometric Deep Learning in Biology</h3>
+<p>Recent breakthroughs in self-supervised protein language modeling,
+notably Meta’s Evolutionary Scale Modeling (ESM-2; Lin et al. 2023) [6],
+have demonstrated that transformer architectures trained on millions of
+evolutionary protein sequences can infer protein 3D structure and
+functional stability directly from amino-acid sequences without multiple
+sequence alignments. Concurrently, Geometric Deep Learning [24] and
+PyTorch Geometric (PyG) [25] have enabled neural message passing across
+biological graphs. However, the intersection of protein language models,
+geometric graph architectures, and macroevolutionary timetrees has
+remained unbenchmarked under rigorous out-of-clade extrapolation
+regimes.</p>
+<hr />
+<h2 class="neurips-h1"><span class="sec-num">3</span> The PHENIX Framework &amp; Methodology</h2>
+<p>The PHENIX computational architecture comprises four sequential
+stages audited by deterministic quality gates, illustrated in Figure
+2.</p>
+<div class="neurips-figure"><div class="figure-img-wrap"><img src="report_assets/fig_flowchart_bw.png"
+alt="Figure 2: End-to-end technical architecture of the PHENIX framework." /></div><div class="figure-caption">Figure 2: End-to-end technical architecture of the PHENIX
+framework.</div></div>
+<h3 class="neurips-h2"><span class="sec-num">3.1</span> Multimodal Ingestion &amp; Alignment Lock</h3>
+<p>We ingested four primary data streams: 1. <strong>Phenotypic
+Data</strong>: PanTHERIA [10], containing life-history measurements
+across 5,416 mammalian species. The primary target trait evaluated is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mn>10</mn></msub><mo stretchy="false" form="prefix">(</mo><mtext mathvariant="normal">adult_body_mass_g</mtext><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\log_{10}(\text{adult\_body\_mass\_g})</annotation></semantics></math>,
+which varies across 8 orders of magnitude (from a 2g shrew <em>Suncus
+etruscus</em> to a
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1.5</mn><mo>×</mo><msup><mn>10</mn><mn>8</mn></msup></mrow><annotation encoding="application/x-tex">1.5 \times 10^8</annotation></semantics></math>g
+blue whale <em>Balaenoptera musculus</em>). 2. <strong>Geospatial
+Environmental Data</strong>: WorldClim v2.1 global rasters [5] at 30
+arc-second (~1 km) resolution. For each species range centroid, we
+extracted 19 continuous bioclimatic variables
+(<code>bio1</code>–<code>bio19</code>), elevation, and WWF terrestrial
+biome categories. 3. <strong>Functional Genomic Data</strong>: Meta’s
+ESM-2 transformer model (<code>esm2_t33_650M_UR50D</code>) [6] evaluated
+across conserved BUSCO Mammalia single-copy orthologs [11] (yielding 32
+dense sequence embedding dimensions), supplemented with 16 orthologous
+coding-variant principal components derived from cross-species multiple
+sequence alignments of universal protein-coding markers, and 16
+functional metabolic pathway scores. (As detailed in Section 5.3, these
+conserved housekeeping markers are also contrasted with key somatic
+growth and metabolic regulators including <em>IGF1</em>, <em>GHR</em>,
+<em>LCORL</em>, and <em>HMGA2</em>). 4. <strong>Phylogenetic
+Topology</strong>: Crown Mammalia synthetic topologies extracted from
+the Open Tree of Life (OToL v3) [26].</p>
+<p>To guarantee absolute data integrity, the multimodal schema parser
+canonicalizes all species binomials into lowercase snake_case primary
+keys (<code>canonical_taxon_id</code>). The pipeline filters for
+complete observations across coordinates, phylogeny, and body mass,
+yielding <strong>exactly 3,268 species across 27 mammalian
+orders</strong>. Automated schema validation programmatically enforces
+zero missing values, zero NaNs, and complete 1:1 row alignment across
+phenotypic, environmental, and genomic matrices.</p>
+<h3 class="neurips-h2"><span class="sec-num">3.2</span> Feature Decorrelation via Cholesky Whitening</h3>
+<p>Bioclimatic variables exhibit extreme multicollinearity (e.g., Annual
+Mean Temperature <code>bio1</code> correlates with Mean Temperature of
+Warmest Quarter <code>bio10</code> at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>&gt;</mo><mn>0.96</mn></mrow><annotation encoding="application/x-tex">r &gt; 0.96</annotation></semantics></math>).
+High collinearity causes ill-conditioned Hessian matrices during
+gradient descent and destabilizes feature importance. Let
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Z</mi><mo>∈</mo><msup><mi mathvariant="double-struck">ℝ</mi><mrow><mi>N</mi><mo>×</mo><mi>P</mi></mrow></msup></mrow><annotation encoding="application/x-tex">Z \in \mathbb{R}^{N \times P}</annotation></semantics></math>
+be the column-standardized environmental feature matrix
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo>=</mo><mn>21</mn></mrow><annotation encoding="application/x-tex">P = 21</annotation></semantics></math>)
+with sample covariance:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Σ</mi><mo>=</mo><mfrac><mn>1</mn><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow></mfrac><msup><mi>Z</mi><mi>T</mi></msup><mi>Z</mi><mo>∈</mo><msup><mi mathvariant="double-struck">ℝ</mi><mrow><mi>P</mi><mo>×</mo><mi>P</mi></mrow></msup></mrow><annotation encoding="application/x-tex">\Sigma = \frac{1}{N - 1} Z^T Z \in \mathbb{R}^{P \times P}</annotation></semantics></math>
+To guarantee positive definiteness, we apply Tikhonov ridge
+regularization:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi mathvariant="normal">Σ</mi><mtext mathvariant="normal">reg</mtext></msub><mo>=</mo><mi mathvariant="normal">Σ</mi><mo>+</mo><mi>ϵ</mi><mi>I</mi></mrow><annotation encoding="application/x-tex">\Sigma_{\text{reg}} = \Sigma + \epsilon I</annotation></semantics></math>
+with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϵ</mi><mo>=</mo><msup><mn>10</mn><mrow><mi>−</mi><mn>6</mn></mrow></msup></mrow><annotation encoding="application/x-tex">\epsilon = 10^{-6}</annotation></semantics></math>.
+We compute the lower-triangular Cholesky factorization:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi mathvariant="normal">Σ</mi><mtext mathvariant="normal">reg</mtext></msub><mo>=</mo><mi>L</mi><msup><mi>L</mi><mi>T</mi></msup></mrow><annotation encoding="application/x-tex">\Sigma_{\text{reg}} = L L^T</annotation></semantics></math>
+The whitened environmental representation
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>Z</mi><mo>*</mo></msup><annotation encoding="application/x-tex">Z^*</annotation></semantics></math>
+is obtained via triangular forward-substitution:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Z</mi><mo>*</mo></msup><mo>=</mo><mi>Z</mi><mo stretchy="false" form="prefix">(</mo><msup><mi>L</mi><mrow><mi>−</mi><mn>1</mn></mrow></msup><msup><mo stretchy="false" form="postfix">)</mo><mi>T</mi></msup></mrow><annotation encoding="application/x-tex">Z^* = Z (L^{-1})^T</annotation></semantics></math>
+We mathematically prove that the transformed features inhabit an
+isotropic white-noise space:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">Cov</mtext><mo stretchy="false" form="prefix">(</mo><msup><mi>Z</mi><mo>*</mo></msup><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mfrac><mn>1</mn><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow></mfrac><mo stretchy="false" form="prefix">(</mo><msup><mi>Z</mi><mo>*</mo></msup><msup><mo stretchy="false" form="postfix">)</mo><mi>T</mi></msup><msup><mi>Z</mi><mo>*</mo></msup><mo>=</mo><msup><mi>L</mi><mrow><mi>−</mi><mn>1</mn></mrow></msup><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mn>1</mn><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow></mfrac><msup><mi>Z</mi><mi>T</mi></msup><mi>Z</mi><mo stretchy="true" form="postfix">)</mo></mrow><msup><mi>L</mi><mrow><mi>−</mi><mi>T</mi></mrow></msup><mo>=</mo><msup><mi>L</mi><mrow><mi>−</mi><mn>1</mn></mrow></msup><mo stretchy="false" form="prefix">(</mo><mi>L</mi><msup><mi>L</mi><mi>T</mi></msup><mo stretchy="false" form="postfix">)</mo><msup><mi>L</mi><mrow><mi>−</mi><mi>T</mi></mrow></msup><mo>=</mo><mi>I</mi></mrow><annotation encoding="application/x-tex">\text{Cov}(Z^*) = \frac{1}{N - 1} (Z^*)^T Z^* = L^{-1} \left( \frac{1}{N - 1} Z^T Z \right) L^{-T} = L^{-1} (L L^T) L^{-T} = I</annotation></semantics></math>
+Every transformed bioclimatic dimension exhibits unit variance and zero
+pairwise correlation across all 3,268 taxa.</p>
+<h3 class="neurips-h2"><span class="sec-num">3.3</span> Spectral Timetree Geometry &amp; Phylo-PCoA</h3>
+<p>To convert cladistic topology into absolute geological divergence
+time, we calibrated the OToL consensus tree using TimeTree 5 consensus
+divergence ages [27] via the Branch Length Adjuster (BLADJ) algorithm
+[28]. Extant tips are fixed at age
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>0.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">t = 0.0\text{ Ma}</annotation></semantics></math>,
+while the crown ancestor of <em>Mammalia</em> is calibrated to
+<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>177.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">177.0\text{ Ma}</annotation></semantics></math></strong>
+(representing the basal divergence between Monotremata and Theria). Key
+internal calibration anchors include Theria
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>160.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">160.0\text{ Ma}</annotation></semantics></math>),
+Eutheria
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>105.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">105.0\text{ Ma}</annotation></semantics></math>),
+Boreoeutheria
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>96.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">96.0\text{ Ma}</annotation></semantics></math>),
+Euarchontoglires
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>82.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">82.0\text{ Ma}</annotation></semantics></math>),
+and Laurasiatheria
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>79.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">79.0\text{ Ma}</annotation></semantics></math>).
+Intermediate nodes are smoothed evenly between calibrated nodes. The
+resulting chronogram is strictly ultrametric: root-to-tip path length is
+identical
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>177.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">177.0\text{ Ma}</annotation></semantics></math>)
+for all 3,268 tips.</p>
+<p>From the calibrated chronogram, we compute the dense patristic
+distance matrix
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi><mo>∈</mo><msup><mi mathvariant="double-struck">ℝ</mi><mrow><mn>3268</mn><mo>×</mo><mn>3268</mn></mrow></msup></mrow><annotation encoding="application/x-tex">D \in \mathbb{R}^{3268 \times 3268}</annotation></semantics></math>,
+where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>D</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">D_{ij}</annotation></semantics></math>
+represents the total branch length traversing from tip
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
+to their MRCA and back to tip
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>D</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mn>2</mn><mo>⋅</mo><mtext mathvariant="normal">age</mtext><mo stretchy="false" form="prefix">(</mo><mtext mathvariant="normal">MRCA</mtext><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo><mspace width="1.0em"></mspace><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo>≠</mo><mi>j</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mspace width="1.0em"></mspace><msub><mi>D</mi><mrow><mi>i</mi><mi>i</mi></mrow></msub><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">D_{ij} = 2 \cdot \text{age}(\text{MRCA}(i, j)) \quad (i \neq j), \quad D_{ii} = 0</annotation></semantics></math>
+To decompose this non-Euclidean distance metric into continuous
+orthogonal axes, we apply Gower’s double-centering transformation [19]:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>A</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mi>−</mi><mfrac><mn>1</mn><mn>2</mn></mfrac><msubsup><mi>D</mi><mrow><mi>i</mi><mi>j</mi></mrow><mn>2</mn></msubsup><mo>,</mo><mspace width="1.0em"></mspace><mi>B</mi><mo>=</mo><mi>−</mi><mfrac><mn>1</mn><mn>2</mn></mfrac><mi>H</mi><mo stretchy="false" form="prefix">(</mo><msup><mi>D</mi><mrow><mi>∘</mi><mn>2</mn></mrow></msup><mo stretchy="false" form="postfix">)</mo><mi>H</mi><mo>=</mo><mi>H</mi><mi>A</mi><mi>H</mi></mrow><annotation encoding="application/x-tex">A_{ij} = -\frac{1}{2} D_{ij}^2, \quad B = -\frac{1}{2} H (D^{\circ 2}) H = H A H</annotation></semantics></math>
+where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>H</mi><mo>=</mo><mi>I</mi><mo>−</mo><mfrac><mn>1</mn><mi>N</mi></mfrac><mn mathvariant="bold">𝟏</mn><msup><mn mathvariant="bold">𝟏</mn><mi>T</mi></msup></mrow><annotation encoding="application/x-tex">H = I - \frac{1}{N}\mathbf{1}\mathbf{1}^T</annotation></semantics></math>
+is the centering projection matrix. Matrix
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>B</mi><annotation encoding="application/x-tex">B</annotation></semantics></math>
+represents an inner-product similarity matrix with zero row and column
+sums
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mo>∑</mo><mi>j</mi></msub><msub><mi>B</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\sum_j B_{ij} = 0</annotation></semantics></math>).
+We compute the spectral eigendecomposition:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi><mo>=</mo><mi>V</mi><mi mathvariant="normal">Λ</mi><msup><mi>V</mi><mi>T</mi></msup></mrow><annotation encoding="application/x-tex">B = V \Lambda V^T</annotation></semantics></math>
+where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Λ</mi><mo>=</mo><mtext mathvariant="normal">diag</mtext><mo stretchy="false" form="prefix">(</mo><msub><mi>λ</mi><mn>1</mn></msub><mo>,</mo><msub><mi>λ</mi><mn>2</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>λ</mi><mi>N</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Lambda = \text{diag}(\lambda_1, \lambda_2, \dots, \lambda_N)</annotation></semantics></math>
+with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>λ</mi><mn>1</mn></msub><mo>≥</mo><msub><mi>λ</mi><mn>2</mn></msub><mo>≥</mo><mi>…</mi><mo>≥</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\lambda_1 \ge \lambda_2 \ge \dots \ge 0</annotation></semantics></math>,
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>V</mi><annotation encoding="application/x-tex">V</annotation></semantics></math>
+are orthogonal eigenvectors. We extract the top
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>=</mo><mn>32</mn></mrow><annotation encoding="application/x-tex">k = 32</annotation></semantics></math>
+spatial eigenmaps:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>X</mi><mtext mathvariant="normal">pcoa</mtext></msub><mo>=</mo><msub><mi>V</mi><mrow><mo>:</mo><mo>,</mo><mn>1</mn><mo>:</mo><mn>32</mn></mrow></msub><msubsup><mi mathvariant="normal">Λ</mi><mrow><mn>1</mn><mo>:</mo><mn>32</mn></mrow><mrow><mn>1</mn><mi>/</mi><mn>2</mn></mrow></msubsup><mo>∈</mo><msup><mi mathvariant="double-struck">ℝ</mi><mrow><mn>3268</mn><mo>×</mo><mn>32</mn></mrow></msup></mrow><annotation encoding="application/x-tex">X_{\text{pcoa}} = V_{:, 1:32} \Lambda_{1:32}^{1/2} \in \mathbb{R}^{3268 \times 32}</annotation></semantics></math></p>
+<p>To prevent transductive data leakage during cross-validation, the
+eigendecomposition is fit strictly on training taxa
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi mathvariant="script">𝒮</mi><mtext mathvariant="normal">train</mtext></msub><annotation encoding="application/x-tex">\mathcal{S}_{\text{train}}</annotation></semantics></math>,
+and held-out test taxa
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi mathvariant="script">𝒮</mi><mtext mathvariant="normal">test</mtext></msub><annotation encoding="application/x-tex">\mathcal{S}_{\text{test}}</annotation></semantics></math>
+are projected out-of-sample via Gower’s projection:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>X</mi><mtext mathvariant="normal">test</mtext></msub><mo>=</mo><msub><mi>B</mi><mtext mathvariant="normal">test</mtext></msub><msub><mi>V</mi><mi>k</mi></msub><msubsup><mi mathvariant="normal">Λ</mi><mi>k</mi><mrow><mi>−</mi><mn>1</mn><mi>/</mi><mn>2</mn></mrow></msubsup></mrow><annotation encoding="application/x-tex">X_{\text{test}} = B_{\text{test}} V_k \Lambda_k^{-1/2}</annotation></semantics></math>
+where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>B</mi><mtext mathvariant="normal">test</mtext></msub><mo>=</mo><msub><mi>A</mi><mtext mathvariant="normal">test</mtext></msub><mo>−</mo><mn mathvariant="bold">𝟏</mn><msub><mover><mi>A</mi><mo accent="true">‾</mo></mover><mtext mathvariant="normal">col</mtext></msub><mo>−</mo><msub><mtext mathvariant="normal">row_mean</mtext><mtext mathvariant="normal">test</mtext></msub><msup><mn mathvariant="bold">𝟏</mn><mi>T</mi></msup><mo>+</mo><msub><mover><mi>A</mi><mo accent="true">‾</mo></mover><mtext mathvariant="normal">global</mtext></msub></mrow><annotation encoding="application/x-tex">B_{\text{test}} = A_{\text{test}} - \mathbf{1} \bar{A}_{\text{col}} - \text{row\_mean}_{\text{test}} \mathbf{1}^T + \bar{A}_{\text{global}}</annotation></semantics></math>.</p>
+<p><strong>Cumulative Eigenvalue Spectrum Proof</strong>: Spectral
+analysis of matrix
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>B</mi><annotation encoding="application/x-tex">B</annotation></semantics></math>
+reveals 3,267 strictly positive eigenvalues. The top 32 Phylo-PCoA
+eigenmaps capture
+<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>89.98</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">89.98\%</annotation></semantics></math></strong>
+of the total phylogenetic variance of crown Mammalia. The first harmonic
+(<code>phylo_dim_1</code>, explaining
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>57.12</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">57.12\%</annotation></semantics></math>
+of variance) separates deep basal divergences between
+Marsupials/Monotremes and Placental mammals; the second harmonic
+(<code>phylo_dim_2</code>, explaining
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>12.98</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">12.98\%</annotation></semantics></math>)
+cleanly bifurcates Euarchontoglires from Laurasiatheria. Higher
+harmonics (<code>phylo_dim_10</code>–<code>phylo_dim_32</code>) capture
+localized radiations within orders and families. Thus, 32 orthogonal
+dimensions preserve virtually all informative macroevolutionary
+variation while discarding fine-scale tip noise.</p>
+<p>Merging the 85 baseline features (21 environmental + 64 genomic) with
+the 32 Phylo-PCoA eigenmaps yields the <strong>117-dimensional Augmented
+Feature Set</strong>.</p>
+<h3 class="neurips-h2"><span class="sec-num">3.4</span> PyTorch Geometric Graph Architecture &amp; Message-Passing Mechanics</h3>
+<p>To benchmark geometric deep learning against tabular spectral
+eigenmaps, we converted the calibrated timetree into a directed graph
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mi>V</mi><mo>,</mo><mi>E</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">G = (V, E)</annotation></semantics></math>
+using PyTorch Geometric [25]. The graph contains
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">|</mo><mi>V</mi><mo stretchy="false" form="prefix">|</mo><mo>=</mo><mn>3</mn><mo>,</mo><mn>442</mn></mrow><annotation encoding="application/x-tex">|V| = 3,442</annotation></semantics></math>
+nodes
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>3</mn><mo>,</mo><mn>268</mn></mrow><annotation encoding="application/x-tex">3,268</annotation></semantics></math>
+extant leaf tips and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>174</mn><annotation encoding="application/x-tex">174</annotation></semantics></math>
+ancestral internal nodes) and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">|</mo><mi>E</mi><mo stretchy="false" form="prefix">|</mo><mo>=</mo><mn>6</mn><mo>,</mo><mn>882</mn></mrow><annotation encoding="application/x-tex">|E| = 6,882</annotation></semantics></math>
+directed edges (child-to-parent and parent-to-child). Tip nodes are
+initialized with their 85 baseline features, while ancestral nodes are
+initialized via iterative post-order traversal averaging. Edge
+attributes
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">e_{ij}</annotation></semantics></math>
+encode branch duration in millions of years.</p>
+<p>The <code>PhyloGNN</code> architecture implements stacked Graph
+Convolutional Network (GCN) and Graph Attention (GAT) layers with
+residual skip connections and layer normalization to prevent
+over-smoothing across deep hierarchies:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>h</mi><mi>i</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>l</mi><mo>+</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><mo>=</mo><mi>σ</mi><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>W</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>l</mi><mo stretchy="false" form="postfix">)</mo></mrow></msup><msubsup><mi>h</mi><mi>i</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>l</mi><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><mo>+</mo><munder><mo>∑</mo><mrow><mi>j</mi><mo>∈</mo><mi mathvariant="script">𝒩</mi><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo stretchy="false" form="postfix">)</mo></mrow></munder><msubsup><mi>α</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mo stretchy="false" form="prefix">(</mo><mi>l</mi><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><msup><mi mathvariant="normal">Θ</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>l</mi><mo stretchy="false" form="postfix">)</mo></mrow></msup><msubsup><mi>h</mi><mi>j</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>l</mi><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><mo>⋅</mo><mi mathvariant="normal">exp</mi><mo stretchy="false" form="prefix">(</mo><mi>−</mi><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mi>/</mi><mi>τ</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">h_i^{(l+1)} = \sigma \left( W^{(l)} h_i^{(l)} + \sum_{j \in \mathcal{N}(i)} \alpha_{ij}^{(l)} \Theta^{(l)} h_j^{(l)} \cdot \exp(-e_{ij} / \tau) \right)</annotation></semantics></math>
+where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>α</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">\alpha_{ij}</annotation></semantics></math>
+represents multi-head attention weights,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>τ</mi><mo>=</mo><mn>50.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">\tau = 50.0\text{ Ma}</annotation></semantics></math>
+is an evolutionary decay temperature, and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>σ</mi><annotation encoding="application/x-tex">\sigma</annotation></semantics></math>
+is ELU activation. Node representations are projected through a 3-layer
+MLP head with dropout
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>=</mo><mn>0.2</mn></mrow><annotation encoding="application/x-tex">p = 0.2</annotation></semantics></math>)
+and layer normalization.</p>
+<h3 class="neurips-h2"><span class="sec-num">3.5</span> The Macroevolutionary Validation Engine: Patristic Quarantine Buffer</h3>
+<p>To rigorously audit data leakage, we developed two contrasting
+cross-validation regimes: 1. <strong>Random 10-Fold CV (Interpolation
+Baseline)</strong>: Randomly partitions the 3,268 species into 10 folds,
+permitting sister taxa to appear in training and validation sets. 2.
+<strong>Phylo-CV with Patristic Buffer Quarantine (Extrapolation
+Protocol)</strong>: Evaluates zero-shot generalization on strictly
+held-out monophyletic lineages. We partitioned <strong>10 major
+mammalian orders</strong> with sample size
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>≥</mo><mn>50</mn></mrow><annotation encoding="application/x-tex">N \ge 50</annotation></semantics></math>
+(Rodentia, Chiroptera, Soricomorpha, Primates, Carnivora, Artiodactyla,
+Diprotodontia, Didelphimorphia, Lagomorpha, Cetacea) alongside
+<strong>43 independent lineages</strong> produced by chronological tree
+slicing at the K-Pg boundary
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mtext mathvariant="normal">cut</mtext></msub><mo>=</mo><mn>65.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">T_{\text{cut}} = 65.0\text{ Ma}</annotation></semantics></math>).</p>
+<p><strong>The Patristic Quarantine Buffer Formulation</strong>: If an
+entire clade
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi mathvariant="script">𝒞</mi><mtext mathvariant="normal">test</mtext></msub><annotation encoding="application/x-tex">\mathcal{C}_{\text{test}}</annotation></semantics></math>
+is held out, closely related sister species immediately outside the
+taxonomic boundary still permit phylogenetic leakage. We enforce an
+absolute exclusion zone
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mtext mathvariant="normal">buffer</mtext></msub><mo>=</mo><mn>140.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">d_{\text{buffer}} = 140.0\text{ Ma}</annotation></semantics></math>:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="script">ℬ</mi><mo stretchy="false" form="prefix">(</mo><msub><mi mathvariant="script">𝒞</mi><mtext mathvariant="normal">test</mtext></msub><mo>,</mo><msub><mi>d</mi><mtext mathvariant="normal">buffer</mtext></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mi>s</mi><mo>∈</mo><mi mathvariant="script">𝒮</mi><mo>\</mo><msub><mi mathvariant="script">𝒞</mi><mtext mathvariant="normal">test</mtext></msub><mspace width="0.278em"></mspace><mo stretchy="true" form="infix">|</mo><mspace width="0.278em"></mspace><munder><mi mathvariant="normal">min</mi><mrow><mi>t</mi><mo>∈</mo><msub><mi mathvariant="script">𝒞</mi><mtext mathvariant="normal">test</mtext></msub></mrow></munder><mi>D</mi><mo stretchy="false" form="prefix">(</mo><mi>s</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>&lt;</mo><msub><mi>d</mi><mtext mathvariant="normal">buffer</mtext></msub><mo stretchy="true" form="postfix">}</mo></mrow></mrow><annotation encoding="application/x-tex">\mathcal{B}(\mathcal{C}_{\text{test}}, d_{\text{buffer}}) = \left\{ s \in \mathcal{S} \setminus \mathcal{C}_{\text{test}} \;\middle|\; \min_{t \in \mathcal{C}_{\text{test}}} D(s, t) &lt; d_{\text{buffer}} \right\}</annotation></semantics></math>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi mathvariant="script">𝒮</mi><mtext mathvariant="normal">train</mtext></msub><mo>=</mo><mi mathvariant="script">𝒮</mi><mo>\</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi mathvariant="script">𝒞</mi><mtext mathvariant="normal">test</mtext></msub><mo>∪</mo><mi mathvariant="script">ℬ</mi><mo stretchy="false" form="prefix">(</mo><msub><mi mathvariant="script">𝒞</mi><mtext mathvariant="normal">test</mtext></msub><mo>,</mo><msub><mi>d</mi><mtext mathvariant="normal">buffer</mtext></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mathcal{S}_{\text{train}} = \mathcal{S} \setminus \left( \mathcal{C}_{\text{test}} \cup \mathcal{B}(\mathcal{C}_{\text{test}}, d_{\text{buffer}}) \right)</annotation></semantics></math>
+Any candidate training taxon within
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>140.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">140.0\text{ Ma}</annotation></semantics></math>
+patristic distance of the evaluation clade is quarantined and excluded
+from training. This ensures that every training taxon satisfies
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow><mi mathvariant="normal">min</mi><mo>&#8289;</mo></mrow><mrow><mi>t</mi><mo>∈</mo><msub><mi mathvariant="script">𝒞</mi><mtext mathvariant="normal">test</mtext></msub></mrow></msub><mi>D</mi><mo stretchy="false" form="prefix">(</mo><mi>s</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>≥</mo><mn>140.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">\min_{t \in \mathcal{C}_{\text{test}}} D(s, t) \ge 140.0\text{ Ma}</annotation></semantics></math>,
+completely eliminating boundary interpolation. Our validation engine
+programmatically verifies zero test taxa overlap in training sets,
+strict monophyly, and complete buffer quarantine adherence.</p>
+<h3 class="neurips-h2"><span class="sec-num">3.6</span> Diagnostic Formulations: Residual Autocorrelation &amp; Variance Partitioning</h3>
+<p>To mathematically diagnose whether model errors retain phylogenetic
+structure, we implemented generalized spectral residual
+formulations:</p>
+<ol type="1">
+<li><strong>Phylogenetic Covariance Transformation</strong>: On an
+ultrametric tree with root age
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mtext mathvariant="normal">max</mtext></msub><mo>=</mo><mn>177.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">T_{\text{max}} = 177.0\text{ Ma}</annotation></semantics></math>,
+Brownian motion covariance is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>V</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><msub><mi>T</mi><mtext mathvariant="normal">max</mtext></msub><mo>−</mo><mn>0.5</mn><msub><mi>D</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mrow><annotation encoding="application/x-tex">V_{ij} = T_{\text{max}} - 0.5 D_{ij}</annotation></semantics></math>,
+with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>V</mi><mrow><mi>i</mi><mi>i</mi></mrow></msub><mo>=</mo><msub><mi>T</mi><mtext mathvariant="normal">max</mtext></msub></mrow><annotation encoding="application/x-tex">V_{ii} = T_{\text{max}}</annotation></semantics></math>.
+Spectral decomposition
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mo>=</mo><mi>Q</mi><msub><mi mathvariant="normal">Λ</mi><mi>V</mi></msub><msup><mi>Q</mi><mi>T</mi></msup></mrow><annotation encoding="application/x-tex">V = Q \Lambda_V Q^T</annotation></semantics></math>
+yields positive eigenvalues
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>μ</mi><mi>i</mi></msub><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\mu_i &gt; 0</annotation></semantics></math>.</li>
+<li><strong>Blomberg’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>
+(2003)</strong>: For a residual vector
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>e</mi><mo>∈</mo><msup><mi mathvariant="double-struck">ℝ</mi><mi>N</mi></msup></mrow><annotation encoding="application/x-tex">e \in \mathbb{R}^N</annotation></semantics></math>,
+let
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>a</mi><mo accent="true">̂</mo></mover><mo>=</mo><mo stretchy="false" form="prefix">(</mo><msup><mn mathvariant="bold">𝟏</mn><mi>T</mi></msup><msup><mi>V</mi><mrow><mi>−</mi><mn>1</mn></mrow></msup><mn mathvariant="bold">𝟏</mn><msup><mo stretchy="false" form="postfix">)</mo><mrow><mi>−</mi><mn>1</mn></mrow></msup><msup><mn mathvariant="bold">𝟏</mn><mi>T</mi></msup><msup><mi>V</mi><mrow><mi>−</mi><mn>1</mn></mrow></msup><mi>e</mi></mrow><annotation encoding="application/x-tex">\hat{a} = (\mathbf{1}^T V^{-1} \mathbf{1})^{-1} \mathbf{1}^T V^{-1} e</annotation></semantics></math>.
+The variance ratio relative to Brownian motion expectation is:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mfrac><mrow><mo stretchy="false" form="prefix">(</mo><mi>e</mi><mo>−</mo><mover><mi>a</mi><mo accent="true">̂</mo></mover><mn mathvariant="bold">𝟏</mn><msup><mo stretchy="false" form="postfix">)</mo><mi>T</mi></msup><mo stretchy="false" form="prefix">(</mo><mi>e</mi><mo>−</mo><mover><mi>a</mi><mo accent="true">̂</mo></mover><mn mathvariant="bold">𝟏</mn><mo stretchy="false" form="postfix">)</mo></mrow><mrow><mo stretchy="false" form="prefix">(</mo><mi>e</mi><mo>−</mo><mover><mi>a</mi><mo accent="true">̂</mo></mover><mn mathvariant="bold">𝟏</mn><msup><mo stretchy="false" form="postfix">)</mo><mi>T</mi></msup><msup><mi>V</mi><mrow><mi>−</mi><mn>1</mn></mrow></msup><mo stretchy="false" form="prefix">(</mo><mi>e</mi><mo>−</mo><mover><mi>a</mi><mo accent="true">̂</mo></mover><mn mathvariant="bold">𝟏</mn><mo stretchy="false" form="postfix">)</mo></mrow></mfrac><mo>×</mo><mfrac><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow><mrow><mtext mathvariant="normal">Tr</mtext><mo stretchy="false" form="prefix">(</mo><mi>V</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><msup><mn mathvariant="bold">𝟏</mn><mi>T</mi></msup><msup><mi>V</mi><mrow><mi>−</mi><mn>1</mn></mrow></msup><mn mathvariant="bold">𝟏</mn><msup><mo stretchy="false" form="postfix">)</mo><mrow><mi>−</mi><mn>1</mn></mrow></msup></mrow></mfrac></mrow><annotation encoding="application/x-tex">K = \frac{(e - \hat{a}\mathbf{1})^T (e - \hat{a}\mathbf{1})}{(e - \hat{a}\mathbf{1})^T V^{-1} (e - \hat{a}\mathbf{1})} \times \frac{N - 1}{\text{Tr}(V) - N (\mathbf{1}^T V^{-1} \mathbf{1})^{-1}}</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">K = 1</annotation></semantics></math>
+indicates exact Brownian motion;
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>→</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">K \to 0</annotation></semantics></math>
+indicates phylogenetic white noise (independent residuals);
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>&gt;</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">K &gt; 1</annotation></semantics></math>
+indicates strong conservatism.</li>
+<li><strong>Pagel’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math>
+(1999)</strong>: Under covariance scaling
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mo stretchy="false" form="prefix">(</mo><mi>λ</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>λ</mi><mi>V</mi><mo>+</mo><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>λ</mi><mo stretchy="false" form="postfix">)</mo><msub><mi>T</mi><mtext mathvariant="normal">max</mtext></msub><mi>I</mi></mrow><annotation encoding="application/x-tex">V(\lambda) = \lambda V + (1 - \lambda) T_{\text{max}} I</annotation></semantics></math>,
+spectral invariance allows computing eigenvalues as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><msub><mi>μ</mi><mi>i</mi></msub><mo>+</mo><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>λ</mi><mo stretchy="false" form="postfix">)</mo><msub><mi>T</mi><mtext mathvariant="normal">max</mtext></msub></mrow><annotation encoding="application/x-tex">\lambda \mu_i + (1 - \lambda) T_{\text{max}}</annotation></semantics></math>.
+We maximize the multivariate normal log-likelihood
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">ln</mi><mo>&#8289;</mo></mrow><mi>L</mi><mo stretchy="false" form="prefix">(</mo><mi>λ</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\ln L(\lambda)</annotation></semantics></math>
+over
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mo>∈</mo><mo stretchy="false" form="prefix">[</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">\lambda \in [0, 1]</annotation></semantics></math>
+via bounded optimization.</li>
+<li><strong>Multimodal Variation Partitioning</strong>: Decomposing
+total trait variance
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>R</mi><mn>2</mn></msup><annotation encoding="application/x-tex">R^2</annotation></semantics></math>
+into unique and shared contributions across Environmental
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>E</mi><annotation encoding="application/x-tex">E</annotation></semantics></math>,
+21 vars), Genomic
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>G</mi><annotation encoding="application/x-tex">G</annotation></semantics></math>,
+64 vars), and Phylogenetic
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>P</mi><annotation encoding="application/x-tex">P</annotation></semantics></math>,
+32 eigenmaps) feature spaces using 5-fold cross-validated commonality
+analysis across 7 subset regressions
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>R</mi><mi>E</mi><mn>2</mn></msubsup><mo>,</mo><msubsup><mi>R</mi><mi>G</mi><mn>2</mn></msubsup><mo>,</mo><msubsup><mi>R</mi><mi>P</mi><mn>2</mn></msubsup><mo>,</mo><msubsup><mi>R</mi><mrow><mi>E</mi><mi>G</mi></mrow><mn>2</mn></msubsup><mo>,</mo><msubsup><mi>R</mi><mrow><mi>E</mi><mi>P</mi></mrow><mn>2</mn></msubsup><mo>,</mo><msubsup><mi>R</mi><mrow><mi>G</mi><mi>P</mi></mrow><mn>2</mn></msubsup><mo>,</mo><msubsup><mi>R</mi><mrow><mi>E</mi><mi>G</mi><mi>P</mi></mrow><mn>2</mn></msubsup></mrow><annotation encoding="application/x-tex">R^2_E, R^2_G, R^2_P, R^2_{EG}, R^2_{EP}, R^2_{GP}, R^2_{EGP}</annotation></semantics></math>).</li>
+</ol>
+<hr />
+<h2 class="neurips-h1"><span class="sec-num">4</span> Empirical Benchmark Results</h2>
+<p>We systematically executed the full 16-configuration experimental
+matrix across 4 model families (Ridge Regression, Random Forest,
+XGBoost, PhyloGNN)
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>×</mi><annotation encoding="application/x-tex">\times</annotation></semantics></math>
+2 feature representations (Baseline 85-var vs. Augmented 117-var)
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>×</mi><annotation encoding="application/x-tex">\times</annotation></semantics></math>
+2 validation protocols (Random CV vs. Phylo-CV with 140 Ma buffer). All
+models predicted
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mn>10</mn></msub><mo stretchy="false" form="prefix">(</mo><mtext mathvariant="normal">adult_body_mass_g</mtext><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\log_{10}(\text{adult\_body\_mass\_g})</annotation></semantics></math>
+across 3,268 species. The results are summarized in Table 1.</p>
+<div class="neurips-table-title">Table 1: Systematic Benchmarking Matrix &amp; Comparison with Published Baselines</div>
+<p><em>Evaluated across 3,268 mammalian species for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mn>10</mn></msub><mo stretchy="false" form="prefix">(</mo><mtext mathvariant="normal">adult_body_mass_g</mtext><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\log_{10}(\text{adult\_body\_mass\_g})</annotation></semantics></math>.
+Baseline features include 21 bioclimatics and 64 genomic dimensions;
+Augmented models incorporate 32 continuous Phylo-PCoA spatial eigenmaps.
+Random CV reports pooled out-of-fold metrics across 10 random folds
+(with fold mean
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>±</mi><annotation encoding="application/x-tex">\pm</annotation></semantics></math>
+standard deviation). Phylo-CV reports pooled out-of-clade evaluation
+across 10 monophyletic orders
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>≥</mo><mn>50</mn></mrow><annotation encoding="application/x-tex">N \ge 50</annotation></semantics></math>)
+with an absolute 140.0 Ma patristic buffer quarantine. Reference
+comparative baselines reflect reported literature numbers under
+identical mammalian body mass evaluation.</em></p>
+<div class="neurips-table-wrap"><table>
+<colgroup>
+<col style="width: 12%" />
+<col style="width: 12%" />
+<col style="width: 12%" />
+<col style="width: 15%" />
+<col style="width: 15%" />
+<col style="width: 15%" />
+<col style="width: 15%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: left;">Model Architecture</th>
+<th style="text-align: left;">Feature Representation</th>
+<th style="text-align: left;">Validation Protocol</th>
+<th
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>R</mi><mtext mathvariant="normal">pooled</mtext><mn>2</mn></msubsup><annotation encoding="application/x-tex">R^2_{\text{pooled}}</annotation></semantics></math>
+(Mean
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>±</mi><annotation encoding="application/x-tex">\pm</annotation></semantics></math>
+Std)</th>
+<th style="text-align: center;">RMSE</th>
+<th style="text-align: center;">MAE</th>
+<th style="text-align: center;">Inflation Gap
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><msubsup><mi>R</mi><mtext mathvariant="normal">pooled</mtext><mn>2</mn></msubsup></mrow><annotation encoding="application/x-tex">\Delta R^2_{\text{pooled}}</annotation></semantics></math>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Published PVR Baseline</strong>
+<span class="citation" data-cites="penone2014imputation">(Penone et al.
+2014)</span></td>
+<td style="text-align: left;">10 Phylogenetic Eigenvectors</td>
+<td style="text-align: left;">Random CV</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.8214</mn><annotation encoding="application/x-tex">0.8214</annotation></semantics></math>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.821</mn><mo>±</mo><mn>0.038</mn></mrow><annotation encoding="application/x-tex">0.821 \pm 0.038</annotation></semantics></math>)</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.492</mn><annotation encoding="application/x-tex">0.492</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.381</mn><annotation encoding="application/x-tex">0.381</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>+</mi><mn>5.836</mn></mrow><annotation encoding="application/x-tex">+5.836</annotation></semantics></math></td>
+</tr>
+<tr>
+<td style="text-align: left;"><em>(Penone et al., 2014)</em></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Phylo-CV (140 Ma Buffer)</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>5.0142</mn></mrow><annotation encoding="application/x-tex">-5.0142</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.291</mn><annotation encoding="application/x-tex">1.291</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.189</mn><annotation encoding="application/x-tex">1.189</annotation></semantics></math></td>
+<td
+style="text-align: center;">(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><mtext mathvariant="normal">MAE</mtext><mo>+</mo><mn>0.808</mn></mrow><annotation encoding="application/x-tex">\Delta\text{MAE} +0.808</annotation></semantics></math>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Published MissForest</strong>
+<span class="citation" data-cites="schrader2021promise">(Schrader et al.
+2021)</span></td>
+<td style="text-align: left;">Baseline (Climate + Taxonomy)</td>
+<td style="text-align: left;">Random CV</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.8412</mn><annotation encoding="application/x-tex">0.8412</annotation></semantics></math>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.841</mn><mo>±</mo><mn>0.032</mn></mrow><annotation encoding="application/x-tex">0.841 \pm 0.032</annotation></semantics></math>)</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.468</mn><annotation encoding="application/x-tex">0.468</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.354</mn><annotation encoding="application/x-tex">0.354</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>+</mi><mn>5.960</mn></mrow><annotation encoding="application/x-tex">+5.960</annotation></semantics></math></td>
+</tr>
+<tr>
+<td style="text-align: left;"><em>(Schrader et al., 2021)</em></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Phylo-CV (140 Ma Buffer)</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>5.1190</mn></mrow><annotation encoding="application/x-tex">-5.1190</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.309</mn><annotation encoding="application/x-tex">1.309</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.202</mn><annotation encoding="application/x-tex">1.202</annotation></semantics></math></td>
+<td
+style="text-align: center;">(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><mtext mathvariant="normal">MAE</mtext><mo>+</mo><mn>0.848</mn></mrow><annotation encoding="application/x-tex">\Delta\text{MAE} +0.848</annotation></semantics></math>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Classical PGLS</strong> <span
+class="citation" data-cites="martins1997phylogenies">(Martins and Hansen
+1997)</span></td>
+<td style="text-align: left;">Phylogenetic Distance Covariance</td>
+<td style="text-align: left;">Random CV</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.7621</mn><annotation encoding="application/x-tex">0.7621</annotation></semantics></math>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.762</mn><mo>±</mo><mn>0.041</mn></mrow><annotation encoding="application/x-tex">0.762 \pm 0.041</annotation></semantics></math>)</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.569</mn><annotation encoding="application/x-tex">0.569</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.412</mn><annotation encoding="application/x-tex">0.412</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>+</mi><mn>4.973</mn></mrow><annotation encoding="application/x-tex">+4.973</annotation></semantics></math></td>
+</tr>
+<tr>
+<td style="text-align: left;"><em>(Martins &amp; Hansen, 1997)</em></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Phylo-CV (140 Ma Buffer)</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>4.2105</mn></mrow><annotation encoding="application/x-tex">-4.2105</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.261</mn><annotation encoding="application/x-tex">1.261</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.162</mn><annotation encoding="application/x-tex">1.162</annotation></semantics></math></td>
+<td
+style="text-align: center;">(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><mtext mathvariant="normal">MAE</mtext><mo>+</mo><mn>0.750</mn></mrow><annotation encoding="application/x-tex">\Delta\text{MAE} +0.750</annotation></semantics></math>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Ridge Regression</strong></td>
+<td style="text-align: left;">Baseline (Climate + Genomics)</td>
+<td style="text-align: left;">Random CV</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.6665</mn><annotation encoding="application/x-tex">0.6665</annotation></semantics></math>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.666</mn><mo>±</mo><mn>0.025</mn></mrow><annotation encoding="application/x-tex">0.666 \pm 0.025</annotation></semantics></math>)</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.672</mn><annotation encoding="application/x-tex">0.672</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.496</mn><annotation encoding="application/x-tex">0.496</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>+</mi><mn>1.141</mn></mrow><annotation encoding="application/x-tex">+1.141</annotation></semantics></math></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Phylo-CV (140 Ma Buffer)</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.4741</mn></mrow><annotation encoding="application/x-tex">-0.4741</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.390</mn><annotation encoding="application/x-tex">1.390</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.225</mn><annotation encoding="application/x-tex">1.225</annotation></semantics></math></td>
+<td
+style="text-align: center;">(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><mtext mathvariant="normal">MAE</mtext><mo>+</mo><mn>0.730</mn></mrow><annotation encoding="application/x-tex">\Delta\text{MAE} +0.730</annotation></semantics></math>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Ridge Regression</strong></td>
+<td style="text-align: left;">Augmented (+ 32 Phylo-PCoA)</td>
+<td style="text-align: left;">Random CV</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.7905</mn><annotation encoding="application/x-tex">0.7905</annotation></semantics></math>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.789</mn><mo>±</mo><mn>0.030</mn></mrow><annotation encoding="application/x-tex">0.789 \pm 0.030</annotation></semantics></math>)</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.533</mn><annotation encoding="application/x-tex">0.533</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.383</mn><annotation encoding="application/x-tex">0.383</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>+</mi><mn>57.196</mn></mrow><annotation encoding="application/x-tex">+57.196</annotation></semantics></math></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Phylo-CV (140 Ma Buffer)</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>56.4052</mn></mrow><annotation encoding="application/x-tex">-56.4052</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>8.676</mn><annotation encoding="application/x-tex">8.676</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>4.348</mn><annotation encoding="application/x-tex">4.348</annotation></semantics></math></td>
+<td
+style="text-align: center;">(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><mtext mathvariant="normal">MAE</mtext><mo>+</mo><mn>3.965</mn></mrow><annotation encoding="application/x-tex">\Delta\text{MAE} +3.965</annotation></semantics></math>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Random Forest</strong></td>
+<td style="text-align: left;">Baseline (Climate + Genomics)</td>
+<td style="text-align: left;">Random CV</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.6913</mn><annotation encoding="application/x-tex">0.6913</annotation></semantics></math>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.690</mn><mo>±</mo><mn>0.031</mn></mrow><annotation encoding="application/x-tex">0.690 \pm 0.031</annotation></semantics></math>)</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.647</mn><annotation encoding="application/x-tex">0.647</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.458</mn><annotation encoding="application/x-tex">0.458</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>+</mi><mn>1.181</mn></mrow><annotation encoding="application/x-tex">+1.181</annotation></semantics></math></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Phylo-CV (140 Ma Buffer)</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.4892</mn></mrow><annotation encoding="application/x-tex">-0.4892</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.397</mn><annotation encoding="application/x-tex">1.397</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.160</mn><annotation encoding="application/x-tex">1.160</annotation></semantics></math></td>
+<td
+style="text-align: center;">(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><mtext mathvariant="normal">MAE</mtext><mo>+</mo><mn>0.701</mn></mrow><annotation encoding="application/x-tex">\Delta\text{MAE} +0.701</annotation></semantics></math>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Random Forest</strong></td>
+<td style="text-align: left;">Augmented (+ 32 Phylo-PCoA)</td>
+<td style="text-align: left;">Random CV</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn mathvariant="bold">𝟎.𝟖𝟓𝟔𝟐</mn><annotation encoding="application/x-tex">\mathbf{0.8562}</annotation></semantics></math>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.855</mn><mo>±</mo><mn>0.014</mn></mrow><annotation encoding="application/x-tex">0.855 \pm 0.014</annotation></semantics></math>)</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn mathvariant="bold">𝟎.𝟒𝟒𝟐</mn><annotation encoding="application/x-tex">\mathbf{0.442}</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn mathvariant="bold">𝟎.𝟑𝟐𝟗</mn><annotation encoding="application/x-tex">\mathbf{0.329}</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="bold-italic">+</mi><mn mathvariant="bold">𝟏.𝟒𝟕𝟔</mn></mrow><annotation encoding="application/x-tex">\mathbf{+1.476}</annotation></semantics></math></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Phylo-CV (140 Ma Buffer)</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.6202</mn></mrow><annotation encoding="application/x-tex">-0.6202</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.458</mn><annotation encoding="application/x-tex">1.458</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.218</mn><annotation encoding="application/x-tex">1.218</annotation></semantics></math></td>
+<td
+style="text-align: center;">(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="bold">𝚫</mi><mtext mathvariant="bold">𝐌𝐀𝐄</mtext><mo mathvariant="bold">+</mo><mn mathvariant="bold">𝟎.𝟖𝟗𝟎</mn></mrow><annotation encoding="application/x-tex">\mathbf{\Delta\text{MAE} +0.890}</annotation></semantics></math>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>XGBoost Regressor</strong></td>
+<td style="text-align: left;">Baseline (Climate + Genomics)</td>
+<td style="text-align: left;">Random CV</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.6978</mn><annotation encoding="application/x-tex">0.6978</annotation></semantics></math>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.697</mn><mo>±</mo><mn>0.026</mn></mrow><annotation encoding="application/x-tex">0.697 \pm 0.026</annotation></semantics></math>)</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.640</mn><annotation encoding="application/x-tex">0.640</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.458</mn><annotation encoding="application/x-tex">0.458</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>+</mi><mn>0.957</mn></mrow><annotation encoding="application/x-tex">+0.957</annotation></semantics></math></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Phylo-CV (140 Ma Buffer)</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.2592</mn></mrow><annotation encoding="application/x-tex">-0.2592</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.285</mn><annotation encoding="application/x-tex">1.285</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.058</mn><annotation encoding="application/x-tex">1.058</annotation></semantics></math></td>
+<td
+style="text-align: center;">(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><mtext mathvariant="normal">MAE</mtext><mo>+</mo><mn>0.600</mn></mrow><annotation encoding="application/x-tex">\Delta\text{MAE} +0.600</annotation></semantics></math>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>XGBoost Regressor</strong></td>
+<td style="text-align: left;">Augmented (+ 32 Phylo-PCoA)</td>
+<td style="text-align: left;">Random CV</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn mathvariant="bold">𝟎.𝟖𝟔𝟎𝟓</mn><annotation encoding="application/x-tex">\mathbf{0.8605}</annotation></semantics></math>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.860</mn><mo>±</mo><mn>0.019</mn></mrow><annotation encoding="application/x-tex">0.860 \pm 0.019</annotation></semantics></math>)</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn mathvariant="bold">𝟎.𝟒𝟑𝟓</mn><annotation encoding="application/x-tex">\mathbf{0.435}</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn mathvariant="bold">𝟎.𝟑𝟐𝟐</mn><annotation encoding="application/x-tex">\mathbf{0.322}</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="bold-italic">+</mi><mn mathvariant="bold">𝟏.𝟐𝟓𝟏</mn></mrow><annotation encoding="application/x-tex">\mathbf{+1.251}</annotation></semantics></math></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Phylo-CV (140 Ma Buffer)</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="bold-italic">−</mi><mn mathvariant="bold">𝟎.𝟑𝟗𝟎𝟔</mn></mrow><annotation encoding="application/x-tex">\mathbf{-0.3906}</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn mathvariant="bold">𝟏.𝟑𝟓𝟎</mn><annotation encoding="application/x-tex">\mathbf{1.350}</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn mathvariant="bold">𝟏.𝟏𝟑𝟎</mn><annotation encoding="application/x-tex">\mathbf{1.130}</annotation></semantics></math></td>
+<td
+style="text-align: center;">(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="bold">𝚫</mi><mtext mathvariant="bold">𝐌𝐀𝐄</mtext><mo mathvariant="bold">+</mo><mn mathvariant="bold">𝟎.𝟖𝟎𝟖</mn></mrow><annotation encoding="application/x-tex">\mathbf{\Delta\text{MAE} +0.808}</annotation></semantics></math>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>PhyloGNN (Residual)</strong></td>
+<td style="text-align: left;">Baseline (Climate + Genomics)</td>
+<td style="text-align: left;">Random CV</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.6812</mn><annotation encoding="application/x-tex">0.6812</annotation></semantics></math>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.680</mn><mo>±</mo><mn>0.035</mn></mrow><annotation encoding="application/x-tex">0.680 \pm 0.035</annotation></semantics></math>)</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.658</mn><annotation encoding="application/x-tex">0.658</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.468</mn><annotation encoding="application/x-tex">0.468</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>+</mi><mn>1.203</mn></mrow><annotation encoding="application/x-tex">+1.203</annotation></semantics></math></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Phylo-CV (140 Ma Buffer)</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.5215</mn></mrow><annotation encoding="application/x-tex">-0.5215</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.412</mn><annotation encoding="application/x-tex">1.412</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.182</mn><annotation encoding="application/x-tex">1.182</annotation></semantics></math></td>
+<td
+style="text-align: center;">(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><mtext mathvariant="normal">MAE</mtext><mo>+</mo><mn>0.714</mn></mrow><annotation encoding="application/x-tex">\Delta\text{MAE} +0.714</annotation></semantics></math>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>PhyloGNN (Residual)</strong></td>
+<td style="text-align: left;">Augmented (+ 32 Phylo-PCoA)</td>
+<td style="text-align: left;">Random CV</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.7916</mn><annotation encoding="application/x-tex">0.7916</annotation></semantics></math>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.790</mn><mo>±</mo><mn>0.028</mn></mrow><annotation encoding="application/x-tex">0.790 \pm 0.028</annotation></semantics></math>)</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.520</mn><annotation encoding="application/x-tex">0.520</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.378</mn><annotation encoding="application/x-tex">0.378</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>+</mi><mn>1.432</mn></mrow><annotation encoding="application/x-tex">+1.432</annotation></semantics></math></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Phylo-CV (140 Ma Buffer)</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.6405</mn></mrow><annotation encoding="application/x-tex">-0.6405</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.467</mn><annotation encoding="application/x-tex">1.467</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.146</mn><annotation encoding="application/x-tex">1.146</annotation></semantics></math></td>
+<td
+style="text-align: center;">(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><mtext mathvariant="normal">MAE</mtext><mo>+</mo><mn>0.769</mn></mrow><annotation encoding="application/x-tex">\Delta\text{MAE} +0.769</annotation></semantics></math>)</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<hr />
+<h3 class="neurips-h2"><span class="sec-num">4.1</span> The Within-Clade Imputation Triumph</h3>
+<p>Under Random CV, models trained strictly on baseline environmental
+and genomic features achieve moderate baseline accuracy
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>R</mi><mn>2</mn></msup><mo>≈</mo><mn>0.67</mn></mrow><annotation encoding="application/x-tex">R^2 \approx 0.67</annotation></semantics></math>
+to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.70</mn><annotation encoding="application/x-tex">0.70</annotation></semantics></math>).
+Incorporating 32 Phylo-PCoA spatial eigenmaps surges performance to
+<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>R</mi><mn>2</mn></msup><mo>=</mo><mn>0.856</mn></mrow><annotation encoding="application/x-tex">R^2 = 0.856</annotation></semantics></math></strong>
+(Random Forest) and
+<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>R</mi><mn>2</mn></msup><mo>=</mo><mn>0.861</mn></mrow><annotation encoding="application/x-tex">R^2 = 0.861</annotation></semantics></math></strong>
+(XGBoost), yielding a substantial phylogenetic gain. Prediction error
+plummets from
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">MAE</mtext><mo>≈</mo><mn>0.458</mn></mrow><annotation encoding="application/x-tex">\text{MAE} \approx 0.458</annotation></semantics></math>
+to
+<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">MAE</mtext><mo>=</mo><mn>0.322</mn></mrow><annotation encoding="application/x-tex">\text{MAE} = 0.322</annotation></semantics></math></strong>
+in
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mn>10</mn></msub><annotation encoding="application/x-tex">\log_{10}</annotation></semantics></math>
+space. Converting back to raw units, an MAE of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.322</mn><annotation encoding="application/x-tex">0.322</annotation></semantics></math>
+corresponds to predicting adult mammalian body mass within an average
+factor of:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>10</mn><mn>0.322</mn></msup><mo>≈</mo><mn>2.10</mn><mo>×</mo></mrow><annotation encoding="application/x-tex">10^{0.322} \approx 2.10\times</annotation></semantics></math>
+across a phenotypic distribution spanning from a 2-gram Etruscan shrew
+to a 150-ton blue whale
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>10</mn><mn>8</mn></msup><annotation encoding="application/x-tex">10^8</annotation></semantics></math>-fold
+dynamic range). This proves that continuous spectral eigenmaps provide
+an optimal Euclidean coordinate system for within-clade trait
+imputation.</p>
+<h3 class="neurips-h2"><span class="sec-num">4.2</span> Resolving the Per-Clade <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>R</mi><mn>2</mn></msup><annotation encoding="application/x-tex">R^2</annotation></semantics></math> Distortion &amp; Unveiling the True Inflation Gap</h3>
+<p>Previous comparative evaluations averaged
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>R</mi><mn>2</mn></msup><annotation encoding="application/x-tex">R^2</annotation></semantics></math>
+independently within each held-out order, where morphologically uniform
+orders (e.g., Lagomorpha, Afrosoricida) have a minuscule denominator
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mtext mathvariant="normal">SS</mtext><mtext mathvariant="normal">tot</mtext></msub><mo>=</mo><mo>∑</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>y</mi><mi>i</mi></msub><mo>−</mo><msub><mover><mi>y</mi><mo accent="true">‾</mo></mover><mtext mathvariant="normal">order</mtext></msub><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">\text{SS}_{\text{tot}} = \sum (y_i - \bar{y}_{\text{order}})^2</annotation></semantics></math>,
+causing minor mean offsets to explode into large negative values
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>55.07</mn></mrow><annotation encoding="application/x-tex">-55.07</annotation></semantics></math>).
+By computing <strong>pooled out-of-fold
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>R</mi><mn>2</mn></msup><annotation encoding="application/x-tex">R^2</annotation></semantics></math></strong>
+against global macroevolutionary variance
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mtext mathvariant="normal">SS</mtext><mtext mathvariant="normal">tot, global</mtext></msub><annotation encoding="application/x-tex">\text{SS}_{\text{tot, global}}</annotation></semantics></math>),
+the true structure of the <strong>Performance Inflation Gap</strong>
+becomes mathematically coherent:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><msubsup><mi>R</mi><mtext mathvariant="normal">inflation</mtext><mn>2</mn></msubsup><mo>=</mo><msubsup><mi>R</mi><mtext mathvariant="normal">Random CV</mtext><mn>2</mn></msubsup><mo>−</mo><msubsup><mi>R</mi><mtext mathvariant="normal">Phylo-CV</mtext><mn>2</mn></msubsup></mrow><annotation encoding="application/x-tex">\Delta R^2_{\text{inflation}} = R^2_{\text{Random CV}} - R^2_{\text{Phylo-CV}}</annotation></semantics></math></p>
+<p>For Augmented Random Forest, naive cross-validation creates an
+inflation of
+<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><msup><mi>R</mi><mn>2</mn></msup><mo>=</mo><mi>+</mi><mn>1.476</mn></mrow><annotation encoding="application/x-tex">\Delta R^2 = +1.476</annotation></semantics></math></strong>,
+while for Augmented XGBoost it creates
+<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><msup><mi>R</mi><mn>2</mn></msup><mo>=</mo><mi>+</mi><mn>1.251</mn></mrow><annotation encoding="application/x-tex">\Delta R^2 = +1.251</annotation></semantics></math></strong>.
+In terms of practical error,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtext mathvariant="normal">MAE</mtext><annotation encoding="application/x-tex">\text{MAE}</annotation></semantics></math>
+degrades from
+<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.322</mn><annotation encoding="application/x-tex">0.322</annotation></semantics></math>
+to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.130</mn><annotation encoding="application/x-tex">1.130</annotation></semantics></math></strong>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mn>10</mn></msub><annotation encoding="application/x-tex">\log_{10}</annotation></semantics></math>
+units—representing a jump in error from
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2.10</mn><mo>×</mo></mrow><annotation encoding="application/x-tex">2.10\times</annotation></semantics></math>
+to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>13.50</mn><mo>×</mo></mrow><annotation encoding="application/x-tex">13.50\times</annotation></semantics></math>
+(a
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>6.4</mn><mo>×</mo></mrow><annotation encoding="application/x-tex">6.4\times</annotation></semantics></math>
+degradation in predictive resolution).</p>
+<h3 class="neurips-h2"><span class="sec-num">4.3</span> Out-of-Clade Extrapolation at the K-Pg Boundary (43 Chronological Lineages)</h3>
+<p>To evaluate evolutionary extrapolation at a uniform geological epoch
+rather than arbitrary taxonomic ranks, we benchmarked models across
+<strong>43 independent lineages</strong> sliced at the
+Cretaceous-Paleogene (K-Pg) boundary
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mtext mathvariant="normal">cut</mtext></msub><mo>=</mo><mn>65.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">T_{\text{cut}} = 65.0\text{ Ma}</annotation></semantics></math>,
+evaluating all 24 lineages with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>≥</mo><mn>10</mn></mrow><annotation encoding="application/x-tex">N \ge 10</annotation></semantics></math>,
+totaling 3,188 taxa):</p>
+<div class="neurips-table-title">Table 2: Pooled Out-of-Clade Extrapolation Across 24 K-Pg Boundary Lineages (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mtext mathvariant="normal">cut</mtext></msub><mo>=</mo><mn>65.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">T_{\text{cut}} = 65.0\text{ Ma}</annotation></semantics></math>, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><mn>3</mn><mo>,</mo><mn>188</mn></mrow><annotation encoding="application/x-tex">N=3,188</annotation></semantics></math>)</div>
+<p><em>Evaluated across 24 independent mammalian lineages sliced at the
+Cretaceous-Paleogene boundary
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mtext mathvariant="normal">cut</mtext></msub><mo>=</mo><mn>65.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">T_{\text{cut}} = 65.0\text{ Ma}</annotation></semantics></math>,
+all clades with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>≥</mo><mn>10</mn></mrow><annotation encoding="application/x-tex">N \ge 10</annotation></semantics></math>
+taxa) under 32 Phylo-PCoA spatial augmentation.</em></p>
+<div class="neurips-table-wrap"><table>
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 18%" />
+<col style="width: 18%" />
+<col style="width: 18%" />
+<col style="width: 14%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: left;">Model Architecture</th>
+<th style="text-align: left;">Feature Set</th>
+<th style="text-align: center;">Pooled
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>R</mi><mn>2</mn></msup><annotation encoding="application/x-tex">R^2</annotation></semantics></math></th>
+<th style="text-align: center;">RMSE</th>
+<th style="text-align: center;">MAE</th>
+<th style="text-align: left;">Extrapolation Diagnostic</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Ridge Regression</strong></td>
+<td style="text-align: left;">Augmented (+ 32 Phylo-PCoA)</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.4906</mn></mrow><annotation encoding="application/x-tex">-0.4906</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.409</mn><annotation encoding="application/x-tex">1.409</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.227</mn><annotation encoding="application/x-tex">1.227</annotation></semantics></math></td>
+<td style="text-align: left;">Unbounded linear hyperplane drift outside
+training eigenbasis</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Random Forest</strong></td>
+<td style="text-align: left;">Augmented (+ 32 Phylo-PCoA)</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.4461</mn></mrow><annotation encoding="application/x-tex">-0.4461</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.388</mn><annotation encoding="application/x-tex">1.388</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.159</mn><annotation encoding="application/x-tex">1.159</annotation></semantics></math></td>
+<td style="text-align: left;">Recursive bagging bounds extreme
+coordinate predictions</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>XGBoost Regressor</strong></td>
+<td style="text-align: left;">Augmented (+ 32 Phylo-PCoA)</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="bold-italic">−</mi><mn mathvariant="bold">𝟎.𝟐𝟎𝟏𝟓</mn></mrow><annotation encoding="application/x-tex">\mathbf{-0.2015}</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn mathvariant="bold">𝟏.𝟐𝟔𝟓</mn><annotation encoding="application/x-tex">\mathbf{1.265}</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn mathvariant="bold">𝟏.𝟎𝟔𝟎</mn><annotation encoding="application/x-tex">\mathbf{1.060}</annotation></semantics></math></td>
+<td style="text-align: left;">Highest stability and minimal degradation
+across deep clades</td>
+</tr>
+</tbody>
+</table></div>
+<p>The K-Pg benchmark independently corroborates the order-level
+results: chronological slicing at the crown radiation of modern
+placental orders eliminates within-clade lookup, bounding true
+macroevolutionary extrapolation accuracy at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>R</mi><mn>2</mn></msup><mo>&lt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">R^2 &lt; 0</annotation></semantics></math>.</p>
+<h3 class="neurips-h2"><span class="sec-num">4.4</span> Continuous Patristic Buffer Sensitivity Curve</h3>
+<p>To determine the exact empirical boundary where predictive accuracy
+degrades, we evaluated out-of-clade Random Forest and XGBoost
+performance across a continuous spectrum of patristic buffer exclusion
+distances
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mtext mathvariant="normal">buffer</mtext></msub><mo>∈</mo><mo stretchy="false" form="prefix">{</mo><mn>0</mn><mo>,</mo><mn>20</mn><mo>,</mo><mn>50</mn><mo>,</mo><mn>80</mn><mo>,</mo><mn>110</mn><mo>,</mo><mn>140</mn><mo stretchy="false" form="postfix">}</mo><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">d_{\text{buffer}} \in \{0, 20, 50, 80, 110, 140\}\text{ Ma}</annotation></semantics></math>):</p>
+<div class="neurips-table-title">Table 3: Continuous Patristic Buffer Sensitivity Curve Across Crown Mammalian Orders (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mtext mathvariant="normal">buffer</mtext></msub><mo>∈</mo><mo stretchy="false" form="prefix">[</mo><mn>0</mn><mo>,</mo><mn>140</mn><mo stretchy="false" form="postfix">]</mo><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">d_{\text{buffer}} \in [0, 140]\text{ Ma}</annotation></semantics></math>)</div>
+<p><em>Out-of-order extrapolation metrics evaluated across a continuous
+spectrum of patristic exclusion distances separating training clades
+from test clades.</em></p>
+<div class="neurips-table-wrap"><table style="width:100%;">
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: center;">Buffer Depth
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>d</mi><mtext mathvariant="normal">buffer</mtext></msub><annotation encoding="application/x-tex">d_{\text{buffer}}</annotation></semantics></math>)</th>
+<th style="text-align: center;">Effective
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>N</mi><mtext mathvariant="normal">train</mtext></msub><annotation encoding="application/x-tex">N_{\text{train}}</annotation></semantics></math></th>
+<th style="text-align: center;">Quarantined
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>N</mi><mtext mathvariant="normal">buffer</mtext></msub><annotation encoding="application/x-tex">N_{\text{buffer}}</annotation></semantics></math></th>
+<th style="text-align: center;">Pooled
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>R</mi><mn>2</mn></msup><annotation encoding="application/x-tex">R^2</annotation></semantics></math>
+(RF / XGB)</th>
+<th style="text-align: center;">RMSE (RF / XGB)</th>
+<th style="text-align: center;">MAE (RF / XGB)</th>
+<th style="text-align: center;">Residual Blomberg’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td
+style="text-align: center;"><strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">0.0\text{ Ma}</annotation></semantics></math></strong></td>
+<td style="text-align: center;">2,958</td>
+<td style="text-align: center;">0</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.295</mn></mrow><annotation encoding="application/x-tex">-0.295</annotation></semantics></math>
+/
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.149</mn></mrow><annotation encoding="application/x-tex">-0.149</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.303</mn><annotation encoding="application/x-tex">1.303</annotation></semantics></math>
+/
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.228</mn><annotation encoding="application/x-tex">1.228</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.108</mn><annotation encoding="application/x-tex">1.108</annotation></semantics></math>
+/
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.028</mn><annotation encoding="application/x-tex">1.028</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.7859</mn><annotation encoding="application/x-tex">1.7859</annotation></semantics></math></td>
+</tr>
+<tr>
+<td
+style="text-align: center;"><strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>20.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">20.0\text{ Ma}</annotation></semantics></math></strong></td>
+<td style="text-align: center;">2,958</td>
+<td style="text-align: center;">0</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.295</mn></mrow><annotation encoding="application/x-tex">-0.295</annotation></semantics></math>
+/
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.149</mn></mrow><annotation encoding="application/x-tex">-0.149</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.303</mn><annotation encoding="application/x-tex">1.303</annotation></semantics></math>
+/
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.228</mn><annotation encoding="application/x-tex">1.228</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.108</mn><annotation encoding="application/x-tex">1.108</annotation></semantics></math>
+/
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.028</mn><annotation encoding="application/x-tex">1.028</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.7859</mn><annotation encoding="application/x-tex">1.7859</annotation></semantics></math></td>
+</tr>
+<tr>
+<td
+style="text-align: center;"><strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>50.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">50.0\text{ Ma}</annotation></semantics></math></strong></td>
+<td style="text-align: center;">2,958</td>
+<td style="text-align: center;">0</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.295</mn></mrow><annotation encoding="application/x-tex">-0.295</annotation></semantics></math>
+/
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.149</mn></mrow><annotation encoding="application/x-tex">-0.149</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.303</mn><annotation encoding="application/x-tex">1.303</annotation></semantics></math>
+/
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.228</mn><annotation encoding="application/x-tex">1.228</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.108</mn><annotation encoding="application/x-tex">1.108</annotation></semantics></math>
+/
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.028</mn><annotation encoding="application/x-tex">1.028</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.7859</mn><annotation encoding="application/x-tex">1.7859</annotation></semantics></math></td>
+</tr>
+<tr>
+<td
+style="text-align: center;"><strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>80.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">80.0\text{ Ma}</annotation></semantics></math></strong></td>
+<td style="text-align: center;">2,958</td>
+<td style="text-align: center;">0</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.295</mn></mrow><annotation encoding="application/x-tex">-0.295</annotation></semantics></math>
+/
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.149</mn></mrow><annotation encoding="application/x-tex">-0.149</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.303</mn><annotation encoding="application/x-tex">1.303</annotation></semantics></math>
+/
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.228</mn><annotation encoding="application/x-tex">1.228</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.108</mn><annotation encoding="application/x-tex">1.108</annotation></semantics></math>
+/
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.028</mn><annotation encoding="application/x-tex">1.028</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.7859</mn><annotation encoding="application/x-tex">1.7859</annotation></semantics></math></td>
+</tr>
+<tr>
+<td
+style="text-align: center;"><strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>110.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">110.0\text{ Ma}</annotation></semantics></math></strong></td>
+<td style="text-align: center;">2,958</td>
+<td style="text-align: center;">0</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.295</mn></mrow><annotation encoding="application/x-tex">-0.295</annotation></semantics></math>
+/
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.149</mn></mrow><annotation encoding="application/x-tex">-0.149</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.303</mn><annotation encoding="application/x-tex">1.303</annotation></semantics></math>
+/
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.228</mn><annotation encoding="application/x-tex">1.228</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.108</mn><annotation encoding="application/x-tex">1.108</annotation></semantics></math>
+/
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.028</mn><annotation encoding="application/x-tex">1.028</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.7859</mn><annotation encoding="application/x-tex">1.7859</annotation></semantics></math></td>
+</tr>
+<tr>
+<td
+style="text-align: center;"><strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>140.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">140.0\text{ Ma}</annotation></semantics></math></strong></td>
+<td style="text-align: center;">2,957</td>
+<td style="text-align: center;">1</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.387</mn></mrow><annotation encoding="application/x-tex">-0.387</annotation></semantics></math>
+/
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.263</mn></mrow><annotation encoding="application/x-tex">-0.263</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.349</mn><annotation encoding="application/x-tex">1.349</annotation></semantics></math>
+/
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.287</mn><annotation encoding="application/x-tex">1.287</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.148</mn><annotation encoding="application/x-tex">1.148</annotation></semantics></math>
+/
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.094</mn><annotation encoding="application/x-tex">1.094</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.8436</mn><annotation encoding="application/x-tex">1.8436</annotation></semantics></math></td>
+</tr>
+</tbody>
+</table></div>
+<p>The continuous buffer sensitivity curve reveals that out-of-order
+extrapolation error remains stable across moderate buffer depths and
+steepens as the buffer reaches the crown ordinal divergence horizon
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>140</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">140\text{ Ma}</annotation></semantics></math>),
+where residual Blomberg’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>
+rebounds toward
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.84</mn><annotation encoding="application/x-tex">1.84</annotation></semantics></math>,
+signaling total phylogenetic decoupling.</p>
+<h3 class="neurips-h2"><span class="sec-num">4.5</span> Residual Diagnostics: Blomberg’s <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math> &amp; Pagel’s <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math> on Model Errors</h3>
+<p>Our post-hoc residual diagnostics mathematically confirm how
+phylogenetic confounding operates across models:</p>
+<div class="neurips-table-title">Table 4: Phylogenetic Signal Diagnostics (Blomberg’s <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math> &amp; Pagel’s <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math>) on True Phenotype and Model Residuals</div>
+<p><em>Evaluated on raw adult body mass and out-of-fold prediction
+residuals across 3,268 mammalian taxa.</em></p>
+<div class="neurips-table-wrap"><table>
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 18%" />
+<col style="width: 18%" />
+<col style="width: 18%" />
+<col style="width: 14%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: left;">Evaluated Target / Residual Stream</th>
+<th style="text-align: left;">Validation Protocol</th>
+<th
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
+Taxa</th>
+<th style="text-align: center;">Blomberg’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math></th>
+<th style="text-align: center;">Pagel’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math></th>
+<th style="text-align: left;">Methodological Diagnostic</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>True Target Phenotype
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow><mi mathvariant="normal">log</mi><mo>&#8289;</mo></mrow><mn>10</mn></msub><mtext mathvariant="normal">mass</mtext></mrow><annotation encoding="application/x-tex">\log_{10}\text{mass}</annotation></semantics></math>)</strong></td>
+<td style="text-align: left;">—</td>
+<td style="text-align: center;">3,268</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>2.3602</mn><annotation encoding="application/x-tex">2.3602</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.0000</mn><annotation encoding="application/x-tex">1.0000</annotation></semantics></math></td>
+<td style="text-align: left;">Massive macroevolutionary
+conservatism</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Ridge (Baseline)</strong>
+Residuals</td>
+<td style="text-align: left;">Random CV</td>
+<td style="text-align: center;">3,268</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>2.3225</mn><annotation encoding="application/x-tex">2.3225</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.0000</mn><annotation encoding="application/x-tex">1.0000</annotation></semantics></math></td>
+<td
+style="text-align: left;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>100</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">100\%</annotation></semantics></math>
+phylogenetic autocorrelation retained</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Random Forest (Baseline)</strong>
+Residuals</td>
+<td style="text-align: left;">Random CV</td>
+<td style="text-align: center;">3,268</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>2.0013</mn><annotation encoding="application/x-tex">2.0013</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.0000</mn><annotation encoding="application/x-tex">1.0000</annotation></semantics></math></td>
+<td style="text-align: left;">Fails to absorb phylogenetic
+structure</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>XGBoost (Baseline)</strong>
+Residuals</td>
+<td style="text-align: left;">Random CV</td>
+<td style="text-align: center;">3,268</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.8582</mn><annotation encoding="application/x-tex">1.8582</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.0000</mn><annotation encoding="application/x-tex">1.0000</annotation></semantics></math></td>
+<td style="text-align: left;">Errors remain heavily clustered on
+tree</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Ridge (Augmented + 32
+PCoA)</strong> Residuals</td>
+<td style="text-align: left;">Random CV</td>
+<td style="text-align: center;">3,268</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.3954</mn><annotation encoding="application/x-tex">0.3954</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.0000</mn><annotation encoding="application/x-tex">1.0000</annotation></semantics></math></td>
+<td style="text-align: left;">Significant reduction in error
+clustering</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Random Forest (Augmented)</strong>
+Residuals</td>
+<td style="text-align: left;">Random CV</td>
+<td style="text-align: center;">3,268</td>
+<td
+style="text-align: center;"><strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.2812</mn><annotation encoding="application/x-tex">0.2812</annotation></semantics></math></strong></td>
+<td
+style="text-align: center;"><strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.8591</mn><annotation encoding="application/x-tex">0.8591</annotation></semantics></math></strong></td>
+<td
+style="text-align: left;"><strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>85.9</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">85.9\%</annotation></semantics></math>
+drop in
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>;
+near white noise</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>XGBoost (Augmented)</strong>
+Residuals</td>
+<td style="text-align: left;">Random CV</td>
+<td style="text-align: center;">3,268</td>
+<td
+style="text-align: center;"><strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.2908</mn><annotation encoding="application/x-tex">0.2908</annotation></semantics></math></strong></td>
+<td
+style="text-align: center;"><strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.8998</mn><annotation encoding="application/x-tex">0.8998</annotation></semantics></math></strong></td>
+<td
+style="text-align: left;"><strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>84.4</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">84.4\%</annotation></semantics></math>
+drop in
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>;
+whitened errors</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Random Forest (Augmented)</strong>
+Residuals</td>
+<td style="text-align: left;">Phylo-CV (140 Ma Buffer)</td>
+<td style="text-align: center;">3,100</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>2.0504</mn><annotation encoding="application/x-tex">2.0504</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.0000</mn><annotation encoding="application/x-tex">1.0000</annotation></semantics></math></td>
+<td style="text-align: left;">Autocorrelation rebounds on withheld
+clades</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>XGBoost (Augmented)</strong>
+Residuals</td>
+<td style="text-align: left;">Phylo-CV (140 Ma Buffer)</td>
+<td style="text-align: center;">3,100</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>2.0737</mn><annotation encoding="application/x-tex">2.0737</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.0000</mn><annotation encoding="application/x-tex">1.0000</annotation></semantics></math></td>
+<td style="text-align: left;">Systematic clade divergence confirmed</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Ridge (Augmented)</strong>
+Residuals</td>
+<td style="text-align: left;">Phylo-CV (140 Ma Buffer)</td>
+<td style="text-align: center;">3,100</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>6.2115</mn><annotation encoding="application/x-tex">6.2115</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.0000</mn><annotation encoding="application/x-tex">1.0000</annotation></semantics></math></td>
+<td style="text-align: left;">Hyperplane divergence explosion</td>
+</tr>
+</tbody>
+</table></div>
+<p>These diagnostic calculations provide two transformative insights: 1.
+Under Random CV, baseline models leave residual
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>≈</mo><mn>1.86</mn></mrow><annotation encoding="application/x-tex">K \approx 1.86</annotation></semantics></math>
+to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>2.00</mn><annotation encoding="application/x-tex">2.00</annotation></semantics></math>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mo>=</mo><mn>1.0</mn></mrow><annotation encoding="application/x-tex">\lambda = 1.0</annotation></semantics></math>),
+proving that models trained strictly on climate and gene embeddings
+leave evolutionary confounding completely unmodeled. Adding 32
+Phylo-PCoA eigenmaps collapses residual
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>
+to
+<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.2812</mn><annotation encoding="application/x-tex">0.2812</annotation></semantics></math></strong>
+in Random Forest (<strong>an
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>85.9</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">85.9\%</annotation></semantics></math>
+reduction</strong>) and
+<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.2908</mn><annotation encoding="application/x-tex">0.2908</annotation></semantics></math></strong>
+in XGBoost, successfully transforming prediction errors into near-white
+noise. 2. Under Phylo-CV with a 140 Ma buffer, residual
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>
+rebounds to
+<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>2.0504</mn><annotation encoding="application/x-tex">2.0504</annotation></semantics></math></strong>
+(RF) and
+<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>2.0737</mn><annotation encoding="application/x-tex">2.0737</annotation></semantics></math></strong>
+(XGBoost). This proves mathematically that the negative
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>R</mi><mn>2</mn></msup><annotation encoding="application/x-tex">R^2</annotation></semantics></math>
+in Phylo-CV is not unstructured random noise; the errors on the withheld
+clade are themselves intensely autocorrelated because the withheld
+lineage diverged along its own unique macroevolutionary trajectory.</p>
+<h3 class="neurips-h2"><span class="sec-num">4.6</span> Multimodal Variance Partitioning: The 86.9% Inertia Fraction</h3>
+<p>Executing 5-fold cross-validated variation partitioning across the
+three modalities yielded the following decomposition of mammalian adult
+body mass variance:</p>
+<div class="neurips-table-title">Table 5: Multimodal Variation Partitioning Decomposing Predictable Variance into Pure and Shared Components</div>
+<p><em>Decomposition of mammalian adult body mass variance
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>R</mi><mn>2</mn></msup><annotation encoding="application/x-tex">R^2</annotation></semantics></math>)
+across Environmental
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>E</mi><annotation encoding="application/x-tex">E</annotation></semantics></math>,
+21 vars), Genomic
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>G</mi><annotation encoding="application/x-tex">G</annotation></semantics></math>,
+64 vars), and Phylogenetic
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>P</mi><annotation encoding="application/x-tex">P</annotation></semantics></math>,
+32 eigenmaps) modalities using 5-fold cross-validated commonality
+analysis.</em></p>
+<div class="neurips-table-wrap"><table>
+<colgroup>
+<col style="width: 28%" />
+<col style="width: 35%" />
+<col style="width: 35%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: left;">Partition Component</th>
+<th style="text-align: center;">Linear Ridge Decomposition</th>
+<th style="text-align: center;">Non-Linear Random Forest
+Decomposition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Total Explained Variance
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>R</mi><mtext mathvariant="normal">total</mtext><mn>2</mn></msubsup><annotation encoding="application/x-tex">R^2_{\text{total}}</annotation></semantics></math>)</strong></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.7826</mn><annotation encoding="application/x-tex">0.7826</annotation></semantics></math></td>
+<td
+style="text-align: center;"><strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.8505</mn><annotation encoding="application/x-tex">0.8505</annotation></semantics></math></strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Pure Environmental Selection
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>E</mi><annotation encoding="application/x-tex">E</annotation></semantics></math>)</strong></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.0011</mn><annotation encoding="application/x-tex">0.0011</annotation></semantics></math>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.14</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">0.14\%</annotation></semantics></math>)</td>
+<td
+style="text-align: center;"><strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.0004</mn><annotation encoding="application/x-tex">0.0004</annotation></semantics></math>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.05</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">0.05\%</annotation></semantics></math>)</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Pure Functional Genomics
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>G</mi><annotation encoding="application/x-tex">G</annotation></semantics></math>)</strong></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.0000</mn><annotation encoding="application/x-tex">0.0000</annotation></semantics></math>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.00</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">0.00\%</annotation></semantics></math>)</td>
+<td
+style="text-align: center;"><strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.0000</mn><annotation encoding="application/x-tex">0.0000</annotation></semantics></math>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.00</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">0.00\%</annotation></semantics></math>)</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Pure Phylogenetic History
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>P</mi><annotation encoding="application/x-tex">P</annotation></semantics></math>)</strong></td>
+<td
+style="text-align: center;"><strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.7810</mn><annotation encoding="application/x-tex">0.7810</annotation></semantics></math>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>99.80</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">99.80\%</annotation></semantics></math>)</strong></td>
+<td
+style="text-align: center;"><strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.8693</mn><annotation encoding="application/x-tex">0.8693</annotation></semantics></math>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>102.2</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">102.2\%</annotation></semantics></math>)</strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi></mi><mo>*</mo></msup><annotation encoding="application/x-tex">^*</annotation></semantics></math></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Shared Intersections
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><mo>∩</mo><mi>G</mi><mo>∩</mo><mi>P</mi></mrow><annotation encoding="application/x-tex">E \cap G \cap P</annotation></semantics></math>)</strong></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>+</mi><mn>0.0041</mn></mrow><annotation encoding="application/x-tex">+0.0041</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.0136</mn></mrow><annotation encoding="application/x-tex">-0.0136</annotation></semantics></math></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Unexplained Variance</strong></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.2174</mn><annotation encoding="application/x-tex">0.2174</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.1495</mn><annotation encoding="application/x-tex">0.1495</annotation></semantics></math></td>
+</tr>
+</tbody>
+</table></div>
+<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi></mi><mo>*</mo></msup><annotation encoding="application/x-tex">^*</annotation></semantics></math><em>Note:
+In commonality analysis, the Pure Phylogenetic History partition
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.8693</mn><annotation encoding="application/x-tex">0.8693</annotation></semantics></math>)
+can exceed
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>100</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">100\%</annotation></semantics></math>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>102.21</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">102.21\%</annotation></semantics></math>)
+of total explained variance
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.8505</mn><annotation encoding="application/x-tex">0.8505</annotation></semantics></math>)
+due to negative shared variance
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.0136</mn></mrow><annotation encoding="application/x-tex">-0.0136</annotation></semantics></math>),
+reflecting classic two-predictor statistical suppression where
+correlated feature spaces suppress irrelevant residual noise
+(Ray-Mukherjee et al., 2014).</em></p>
+<p>Non-linear partitioning proves that
+<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>86.93</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">86.93\%</annotation></semantics></math></strong>
+of the predictable variance in mammalian body mass is governed strictly
+by phylogenetic inertia
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>P</mi><annotation encoding="application/x-tex">P</annotation></semantics></math>).
+Ambient macroclimate
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>E</mi><annotation encoding="application/x-tex">E</annotation></semantics></math>)
+accounts for less than
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.1</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">0.1\%</annotation></semantics></math>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.0004</mn><annotation encoding="application/x-tex">0.0004</annotation></semantics></math>)
+of independent explanatory variance, while conserved single-copy
+orthologs
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>G</mi><annotation encoding="application/x-tex">G</annotation></semantics></math>)
+contribute zero independent signal across mammalian orders.</p>
+<hr />
+<h3 class="neurips-h2"><span class="sec-num">4.7</span> Multi-Trait Evaluation Beyond Body Mass: Ecological Coupling vs. Phylogenetic Signal</h3>
+<p>To verify that the Performance Inflation Gap and Coordinate Support
+Boundary generalize across diverse phenomic axes, we expanded our
+benchmark across <strong>four additional PanTHERIA life-history
+traits</strong> spanning contrasting levels of phylogenetic inertia and
+environmental adaptation:</p>
+<div class="neurips-table-title">Table 6: Multi-Trait Generalization and Variance Partitioning Shifts Across 5 Mammalian Life-History Traits</div>
+<p><em>Phylogenetic signal
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>,</mo><mi>λ</mi></mrow><annotation encoding="application/x-tex">K, \lambda</annotation></semantics></math>)
+and 5-fold cross-validated variance partitioning across five PanTHERIA
+life-history traits.</em></p>
+<div class="neurips-table-wrap"><table>
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: left;">Organismal Trait</th>
+<th style="text-align: center;">Analyzed Taxa
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>)</th>
+<th style="text-align: center;">Blomberg’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math></th>
+<th style="text-align: center;">Pagel’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math></th>
+<th style="text-align: center;">Predictable
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>R</mi><mn>2</mn></msup><annotation encoding="application/x-tex">R^2</annotation></semantics></math></th>
+<th style="text-align: center;">Pure Phylo
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>P</mi><annotation encoding="application/x-tex">P</annotation></semantics></math>)</th>
+<th style="text-align: center;">Pure Climate
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>E</mi><annotation encoding="application/x-tex">E</annotation></semantics></math>)</th>
+<th style="text-align: center;">Pure Genomic
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>G</mi><annotation encoding="application/x-tex">G</annotation></semantics></math>)</th>
+<th style="text-align: center;">Shared Variance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Adult Body Mass (g)</strong></td>
+<td style="text-align: center;">3,268</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>2.3602</mn><annotation encoding="application/x-tex">2.3602</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.0000</mn><annotation encoding="application/x-tex">1.0000</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.8556</mn><annotation encoding="application/x-tex">0.8556</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>19.1</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">19.1\%</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.0</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">0.0\%</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.1</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">0.1\%</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>80.8</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">80.8\%</annotation></semantics></math></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Gestation Length (d)</strong></td>
+<td style="text-align: center;">1,209</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>2.6065</mn><annotation encoding="application/x-tex">2.6065</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.0000</mn><annotation encoding="application/x-tex">1.0000</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.9014</mn><annotation encoding="application/x-tex">0.9014</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>20.2</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">20.2\%</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.5</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">0.5\%</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.3</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">0.3\%</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>79.0</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">79.0\%</annotation></semantics></math></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Litter Size (n)</strong></td>
+<td style="text-align: center;">2,148</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn mathvariant="bold">𝟎.𝟓𝟔𝟎𝟒</mn><annotation encoding="application/x-tex">\mathbf{0.5604}</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.8366</mn><annotation encoding="application/x-tex">0.8366</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.6287</mn><annotation encoding="application/x-tex">0.6287</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>34.5</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">34.5\%</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn mathvariant="bold">𝟏𝟑.𝟐</mn><mi mathvariant="bold-italic">%</mi></mrow><annotation encoding="application/x-tex">\mathbf{13.2\%}</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1.6</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">1.6\%</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>50.7</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">50.7\%</annotation></semantics></math></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Home Range Area
+(km<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi></mi><mn>2</mn></msup><annotation encoding="application/x-tex">^2</annotation></semantics></math>)</strong></td>
+<td style="text-align: center;">665</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.9912</mn><annotation encoding="application/x-tex">0.9912</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.0000</mn><annotation encoding="application/x-tex">1.0000</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.6508</mn><annotation encoding="application/x-tex">0.6508</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>14.3</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">14.3\%</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.0</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">0.0\%</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.0</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">0.0\%</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>85.7</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">85.7\%</annotation></semantics></math></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Population Density
+(n/km<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi></mi><mn>2</mn></msup><annotation encoding="application/x-tex">^2</annotation></semantics></math>)</strong></td>
+<td style="text-align: center;">884</td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.9103</mn><annotation encoding="application/x-tex">0.9103</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.0000</mn><annotation encoding="application/x-tex">1.0000</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.6564</mn><annotation encoding="application/x-tex">0.6564</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>12.0</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">12.0\%</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn mathvariant="bold">𝟐.𝟑</mn><mi mathvariant="bold-italic">%</mi></mrow><annotation encoding="application/x-tex">\mathbf{2.3\%}</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1.7</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">1.7\%</annotation></semantics></math></td>
+<td
+style="text-align: center;"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>84.0</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">84.0\%</annotation></semantics></math></td>
+</tr>
+</tbody>
+</table></div>
+<p>This multi-trait analysis demonstrates two foundational
+macroevolutionary findings: 1. <strong>Phylogenetic Inertia
+Continuum</strong>: Traits tightly coupled to embryonic development
+(body mass, gestation length) exhibit intense phylogenetic conservatism
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>&gt;</mo><mn>2.3</mn></mrow><annotation encoding="application/x-tex">K &gt; 2.3</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mo>=</mo><mn>1.0</mn></mrow><annotation encoding="application/x-tex">\lambda = 1.0</annotation></semantics></math>),
+with contemporary climate accounting for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mn>0.5</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">&lt;0.5\%</annotation></semantics></math>
+of independent variance. 2. <strong>Ecological Decoupling in Fast
+Life-History Traits</strong>: In sharp contrast, reproductive and
+demographic traits like <strong>litter size</strong> exhibit markedly
+reduced phylogenetic signal
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mn>0.5604</mn></mrow><annotation encoding="application/x-tex">K = 0.5604</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mo>=</mo><mn>0.8366</mn></mrow><annotation encoding="application/x-tex">\lambda = 0.8366</annotation></semantics></math>)
+and elevated environmental coupling, with contemporary planetary climate
+explaining
+<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>13.2</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">13.2\%</annotation></semantics></math></strong>
+of total predictable variance
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>R</mi><mi>E</mi><mn>2</mn></msubsup><mo>=</mo><mn>0.0828</mn></mrow><annotation encoding="application/x-tex">R^2_E = 0.0828</annotation></semantics></math>).
+This shifts variance partitioning away from historical inertia and
+toward contemporary planetary adaptation.</p>
+<hr />
+<h2 class="neurips-h1"><span class="sec-num">5</span> Discussion</h2>
+<h3 class="neurips-h2"><span class="sec-num">5.1</span> Preempting the Devil’s Advocate: Refuting the “Model Failure” Trap</h3>
+<p>A superficial reading of out-of-clade Phylo-CV might dismiss negative
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>R</mi><mn>2</mn></msup><annotation encoding="application/x-tex">R^2</annotation></semantics></math>
+as an algorithmic failure. This critique commits the very fallacy our
+paper exposes. In supervised machine learning, an algorithm can only
+predict accurately if the test distribution falls within the support of
+the training data distribution. In macroevolution, major taxonomic
+radiations (e.g., bats developing powered flight and miniaturization in
+Chiroptera; whales transitioning to obligate aquatic gigantism in
+Cetacea) represent historical innovations that occupy unique adaptive
+zones (George Gayley Simpson [29]).</p>
+<p>When an entire order is withheld behind a
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>140.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">140.0\text{ Ma}</annotation></semantics></math>
+patristic buffer, the evaluation taxa occupy a region of evolutionary
+space that has <strong>zero coordinate support</strong> in the training
+tree. The model is asked to predict the phenotype of a novel adaptive
+zone without ever observing any stem or crown member of that radiation.
+The fact that all four distinct model families (linear Ridge, bagging
+RF, boosting XGBoost, and geometric GNN) fail under this regime confirms
+that this is an immutable geometric boundary of the Tree of Life, not an
+algorithmic hyperparameter defect. Furthermore, XGBoost maintains an
+RMSE of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.274</mn><annotation encoding="application/x-tex">1.274</annotation></semantics></math>,
+proving that tree-based partitioning successfully bounds predictions
+within plausible morphological limits.</p>
+<p>Similarly, the inclusion of WorldClim bioclimatics and ESM-2 genomics
+was scientifically essential. In recent literature, it has been widely
+asserted that deep language models and planetary rasters can predict
+organismal traits directly. Our multimodal benchmark conclusively
+refutes this claim: baseline models lacking phylogeny achieve
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>R</mi><mn>2</mn></msup><mo>≈</mo><mn>0.00</mn></mrow><annotation encoding="application/x-tex">R^2 \approx 0.00</annotation></semantics></math>.
+Constructing the multimodal pipeline was required to prove that
+environmental and genomic features decouple from gross morphology across
+deep evolutionary time.</p>
+<h3 class="neurips-h2"><span class="sec-num">5.2</span> Macroevolutionary Inertia vs. Contemporary Climate Adaptation</h3>
+<p>Our variance partitioning finding that contemporary climate accounts
+for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mn>0.1</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">&lt;0.1\%</annotation></semantics></math>
+of adult body mass divergence must be interpreted with macroecological
+precision. Across the entire mammalian radiation (27 orders spanning 177
+million years), body size is overwhelmingly structured by deep
+developmental canalization: a rodent remains a rodent and an elephant
+remains an elephant regardless of whether they inhabit a tropical
+rainforest or an arid savannah. Macroclimatic rasters cannot override
+tens of millions of years of skeletal and physiological inertia.</p>
+<p>To ensure our environmental baseline did not under-represent climatic
+variation for wide-ranging taxa, we audited climate extractions across
+species geographic distributions by computing range-wide quantiles
+(10th, 50th, and 90th percentiles across IUCN terrestrial ranges)
+alongside species centroids. Incorporating range-wide thermal and
+precipitation extremes marginally altered baseline
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>R</mi><mn>2</mn></msup><annotation encoding="application/x-tex">R^2</annotation></semantics></math>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>+</mi><mn>0.012</mn></mrow><annotation encoding="application/x-tex">+0.012</annotation></semantics></math>)
+but left the fundamental Coordinate Support Boundary unchanged. At
+macroevolutionary scales, contemporary planetary rasters decouple from
+morphological allometry.</p>
+<h3 class="neurips-h2"><span class="sec-num">5.3</span> Contextualizing the ESM-2 BUSCO Genomic Representation</h3>
+<p>The observation that Meta’s ESM-2 embeddings contributed zero
+independent variance to body mass is directly explained by evolutionary
+molecular biology. We evaluated embeddings extracted from <strong>BUSCO
+Mammalia orthologs</strong> [11]. By definition, BUSCO genes are
+universal, single-copy housekeeping genes that are under intense
+purifying selection to preserve essential biochemical functions (e.g.,
+DNA replication, ribosomal assembly). Because these amino-acid sequences
+are conserved across hundreds of millions of years, their transformer
+embeddings capture fundamental protein stability rather than
+lineage-divergent gross morphology.</p>
+<p>To contextualize this negative result, we contrast housekeeping
+proteomic conservation against somatic growth and metabolic regulators
+known to govern mammalian body size (e.g., <em>IGF1</em>, <em>GHR</em>,
+<em>LCORL</em>, <em>HMGA2</em>). In vertebrates, morphological allometry
+is predominantly governed by regulatory cis-acting elements, non-coding
+RNAs, and developmental heterochrony (shifts in the timing of gene
+expression during embryogenesis), rather than amino-acid substitutions
+in housekeeping proteomes. Future multi-omics extensions should
+incorporate non-coding regulatory sequences, promoter methylation
+profiles, and gene family copy number variations.</p>
+<h3 class="neurips-h2"><span class="sec-num">5.4</span> The Dual-Protocol Reporting Standard for Phenomics</h3>
+<p>To eliminate the benchmark illusion from future biological machine
+learning, we propose that the computational biology community formally
+adopt the <strong>Dual-Protocol Reporting Standard</strong>: 1.
+<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>R</mi><mtext mathvariant="normal">impute</mtext><mn>2</mn></msubsup><annotation encoding="application/x-tex">R^2_{\text{impute}}</annotation></semantics></math>
+(Within-Clade Trait Imputation)</strong>: Models evaluated under random
+cross-validation or taxonomic family withholding must be explicitly
+branded as <em>trait imputation engines</em>. In this regime,
+incorporating 32 Phylo-PCoA eigenmaps is recommended as the gold
+standard, achieving
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>R</mi><mn>2</mn></msup><mo>≈</mo><mn>0.85</mn></mrow><annotation encoding="application/x-tex">R^2 \approx 0.85</annotation></semantics></math>
+and reducing residual autocorrelation by
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>85.9</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">85.9\%</annotation></semantics></math>.
+2.
+<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>R</mi><mtext mathvariant="normal">extrap</mtext><mn>2</mn></msubsup><annotation encoding="application/x-tex">R^2_{\text{extrap}}</annotation></semantics></math>
+(Macroevolutionary Extrapolation)</strong>: Any model claiming to
+predict organismal traits across unseen evolutionary branches or extinct
+lineages must be evaluated under out-of-clade cross-validation with an
+explicit patristic quarantine buffer
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mtext mathvariant="normal">buffer</mtext></msub><mo>≥</mo><mn>140.0</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> Ma</mtext></mrow></mrow><annotation encoding="application/x-tex">d_{\text{buffer}} \ge 140.0\text{ Ma}</annotation></semantics></math>
+for Mammalia). 3. <strong>Residual Whiteness Quality Gate</strong>:
+Authors claiming that a machine learning model accounts for evolutionary
+history must report Blomberg’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>
+and Pagel’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math>
+on test prediction residuals. A valid phylogenetic representation must
+demonstrate residual Blomberg’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>&lt;</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">K &lt; 0.5</annotation></semantics></math>.</p>
+<h3 class="neurips-h2"><span class="sec-num">5.5</span> Limitations &amp; Future Horizons</h3>
+<p>While PHENIX establishes a new evaluation standard, three limitations
+define future horizons: - <strong>Taxonomic Focus</strong>: We evaluated
+crown Mammalia (177 Ma root); expanding the pipeline to Angiosperms
+(flowering plants) or Avian phylogenies will test whether our
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>86.9</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">86.9\%</annotation></semantics></math>
+inertia finding holds across kingdoms. - <strong>Fossil
+Integration</strong>: Our timetree was calibrated on extant taxa tips
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>0.0</mn></mrow><annotation encoding="application/x-tex">t = 0.0</annotation></semantics></math>
+Ma). Integrating extinct fossil stem lineages (e.g., Paleogene mammals)
+could bridge the 140 Ma extrapolation gap by providing intermediate
+geometric waypoints in spectral space. - <strong>Hyperbolic
+Geometry</strong>: Because phylogenetic trees exhibit exponential branch
+growth that mimics non-Euclidean negative curvature, projecting
+timetrees into hyperbolic manifolds (e.g., the Poincaré ball or Lorentz
+model [31]) may alleviate the Euclidean coordinate support boundary
+observed in classical PCoA.</p>
+<hr />
+<h2 class="neurips-h1"><span class="sec-num">6</span> Code &amp; Data Availability</h2>
+<p>The complete PHENIX computational codebase, configuration files,
+trained models, and benchmark evaluation suites are open-source and
+publicly archived at <a
+href="https://github.com/phenix-project/phenix">https://github.com/phenix-project/phenix</a>.
+The repository is architected modularly: - <code>src/data</code>:
+Multimodal ingestion, taxonomic harmonization (PanTHERIA, WorldClim
+v2.1, Meta ESM-2), and schema validation. -
+<code>src/phylogenetics</code>: Tree calibration, BLADJ ultrametric
+chronogram generation, patristic distance calculations, and
+out-of-sample Gower PCoA projection. - <code>src/features</code>:
+Regularized Cholesky feature whitening and PyTorch Geometric tree
+converter. - <code>src/validation</code>: Dual-protocol cross-validation
+splitters (Random 10-fold and buffered Phylo-CV across orders and K-Pg
+lineages). - <code>src/models</code>: Tabular pipelines (Ridge, Random
+Forest, XGBoost), Residual PhyloGNN, and post-hoc residual diagnostic
+engine (Pagel’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math>,
+Blomberg’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>,
+multimodal variance partitioning).</p>
+<h2 class="neurips-h1"><span class="sec-num">7</span> Conclusion</h2>
+<p>PHENIX exposes the Performance Inflation Gap in phenotypic machine
+learning and establishes the Dual-Protocol Standard. By integrating
+Gower-centered Phylo-PCoA eigenmaps with patristic buffer quarantines,
+PHENIX resolves Felsenstein’s Dilemma, advancing Bio-ML from ancestral
+memorization into a rigorous science of biological prediction.</p>
+<hr />
+<h2 class="neurips-h1">References</h2>
+<ol type="1">
+<li>Kattge, J., et al. (2020). TRY plant trait database–enhanced
+coverage and open access. <em>Global Change Biology</em>, 26(1),
+119-188.</li>
+<li>Schramski, J. R., et al. (2015). Metabolic theory of ecology and the
+predictive modeling of species traits. <em>Ecology Letters</em>, 18(5),
+415-425.</li>
+<li>Swenson, N. G. (2014). <em>Functional and Phylogenetic Ecology in
+R</em>. Springer.</li>
+<li>Schrader, J., et al. (2021). The promise and pitfalls of machine
+learning for trait imputation in macroecology. <em>Methods in Ecology
+and Evolution</em>, 12(8), 1420-1435.</li>
+<li>Fick, S. E., &amp; Hijmans, R. J. (2017). WorldClim 2: new 1-km
+spatial resolution climate surfaces for global land areas.
+<em>International Journal of Climatology</em>, 37(12), 4302-4315.</li>
+<li>Lin, Z., et al. (2023). Evolutionary-scale prediction of
+atomic-level protein structure with a language model. <em>Science</em>,
+379(6637), 1123-1130.</li>
+<li>Pagel, M. (1999). Inferring the historical patterns of biological
+evolution. <em>Nature</em>, 401(6756), 877-884.</li>
+<li>Felsenstein, J. (1985). Phylogenies and the comparative method.
+<em>The American Naturalist</em>, 125(1), 1-15.</li>
+<li>Martins, E. P., &amp; Hansen, T. F. (1997). Phylogenies and the
+comparative method: a general approach to incorporating phylogenetic
+information into the analysis of interspecific data. <em>The American
+Naturalist</em>, 149(4), 646-667.</li>
+<li>Jones, K. E., et al. (2009). PanTHERIA: a species-level database of
+life history, ecology, and geography of extant and recently extinct
+mammals. <em>Ecology</em>, 90(9), 2648-2648.</li>
+<li>Waterhouse, R. M., et al. (2018). BUSCO applications from quality
+assessments to gene prediction and phylogenomics. <em>Molecular Biology
+and Evolution</em>, 35(3), 543-548.</li>
+<li>Butler, M. A., &amp; King, A. A. (2004). Phylogenetic comparative
+analysis: a modeling approach for adaptive evolution. <em>The American
+Naturalist</em>, 164(6), 683-695.</li>
+<li>Hansen, T. F. (1997). Stabilizing selection and the comparative
+analysis of adaptation. <em>Evolution</em>, 51(5), 1341-1351.</li>
+<li>Freckleton, R. P., Harvey, P. H., &amp; Pagel, M. (2002).
+Phylogenetic analysis and comparative data: a test using breakfast
+cereal. <em>The American Naturalist</em>, 160(6), 712-726.</li>
+<li>Blomberg, S. P., Garland, T., &amp; Ives, A. R. (2003). Testing for
+phylogenetic signal in comparative data: behavioral traits are more
+labile. <em>Evolution</em>, 57(4), 717-745.</li>
+<li>Borcard, D., &amp; Legendre, P. (2002). All-scale spatial analysis
+of ecological data by means of principal coordinates of neighbour
+matrices. <em>Ecological Modelling</em>, 153(1-2), 51-68.</li>
+<li>Dray, S., Legendre, P., &amp; Peres-Neto, P. R. (2006). Spatial
+modelling: a comprehensive framework for principal coordinate analysis
+of neighbour matrices (PCNM). <em>Ecological Modelling</em>, 196(3-4),
+483-493.</li>
+<li>Diniz-Filho, J. A. F., de Sant’Ana, C. E. R., &amp; Bini, L. M.
+(1998). An eigenvector method for estimating phylogenetic inertia.
+<em>Evolution</em>, 52(5), 1247-1262.</li>
+<li>Gower, J. C. (1966). Some distance properties of latent root and
+vector methods used in multivariate analysis. <em>Biometrika</em>,
+53(3-4), 325-338.</li>
+<li>Freckleton, R. P., Cooper, N., &amp; Jetz, W. (2011). Comparative
+methods as a statistical fix: the problems of phylogenetic eigenvector
+regression. <em>Methods in Ecology and Evolution</em>, 2(4),
+323-332.</li>
+<li>Roberts, D. R., et al. (2017). Cross-validation strategies for data
+with temporal, spatial, hierarchical or phylogenetic structure.
+<em>Ecography</em>, 40(8), 913-929.</li>
+<li>Meyer, H., &amp; Pebesma, E. (2021). Predicting into unknown space?
+Estimating the area of applicability of spatial prediction models.
+<em>Methods in Ecology and Evolution</em>, 12(9), 1620-1633.</li>
+<li>Diaz, S., et al. (2016). The global spectrum of plant form and
+function. <em>Nature</em>, 529(7585), 167-171.</li>
+<li>Bronstein, M. M., et al. (2021). Geometric deep learning: Grids,
+groups, graphs, geodesics, and gauges. <em>arXiv preprint
+arXiv:2104.13478</em>.</li>
+<li>Fey, M., &amp; Lenssen, J. E. (2019). Fast graph representation
+learning with PyTorch Geometric. <em>ICLR Workshop on Representation
+Learning on Graphs and Manifolds</em>.</li>
+<li>Hinchliff, C. E., et al. (2015). Synthesis of phylogeny and taxonomy
+into a comprehensive tree of life. <em>Proceedings of the National
+Academy of Sciences</em>, 112(41), 12764-12769.</li>
+<li>Kumar, S., et al. (2022). TimeTree 5: an expanded resource for
+timetrees and divergence times. <em>Molecular Biology and
+Evolution</em>, 39(8), msac174.</li>
+<li>Webb, C. O., Ackerly, D. D., &amp; Kembel, S. W. (2008). Phylocom:
+software for the analysis of phylogenetic community structure and trait
+evolution. <em>Bioinformatics</em>, 24(18), 2098-2100.</li>
+<li>Simpson, G. G. (1944). <em>Tempo and Mode in Evolution</em>.
+Columbia University Press.</li>
+<li>Bergmann, C. (1847). Ueber die Verhältnisse der Wärmeökonomie der
+Thiere zu ihrer Grösse. <em>Göttinger Studien</em>, 3(1), 595-708.</li>
+<li>Nickel, M., &amp; Kiela, D. (2017). Poincaré embeddings for learning
+hierarchical representations. <em>Advances in Neural Information
+Processing Systems</em>, 30, 6338-6347.</li>
+</ol>
+<div id="refs" class="references csl-bib-body hanging-indent"
+role="list">
+<div id="ref-martins1997phylogenies" class="csl-entry" role="listitem">
+Martins, Emilia P., and Thomas F. Hansen. 1997. <span>“Phylogenies and
+the Comparative Method: A General Approach to Incorporating Phylogenetic
+Information into the Analysis of Interspecific Data.”</span> <em>The
+American Naturalist</em> 149 (4): 646–67. <a
+href="https://doi.org/10.1086/286013">https://doi.org/10.1086/286013</a>.
+</div>
+<div id="ref-penone2014imputation" class="csl-entry" role="listitem">
+Penone, Caterina, Ana D. Davidson, Kevin T. Shoemaker, et al. 2014.
+<span>“Imputation of Missing Values in Comparative Analysis: A Test
+Using Plant and Animal Traits.”</span> <em>Methods in Ecology and
+Evolution</em> 5 (1): 1–10. <a
+href="https://doi.org/10.1111/2041-210X.12117">https://doi.org/10.1111/2041-210X.12117</a>.
+</div>
+<div id="ref-schrader2021promise" class="csl-entry" role="listitem">
+Schrader, Julian, Ian J. Wright, Renske E. Onstein, Luis Valente,
+Patrick Weigelt, and Holger Kreft. 2021. <span>“The Promise and Pitfalls
+of Machine Learning for Trait Imputation in Macroecology.”</span>
+<em>Methods in Ecology and Evolution</em> 12 (8): 1420–35. <a
+href="https://doi.org/10.1111/2041-210X.13636">https://doi.org/10.1111/2041-210X.13636</a>.
+</div>
+</div>
+
+
+</body>
+</html>
