@@ -651,7 +651,7 @@ def plot_clade_buffer_diagram() -> plt.Figure:
     ax.set_xticks([0, 37, 140, 177])
     ax.set_xticklabels(["Root\n(177 Ma)", "d_buffer cutoff\n(140 Ma)", "Recent Splits\n(37 Ma)", "Present Day\n(0 Ma)"], fontsize=8.0)
     ax.set_xlabel("Evolutionary Divergence Time (Million Years Ago [Ma])", fontsize=9.0, fontweight="bold", color="#2c3e50")
-    ax.set_title("The Patristic Quarantine Buffer (Sync Barrier 3)", fontsize=10.5, fontweight="bold", color="#1a202c")
+    ax.set_title("The Patristic Quarantine Buffer (Phylo-CV Protocol)", fontsize=10.5, fontweight="bold", color="#1a202c")
 
     for spine in ["top", "left", "right"]:
         ax.spines[spine].set_visible(False)
@@ -924,6 +924,210 @@ def plot_forecasting_comparison_horizontal(
     min_val, max_val = min(vals), max(vals)
     span = max(abs(min_val), abs(max_val), 0.05)
     ax.set_xlim(-span * 1.4, span * 1.4)
+
+    plt.tight_layout(pad=1.0)
+    return fig
+
+
+def plot_dual_protocol_benchmark_comparison() -> plt.Figure:
+    """Plots comparative grouped bar chart: Random CV (Impute) vs. Phylo-CV (Extrap) with published baselines."""
+    fig, ax = plt.subplots(figsize=(8.5, 4.8), dpi=100)
+    fig.patch.set_facecolor("#ffffff")
+    ax.set_facecolor("#fafbfc")
+
+    models = [
+        "Penone PVR (2014)",
+        "Schrader MissForest (2021)",
+        "Martins PGLS (1997)",
+        "Ridge (Baseline)",
+        "Ridge (+ 32 Phylo-PCoA)",
+        "Random Forest (Baseline)",
+        "Random Forest (+ 32 PCoA)",
+        "XGBoost (Baseline)",
+        "XGBoost (+ 32 PCoA)",
+    ]
+    r2_random = [0.8214, 0.8412, 0.7621, 0.6661, 0.7893, 0.6902, 0.8554, 0.6969, 0.8597]
+    r2_phylo = [-5.0142, -5.1190, -4.2105, -3.7777, -10.0, -5.6328, -7.7642, -5.3477, -5.9718]
+    # Cap Ridge Augmented at -10 for plot visual scale (true value is -91.47)
+
+    y = np.arange(len(models))
+    height = 0.38
+
+    rects1 = ax.barh(y - height/2, r2_random, height, label="Random CV (R² impute: Within-Clade)", color="#10b981", edgecolor="#059669")
+    rects2 = ax.barh(y + height/2, r2_phylo, height, label="Phylo-CV (R² extrap: Out-of-Clade)", color="#ef4444", edgecolor="#dc2626")
+
+    ax.axvline(0, color="#1e293b", linestyle="-", linewidth=1.0, alpha=0.8)
+    ax.axvline(0.85, color="#10b981", linestyle=":", linewidth=1.0, alpha=0.6, label="Imputation Frontier (~0.86)")
+
+    ax.set_yticks(y)
+    ax.set_yticklabels(models, fontsize=8.5, fontweight="bold", color="#1e293b")
+    ax.invert_yaxis()
+    ax.set_xlabel("Cross-Validation Predictive Coefficient of Determination (R²)", fontsize=9.5, fontweight="bold", color="#1e293b")
+    ax.set_title("The Dual-Protocol Reporting Standard: Exposing Clade Leakage Across Models", fontsize=11.0, fontweight="bold", color="#0d3b2e", pad=12)
+    ax.set_xlim(-8.5, 1.05)
+    ax.grid(axis="x", linestyle="--", alpha=0.4, color="#cbd5e0")
+    ax.legend(loc="lower left", fontsize=8.0, framealpha=0.95)
+
+    # Annotate values
+    for rect in rects1:
+        w = rect.get_width()
+        ax.annotate(f"{w:.2f}", xy=(w + 0.08, rect.get_y() + rect.get_height()/2), va="center", ha="left", fontsize=7.5, fontweight="bold", color="#047857")
+
+    for idx, rect in enumerate(rects2):
+        w = rect.get_width()
+        label_txt = f"{w:.2f}" if idx != 4 else "-91.47 (clipped)"
+        ax.annotate(label_txt, xy=(w - 0.12, rect.get_y() + rect.get_height()/2), va="center", ha="right", fontsize=7.5, fontweight="bold", color="#b91c1c")
+
+    for spine in ["top", "right"]:
+        ax.spines[spine].set_visible(False)
+    ax.spines["left"].set_color("#cbd5e0")
+    ax.spines["bottom"].set_color("#cbd5e0")
+
+    plt.tight_layout(pad=1.0)
+    return fig
+
+
+def plot_buffer_sensitivity_curve(buffer_data: list) -> plt.Figure:
+    """Plots the continuous patristic quarantine buffer sensitivity curve."""
+    fig, ax1 = plt.subplots(figsize=(8.0, 4.0), dpi=100)
+    fig.patch.set_facecolor("#ffffff")
+    ax1.set_facecolor("#fafbfc")
+
+    buffers = [d["d_buffer_ma"] for d in buffer_data]
+    r2_rf = [d["r2_pooled_rf"] for d in buffer_data]
+    r2_xgb = [d["r2_pooled_xgb"] for d in buffer_data]
+    k_rf = [d["resid_blomberg_k_rf"] for d in buffer_data]
+
+    # Primary axis: Pooled R2
+    ax1.plot(buffers, r2_xgb, marker="o", linewidth=2.2, color="#059669", label="Augmented XGBoost (Pooled R²)")
+    ax1.plot(buffers, r2_rf, marker="s", linewidth=2.2, color="#2563eb", label="Augmented Random Forest (Pooled R²)")
+    ax1.axhline(0, color="#64748b", linestyle="--", linewidth=1.0, label="Global Mean Baseline (R² = 0)")
+
+    ax1.set_xlabel("Patristic Quarantine Buffer Threshold d_buffer (Million Years Ago [Ma])", fontsize=9.5, fontweight="bold", color="#1e293b")
+    ax1.set_ylabel("Pooled Out-of-Clade Extrapolation R²", fontsize=9.5, fontweight="bold", color="#1e293b")
+    ax1.set_ylim(-0.50, 0.05)
+    ax1.grid(True, linestyle="--", alpha=0.4, color="#cbd5e0")
+
+    # Secondary axis: Residual Blomberg's K
+    ax2 = ax1.twinx()
+    ax2.plot(buffers, k_rf, marker="^", linewidth=2.0, linestyle=":", color="#dc2626", label="Residual Blomberg's K (RF)")
+    ax2.set_ylabel("Residual Blomberg's K (Phylogenetic Signal)", fontsize=9.5, fontweight="bold", color="#dc2626")
+    ax2.set_ylim(1.5, 2.1)
+    ax2.spines["right"].set_color("#dc2626")
+
+    # Combine legends
+    lines1, labels1 = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax1.legend(lines1 + lines2, labels1 + labels2, loc="lower left", fontsize=8.0, framealpha=0.92)
+
+    ax1.set_title("Coordinate Support Boundary: Trait Predictability Across Quarantine Buffers", fontsize=11.0, fontweight="bold", color="#0d3b2e", pad=12)
+
+    for spine in ["top"]:
+        ax1.spines[spine].set_visible(False)
+        ax2.spines[spine].set_visible(False)
+
+    plt.tight_layout(pad=1.0)
+    return fig
+
+
+def plot_multi_trait_variance_comparison() -> plt.Figure:
+    """Plots stacked variance partitioning across 5 PanTHERIA life-history traits."""
+    fig, ax = plt.subplots(figsize=(8.5, 4.2), dpi=100)
+    fig.patch.set_facecolor("#ffffff")
+    ax.set_facecolor("#fafbfc")
+
+    traits = [
+        "Adult Body Mass (3,268 taxa)",
+        "Gestation Length (1,209 taxa)",
+        "Litter Size (2,148 taxa)",
+        "Home Range Area (665 taxa)",
+        "Population Density (884 taxa)",
+    ]
+
+    # Percentages from Table 6
+    pure_p = np.array([19.1, 20.2, 34.5, 14.3, 12.0])
+    pure_e = np.array([0.0, 0.5, 13.2, 0.0, 2.3])
+    pure_g = np.array([0.1, 0.3, 1.6, 0.0, 1.7])
+    shared = np.array([80.8, 79.0, 50.7, 85.7, 84.0])
+
+    y = np.arange(len(traits))
+    height = 0.52
+
+    p1 = ax.barh(y, pure_p, height, label="Pure Phylogeny (P)", color="#0f766e", edgecolor="#0d5a36")
+    p2 = ax.barh(y, pure_e, height, left=pure_p, label="Pure Climate (E)", color="#f59e0b", edgecolor="#d97706")
+    p3 = ax.barh(y, pure_g, height, left=pure_p + pure_e, label="Pure Genomic (G)", color="#8b5cf6", edgecolor="#7c3aed")
+    p4 = ax.barh(y, shared, height, left=pure_p + pure_e + pure_g, label="Shared Covariance", color="#64748b", edgecolor="#475569")
+
+    # Annotate pure climate highlight on Litter Size
+    ax.annotate(
+        "★ 13.2% Climate Signal\n(Fast Life-History)",
+        xy=(pure_p[2] + pure_e[2]/2, y[2]),
+        xytext=(45, y[2] + 0.35),
+        arrowprops=dict(facecolor="#d97706", shrink=0.08, width=1.5, headwidth=6),
+        fontsize=8.0,
+        fontweight="bold",
+        color="#b45309",
+    )
+
+    ax.set_yticks(y)
+    ax.set_yticklabels(traits, fontsize=8.5, fontweight="bold", color="#1e293b")
+    ax.invert_yaxis()
+    ax.set_xlabel("Percentage of Predictable Morphological Variance (%)", fontsize=9.5, fontweight="bold", color="#1e293b")
+    ax.set_title("Macroevolutionary Variance Partitioning Across Life-History Traits", fontsize=11.0, fontweight="bold", color="#0d3b2e", pad=12)
+    ax.set_xlim(0, 105)
+    ax.grid(axis="x", linestyle="--", alpha=0.4, color="#cbd5e0")
+    ax.legend(loc="lower right", fontsize=8.0, framealpha=0.92)
+
+    for spine in ["top", "right"]:
+        ax.spines[spine].set_visible(False)
+    ax.spines["left"].set_color("#cbd5e0")
+    ax.spines["bottom"].set_color("#cbd5e0")
+
+    plt.tight_layout(pad=1.0)
+    return fig
+
+
+def plot_residual_whitening_comparison() -> plt.Figure:
+    """Plots Blomberg's K across raw trait vs. baseline and augmented model residuals."""
+    fig, ax = plt.subplots(figsize=(8.0, 3.8), dpi=100)
+    fig.patch.set_facecolor("#ffffff")
+    ax.set_facecolor("#fafbfc")
+
+    labels = [
+        "True Adult Body Mass",
+        "Ridge (Baseline Residuals)",
+        "Random Forest (Baseline Residuals)",
+        "XGBoost (Baseline Residuals)",
+        "Ridge (+ 32 Phylo-PCoA Residuals)",
+        "Random Forest (+ 32 PCoA Residuals)",
+        "XGBoost (+ 32 PCoA Residuals)",
+    ]
+    k_vals = [2.3602, 2.3225, 2.0013, 1.8582, 0.3954, 0.2812, 0.2834]
+    colors = ["#7c2d12", "#b91c1c", "#c2410c", "#d97706", "#0284c7", "#059669", "#047857"]
+
+    y = np.arange(len(labels))
+    bars = ax.barh(y, k_vals, height=0.55, color=colors, edgecolor="#1e293b", linewidth=0.8)
+
+    ax.axvline(1.0, color="#b91c1c", linestyle="--", linewidth=1.2, label="Brownian Motion Expectation (K = 1.0)")
+    ax.axvline(0.0, color="#1e293b", linestyle="-", linewidth=1.0)
+
+    for bar in bars:
+        w = bar.get_width()
+        ax.annotate(f"K = {w:.4f}", xy=(w + 0.05, bar.get_y() + bar.get_height()/2), va="center", ha="left", fontsize=8.0, fontweight="bold", color="#1e293b")
+
+    ax.set_yticks(y)
+    ax.set_yticklabels(labels, fontsize=8.5, fontweight="bold", color="#1e293b")
+    ax.invert_yaxis()
+    ax.set_xlabel("Blomberg's K (Phylogenetic Signal in Prediction Residuals)", fontsize=9.5, fontweight="bold", color="#1e293b")
+    ax.set_title("Phylogenetic Whitening: Residual Error Decorrelation via Phylo-PCoA", fontsize=11.0, fontweight="bold", color="#0d3b2e", pad=12)
+    ax.set_xlim(0, 2.85)
+    ax.grid(axis="x", linestyle="--", alpha=0.4, color="#cbd5e0")
+    ax.legend(loc="upper right", fontsize=8.0, framealpha=0.92)
+
+    for spine in ["top", "right"]:
+        ax.spines[spine].set_visible(False)
+    ax.spines["left"].set_color("#cbd5e0")
+    ax.spines["bottom"].set_color("#cbd5e0")
 
     plt.tight_layout(pad=1.0)
     return fig
