@@ -60,7 +60,7 @@ def generate_ieee_html():
 
     # Format Section Headings to IEEE Roman Numerals
     def replace_h2(match):
-        title = match.group(1).strip()
+        title = re.sub(r"\s+", " ", match.group(1).strip())
         # Map titles to Roman Numerals
         num_map = {
             "1. Introduction": "I. INTRODUCTION",
@@ -69,17 +69,19 @@ def generate_ieee_html():
             "3. The PHENIX Framework & Methodology": "III. THE PHENIX METHODOLOGY",
             "4. Empirical Benchmark Results": "IV. EMPIRICAL BENCHMARK RESULTS",
             "5. Discussion": "V. DISCUSSION",
-            "6. Conclusion": "VI. CONCLUSION",
+            "6. Code & Data Availability": "VI. CODE & DATA AVAILABILITY",
+            "6. Code &amp; Data Availability": "VI. CODE & DATA AVAILABILITY",
+            "7. Conclusion": "VII. CONCLUSION",
             "References": "REFERENCES"
         }
         clean_title = num_map.get(title, title.upper())
         return f'<h2 class="ieee-heading-1">{clean_title}</h2>'
 
-    content = re.sub(r"<h2[^>]*>(.*?)</h2>", replace_h2, content)
+    content = re.sub(r"<h2[^>]*>(.*?)</h2>", replace_h2, content, flags=re.DOTALL)
 
     # Format Subsections to IEEE Letters
     def replace_h3(match):
-        title = match.group(1).strip()
+        title = re.sub(r"\s+", " ", match.group(1).strip())
         # Subsections like 2.1 The Non-Independence... -> A. The Non-Independence...
         sub_match = re.match(r"^\d+\.(\d+)\s+(.*)", title)
         if sub_match:
@@ -89,11 +91,18 @@ def generate_ieee_html():
             return f'<h3 class="ieee-heading-2">{letter}. {sub_title}</h3>'
         return f'<h3 class="ieee-heading-2">{title}</h3>'
 
-    content = re.sub(r"<h3[^>]*>(.*?)</h3>", replace_h3, content)
+    content = re.sub(r"<h3[^>]*>(.*?)</h3>", replace_h3, content, flags=re.DOTALL)
 
     # Make Table 1 and Table 2 span both columns
     content = re.sub(r"(<table[^>]*>)", r'<div class="ieee-full-width-table">\1', content)
     content = re.sub(r"(</table>)", r"\1</div>", content)
+
+    # Format full-width figures with captions
+    content = re.sub(
+        r'<p>(<img[^>]*>)\s*(?:<br\s*/?>)?\s*<em>(.*?)</em></p>',
+        r'<div class="ieee-full-width-figure">\1<div class="ieee-figure-caption">\2</div></div>',
+        content
+    )
 
     # IEEE Document Template with strict CSS
     ieee_html = f"""<!DOCTYPE html>
@@ -291,6 +300,29 @@ caption {{
     text-indent: -0.22in;
     padding-left: 0.22in;
     margin-bottom: 0.35em;
+}}
+
+img {{
+    max-width: 95%;
+    max-height: 2.8in;
+    height: auto;
+    display: block;
+    margin: 0.4em auto;
+}}
+
+.ieee-full-width-figure {{
+    column-span: all;
+    margin: 1.1em 0;
+    text-align: center;
+    width: 100%;
+}}
+
+.ieee-figure-caption {{
+    font-size: 8.5pt;
+    font-style: italic;
+    text-align: center;
+    margin-top: 3px;
+    margin-bottom: 6px;
 }}
 
 /* Avoid orphan lines */

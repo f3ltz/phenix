@@ -75,6 +75,22 @@ class TestPhylogenetics(unittest.TestCase):
         self.assertIn("phylo_dim_1", df_pcoa.columns)
         self.assertFalse(df_pcoa.isnull().any().any())
 
+        # Test out-of-sample Gower projection on held-out taxon
+        D_train = D[:4, :4]
+        B_train = engine.compute_double_centered_matrix(D_train)
+        df_pcoa_tr, evals_tr = engine.compute_phylo_pcoa_eigenmaps(B_train, self.taxa[:4], n_components=2)
+        # Extract training eigenvectors
+        N_tr = len(D_train)
+        evals_raw, evecs_raw = np.linalg.eigh(B_train)
+        idx_desc = np.argsort(evals_raw)[::-1]
+        evals_k = evals_raw[idx_desc][:2]
+        evecs_k = evecs_raw[:, idx_desc][:, :2]
+
+        D_test_train = D[4:5, :4]
+        X_test_proj = engine.project_pcoa_eigenmaps(D_test_train, D_train, evals_k, evecs_k)
+        self.assertEqual(X_test_proj.shape, (1, 2))
+        self.assertFalse(np.isnan(X_test_proj).any())
+
 
 if __name__ == "__main__":
     unittest.main()

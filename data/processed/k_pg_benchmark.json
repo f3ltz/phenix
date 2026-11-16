@@ -1,0 +1,23 @@
+{
+  "Ridge": {
+    "n_taxa": 3188,
+    "r2_pooled": -0.4906,
+    "rmse": 1.4092,
+    "mae": 1.2265,
+    "fold_error": 16.85
+  },
+  "RandomForest": {
+    "n_taxa": 3188,
+    "r2_pooled": -0.4461,
+    "rmse": 1.388,
+    "mae": 1.1592,
+    "fold_error": 14.43
+  },
+  "XGBoost": {
+    "n_taxa": 3188,
+    "r2_pooled": -0.2015,
+    "rmse": 1.2652,
+    "mae": 1.0604,
+    "fold_error": 11.49
+  }
+}

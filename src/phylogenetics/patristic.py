@@ -110,3 +110,36 @@ class PatristicMatrixEngine:
         df_pcoa.insert(0, ID_COL, taxa)
 
         return df_pcoa, evals_sorted
+
+    def project_pcoa_eigenmaps(
+        self,
+        D_test_train: np.ndarray,
+        D_train: np.ndarray,
+        evals_k: np.ndarray,
+        evecs_k: np.ndarray,
+    ) -> np.ndarray:
+        """
+        Projects out-of-sample test taxa onto the training PCoA spectral eigenbasis
+        using Gower's (1968) out-of-sample projection formula.
+        Eliminates transductive data leakage from test clades into the feature basis.
+
+        Parameters:
+            D_test_train: (N_test, N_train) matrix of patristic distances from test taxa to training taxa.
+            D_train: (N_train, N_train) pairwise patristic distance matrix among training taxa.
+            evals_k: (k,) positive eigenvalues from training PCoA.
+            evecs_k: (N_train, k) eigenvectors from training PCoA.
+
+        Returns:
+            X_test: (N_test, k) projected coordinates in the training spectral eigenbasis.
+        """
+        A_tr = -0.5 * (D_train.astype(np.float64) ** 2)
+        A_te = -0.5 * (D_test_train.astype(np.float64) ** 2)
+
+        col_means_A_tr = np.mean(A_tr, axis=0, keepdims=True)
+        grand_mean_A_tr = float(np.mean(A_tr))
+        row_means_A_te = np.mean(A_te, axis=1, keepdims=True)
+
+        B_te = A_te - col_means_A_tr - row_means_A_te + grand_mean_A_tr
+        evals_pos = np.maximum(evals_k, 1e-12)
+        X_test = (B_te @ evecs_k) / np.sqrt(evals_pos)
+        return X_test
